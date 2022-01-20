@@ -1,6 +1,7 @@
 package neqsim.processSimulation.processSystem;
 
 import java.util.ArrayList;
+import com.google.gson.Gson;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -13,6 +14,12 @@ public class ProcessSystemTest {
     @BeforeEach
     public void setUp() {
         p = new ProcessSystem();
+    }
+
+    @Test
+    public void testXMLbuild() {
+        Gson gson = new Gson();
+        String test = gson.toJson(p);
     }
 
     @Test
@@ -90,7 +97,6 @@ public class ProcessSystemTest {
         p.removeUnit("");
         Assertions.assertEquals(p.size(), 0);
     }
-
 
     @Test
     public void testAddUnitsWithNoName() {
