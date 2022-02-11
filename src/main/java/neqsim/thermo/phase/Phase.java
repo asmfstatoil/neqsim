@@ -15,7 +15,6 @@ import neqsim.thermo.system.SystemInterface;
 
 /**
  * @author Even Solbraa
- * @version
  */
 
 abstract class Phase implements PhaseInterface {
@@ -256,21 +255,13 @@ abstract class Phase implements PhaseInterface {
         return temperature;
     }
 
-    /**
-     * {@inheritDoc}
-     *
-     * method to return pressure of a phase
-     */
+    /** {@inheritDoc} */
     @Override
     public double getPressure() {
         return pressure;
     }
 
-    /**
-     * {@inheritDoc}
-     *
-     * method to return pressure in a given unit
-     */
+    /** {@inheritDoc} */
     @Override
     public final double getPressure(String unit) {
         neqsim.util.unit.PressureUnit presConversion =
@@ -284,11 +275,7 @@ abstract class Phase implements PhaseInterface {
         return initType;
     }
 
-    /**
-     * {@inheritDoc}
-     *
-     * Returns the mole composition vector in unit mole fraction
-     */
+    /** {@inheritDoc} */
     @Override
     public double[] getMolarComposition() {
         double[] comp = new double[getNumberOfComponents()];
@@ -299,11 +286,7 @@ abstract class Phase implements PhaseInterface {
         return comp;
     }
 
-    /**
-     * {@inheritDoc}
-     *
-     * Returns the composition vector in unit molefraction/wtfraction/molespersec/volumefraction
-     */
+    /** {@inheritDoc} */
     @Override
     public double[] getComposition(String unit) {
         double[] comp = new double[getNumberOfComponents()];
@@ -369,11 +352,7 @@ abstract class Phase implements PhaseInterface {
         this.pressure = pres;
     }
 
-    /**
-     * {@inheritDoc}
-     *
-     * method to set the temperature of a phase
-     */
+    /** {@inheritDoc} */
     @Override
     public void setTemperature(double temp) {
         this.temperature = temp;
@@ -423,12 +402,7 @@ abstract class Phase implements PhaseInterface {
         // physicalProperties.physicalPropertySystem.commonPhasePhysicalProperties.DefaultPhysicalProperties(this,0,0);
     }
 
-    /**
-     * {@inheritDoc}
-     *
-     * specify the type model for the physical properties you want to use. Type: Model 0
-     * Orginal/default 1 Water 2 Glycol 3 Amine
-     */
+    /** {@inheritDoc} */
     @Override
     public void setPhysicalProperties(int type) {
         if (physicalPropertyHandler == null) {
@@ -572,11 +546,7 @@ abstract class Phase implements PhaseInterface {
         }
     }
 
-    /**
-     * {@inheritDoc}
-     *
-     * method to return molar volume of the phase note: without Peneloux volume correction
-     */
+    /** {@inheritDoc} */
     @Override
     public double getMolarVolume() {
         return molarVolume;
@@ -939,22 +909,14 @@ abstract class Phase implements PhaseInterface {
         return tempVar;
     }
 
-    /**
-     * {@inheritDoc}
-     *
-     * method to return specific heat capacity (Cp)
-     */
+    /** {@inheritDoc} */
     @Override
     public double getCp() {
         // System.out.println("Cp res:" + this.getCpres() + " Cp0: " + getCp0());
         return getCp0() * numberOfMolesInPhase + this.getCpres();
     }
 
-    /**
-     * {@inheritDoc}
-     *
-     * method to return specific heat capacity (Cp) in a given unit
-     */
+    /** {@inheritDoc} */
     @Override
     public double getCp(String unit) {
         double refCp = getCp(); // Cp in J/K
@@ -976,21 +938,13 @@ abstract class Phase implements PhaseInterface {
         return refCp * conversionFactor;
     }
 
-    /**
-     * {@inheritDoc}
-     *
-     * method to return specific heat capacity (Cv)
-     */
+    /** {@inheritDoc} */
     @Override
     public double getCv() {
         return getCp0() * numberOfMolesInPhase - R * numberOfMolesInPhase + getCvres();
     }
 
-    /**
-     * {@inheritDoc}
-     *
-     * method to return specific heat capacity (Cv) in a given unit
-     */
+    /** {@inheritDoc} */
     @Override
     public double getCv(String unit) {
         double refCv = getCv(); // Cv in J/K
@@ -1014,51 +968,33 @@ abstract class Phase implements PhaseInterface {
 
     /**
      * {@inheritDoc}
-     *
-     * method to return heat capacity ratio/adiabatic index/Poisson constant
+     * returns getCp() / getCv();
      */
     @Override
     public double getKappa() {
         return getCp() / getCv();
     }
 
-    /**
-     * {@inheritDoc}
-     *
-     * method to return heat capacity ratio/adiabatic index/Poisson constant. The method calculates
-     * it as Cp (real) /Cv (real)
-     */
+    /** {@inheritDoc} */
     @Override
     public double getGamma() {
         return getCp() / getCv();
     }
 
-    /**
-     * {@inheritDoc}
-     *
-     * method to return heat capacity ratio calculated as Cp/(Cp-R)
-     */
+    /** {@inheritDoc} */
     @Override
     public double getGamma2() {
         double cp0 = getCp();
         return cp0 / (cp0 - ThermodynamicConstantsInterface.R * numberOfMolesInPhase);
     }
 
-    /**
-     * {@inheritDoc}
-     *
-     * method to return enthalpy of a phase in unit Joule
-     */
+    /** {@inheritDoc} */
     @Override
     public double getEnthalpy() {
         return getHID() * numberOfMolesInPhase + this.getHresTP();
     }
 
-    /**
-     * {@inheritDoc}
-     *
-     * method to return phase enthalpy in a given unit
-     */
+    /** {@inheritDoc} */
     @Override
     public double getEnthalpy(String unit) {
         double refEnthalpy = getEnthalpy(); // enthalpy in J
@@ -1122,11 +1058,7 @@ abstract class Phase implements PhaseInterface {
         return ion;
     }
 
-    /**
-     * {@inheritDoc}
-     *
-     * method to return entropy of the phase
-     */
+    /** {@inheritDoc} */
     @Override
     public double getEntropy() {
         double tempVar = 0.0;
@@ -1146,11 +1078,7 @@ abstract class Phase implements PhaseInterface {
                 + tempVar2 * numberOfMolesInPhase + this.getSresTP();
     }
 
-    /**
-     * {@inheritDoc}
-     *
-     * method to return entropy of the phase
-     */
+    /** {@inheritDoc} */
     @Override
     public double getEntropy(String unit) {
         double refEntropy = getEntropy(); // entropy in J/K
@@ -1184,21 +1112,13 @@ abstract class Phase implements PhaseInterface {
         return getCp() / temperature;
     }
 
-    /**
-     * {@inheritDoc}
-     *
-     * method to return viscosity of the phase
-     */
+    /** {@inheritDoc} */
     @Override
     public double getViscosity() {
         return getPhysicalProperties().getViscosity();
     }
 
-    /**
-     * {@inheritDoc}
-     *
-     * method to return viscosity og the phase in a given unit
-     */
+    /** {@inheritDoc} */
     @Override
     public double getViscosity(String unit) {
         double refViscosity = getViscosity(); // viscosity in kg/msec
@@ -1216,34 +1136,20 @@ abstract class Phase implements PhaseInterface {
         return refViscosity * conversionFactor;
     }
 
-    /**
-     * {@inheritDoc}
-     *
-     * method to return conductivity of a phase
-     */
+    /** {@inheritDoc} */
     @Override
     public double getThermalConductivity() {
         return getPhysicalProperties().getConductivity();
     }
 
-    /**
-     * {@inheritDoc}
-     *
-     * method to return conductivity of a phase
-     * 
-     * @deprecated use {@link #getThermalConductivity()} instead.
-     */
+    /** {@inheritDoc} */
     @Override
     @Deprecated
     public double getConductivity() {
         return getPhysicalProperties().getConductivity();
     }
 
-    /**
-     * {@inheritDoc}
-     *
-     * method to return conductivity in a given unit
-     */
+    /** {@inheritDoc} */
     @Override
     public double getThermalConductivity(String unit) {
         double refConductivity = getThermalConductivity(); // conductivity in W/m*K
@@ -1261,13 +1167,7 @@ abstract class Phase implements PhaseInterface {
         return refConductivity * conversionFactor;
     }
 
-    /**
-     * {@inheritDoc}
-     *
-     * method to return conductivity in a given unit
-     * 
-     * @deprecated use {@link #getThermalConductivity(String unit)} instead.
-     */
+    /** {@inheritDoc} */
     @Override
     @Deprecated
     public double getConductivity(String unit) {
@@ -1619,11 +1519,7 @@ abstract class Phase implements PhaseInterface {
         return getInternalEnergy() - temperature * getEntropy();
     }
 
-    /**
-     * {@inheritDoc}
-     *
-     * Returns the molar mass of the phase. Unit: kg/mol
-     */
+    /** {@inheritDoc} */
     @Override
     public final double getMolarMass() {
         double tempVar = 0;
@@ -1633,11 +1529,7 @@ abstract class Phase implements PhaseInterface {
         return tempVar;
     }
 
-    /**
-     * {@inheritDoc}
-     *
-     * method to get the Joule Thomson Coefficient of a phase note: implemented in phaseEos
-     */
+    /** {@inheritDoc} */
     @Override
     public double getJouleThomsonCoefficient(String unit) {
         double JTcoef = getJouleThomsonCoefficient();
@@ -1653,31 +1545,19 @@ abstract class Phase implements PhaseInterface {
         return JTcoef * conversionFactor;
     }
 
-    /**
-     * {@inheritDoc}
-     *
-     * method to get the Joule Thomson Coefficient of a phase note: implemented in phaseEos
-     */
+    /** {@inheritDoc} */
     @Override
     public double getJouleThomsonCoefficient() {
         return 0;
     }
 
-    /**
-     * {@inheritDoc}
-     *
-     * method to get density of a phase note: does not use Peneloux volume correction
-     */
+    /** {@inheritDoc} */
     @Override
     public double getDensity() {
         return 1.0 / getMolarVolume() * getMolarMass() * 1.0e5;
     }
 
-    /**
-     * {@inheritDoc}
-     *
-     * method to get density of a fluid note: with Peneloux volume correction
-     */
+    /** {@inheritDoc} */
     @Override
     public double getDensity(String unit) {
         double refDensity = getPhysicalProperties().getDensity(); // density in kg/m3
@@ -1882,21 +1762,13 @@ abstract class Phase implements PhaseInterface {
         return false;
     }
 
-    /**
-     * {@inheritDoc}
-     *
-     * Getter for property mixingRuleNumber.
-     */
+    /** {@inheritDoc} */
     @Override
     public final int getMixingRuleNumber() {
         return mixingRuleNumber;
     }
 
-    /**
-     * {@inheritDoc}
-     *
-     * Indexed getter for property refPhase.
-     */
+    /** {@inheritDoc} */
     @Override
     public neqsim.thermo.phase.PhaseInterface getRefPhase(int index) {
         if (refPhase == null) {
@@ -1905,11 +1777,7 @@ abstract class Phase implements PhaseInterface {
         return refPhase[index];
     }
 
-    /**
-     * {@inheritDoc}
-     *
-     * Getter for property refPhase.
-     */
+    /** {@inheritDoc} */
     @Override
     public neqsim.thermo.phase.PhaseInterface[] getRefPhase() {
         if (refPhase == null) {
@@ -1918,44 +1786,25 @@ abstract class Phase implements PhaseInterface {
         return refPhase;
     }
 
-    /**
-     * {@inheritDoc}
-     *
-     * Indexed setter for property refPhase.
-     */
+    /** {@inheritDoc} */
     @Override
     public void setRefPhase(int index, neqsim.thermo.phase.PhaseInterface refPhase) {
         this.refPhase[index] = refPhase;
     }
 
-    // public double getTotalVolume() {
-    // return numberOfMolesInPhase * getMolarVolume();
-    // }
-    /**
-     * {@inheritDoc}
-     *
-     * Setter for property refPhase.
-     */
+    /** {@inheritDoc} */
     @Override
     public void setRefPhase(neqsim.thermo.phase.PhaseInterface[] refPhase) {
         this.refPhase = refPhase;
     }
 
-    /**
-     * {@inheritDoc}
-     *
-     * Getter for property physicalPropertyType.
-     */
+    /** {@inheritDoc} */
     @Override
     public final int getPhysicalPropertyType() {
         return physicalPropertyType;
     }
 
-    /**
-     * {@inheritDoc}
-     *
-     * Setter for property physicalPropertyType.
-     */
+    /** {@inheritDoc} */
     @Override
     public void setPhysicalPropertyType(int physicalPropertyType) {
         this.physicalPropertyType = physicalPropertyType;
@@ -2041,11 +1890,7 @@ abstract class Phase implements PhaseInterface {
         return TPBfrac;
     }
 
-    /**
-     * {@inheritDoc}
-     *
-     * Setter for property beta.
-     */
+    /** {@inheritDoc} */
     @Override
     public final void setBeta(double beta) {
         this.beta = beta;
@@ -2055,51 +1900,31 @@ abstract class Phase implements PhaseInterface {
     @Override
     public void setMixingRuleGEModel(String name) {}
 
-    /**
-     * {@inheritDoc}
-     *
-     * Getter for property phaseTypeName.
-     */
+    /** {@inheritDoc} */
     @Override
     public java.lang.String getPhaseTypeName() {
         return phaseTypeName;
     }
 
-    /**
-     * {@inheritDoc}
-     *
-     * Setter for property phaseTypeName.
-     */
+    /** {@inheritDoc} */
     @Override
     public void setPhaseTypeName(java.lang.String phaseTypeName) {
         this.phaseTypeName = phaseTypeName;
     }
 
-    /**
-     * {@inheritDoc}
-     *
-     * Getter for property mixingRuleDefined.
-     */
+    /** {@inheritDoc} */
     @Override
     public boolean isMixingRuleDefined() {
         return mixingRuleDefined;
     }
 
-    /**
-     * {@inheritDoc}
-     *
-     * Setter for property mixingRuleDefined.
-     */
+    /** {@inheritDoc} */
     @Override
     public void setMixingRuleDefined(boolean mixingRuleDefined) {
         this.mixingRuleDefined = mixingRuleDefined;
     }
 
-    /**
-     * {@inheritDoc}
-     *
-     * Setter for property phaseType.
-     */
+    /** {@inheritDoc} */
     @Override
     public final void setPhaseType(int phaseType) {
         this.phaseType = phaseType;
@@ -2123,11 +1948,7 @@ abstract class Phase implements PhaseInterface {
         phaseVolume = volume;
     }
 
-    /**
-     * {@inheritDoc}
-     *
-     * method to return phase volume note: without Peneloux volume correction
-     */
+    /** {@inheritDoc} */
     @Override
     public double getTotalVolume() {
         if (constantPhaseVolume) {
@@ -2136,21 +1957,13 @@ abstract class Phase implements PhaseInterface {
         return getMolarVolume() * getNumberOfMolesInPhase();
     }
 
-    /**
-     * {@inheritDoc}
-     *
-     * method to return phase volume note: without Peneloux volume correction
-     */
+    /** {@inheritDoc} */
     @Override
     public double getVolume() {
         return getTotalVolume();
     }
 
-    /**
-     * {@inheritDoc}
-     *
-     * method to return fluid volume
-     */
+    /** {@inheritDoc} */
     @Override
     public double getVolume(String unit) {
         double conversionFactor = 1.0;
@@ -2165,12 +1978,7 @@ abstract class Phase implements PhaseInterface {
         return conversionFactor * getVolume() / 1.0e5;
     }
 
-    /**
-     * {@inheritDoc}
-     *
-     * method to return phase volume with Peneloux volume correction need to call
-     * initPhysicalProperties() before this method is called
-     */
+    /** {@inheritDoc} */
     @Override
     public double getCorrectedVolume() {
         return getMolarMass() / getPhysicalProperties().getDensity() * getNumberOfMolesInPhase();
@@ -2269,11 +2077,7 @@ abstract class Phase implements PhaseInterface {
         return wtFrac;
     }
 
-    /**
-     * {@inheritDoc}
-     *
-     * method to get density of a phase using the GERG-2008 EoS
-     */
+    /** {@inheritDoc} */
     @Override
     public double getDensity_GERG2008() {
         neqsim.thermo.util.GERG.NeqSimGERG2008 test =
@@ -2281,11 +2085,7 @@ abstract class Phase implements PhaseInterface {
         return test.getDensity();
     }
 
-    /**
-     * {@inheritDoc}
-     *
-     * method to get GERG properties of a phase using the GERG-2008 EoS
-     */
+    /** {@inheritDoc} */
     @Override
     public double[] getProperties_GERG2008() {
         neqsim.thermo.util.GERG.NeqSimGERG2008 test =
@@ -2293,11 +2093,7 @@ abstract class Phase implements PhaseInterface {
         return test.propertiesGERG();
     }
 
-    /**
-     * {@inheritDoc}
-     *
-     * method to get density of a phase using the AGA8-Detail EoS
-     */
+    /** {@inheritDoc} */
     @Override
     public double getDensity_AGA8() {
         neqsim.thermo.util.GERG.NeqSimAGA8Detail test =
@@ -2305,11 +2101,7 @@ abstract class Phase implements PhaseInterface {
         return test.getDensity();
     }
 
-    /**
-     * {@inheritDoc}
-     *
-     * method to return flow rate of phase
-     */
+    /** {@inheritDoc} */
     @Override
     public double getFlowRate(String flowunit) {
         if (flowunit.equals("kg/sec")) {

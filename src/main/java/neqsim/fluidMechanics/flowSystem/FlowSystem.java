@@ -86,6 +86,8 @@ public abstract class FlowSystem implements FlowSystemInterface, java.io.Seriali
      * </p>
      */
     public void flowLegInit() {
+        // TODO: add checks that input arguments have correct size to avoid generic
+        // IndexOutOfBoundsException
         for (int i = 0; i < numberOfFlowLegs; i++) {
             this.flowLeg[i].setThermoSystem(thermoSystem);
             this.flowLeg[i].setEquipmentGeometry(equipmentGeometry[i]);
@@ -102,7 +104,7 @@ public abstract class FlowSystem implements FlowSystemInterface, java.io.Seriali
         }
 
         totalNumberOfNodes = this.calcTotalNumberOfNodes();
-        System.out.println("total number of nodes : " + totalNumberOfNodes);
+        // System.out.println("total number of nodes : " + totalNumberOfNodes);
     }
 
     /** {@inheritDoc} */
