@@ -34,7 +34,10 @@ public class Adjuster extends ProcessEquipmentBaseClass {
      * Constructor for Adjuster.
      * </p>
      */
-    public Adjuster() {}
+    @Deprecated
+    public Adjuster() {
+        this("Adjuster");
+    }
 
     /**
      * <p>
@@ -125,12 +128,9 @@ public class Adjuster extends ProcessEquipmentBaseClass {
         this.targetComponent = targetComponent;
     }
 
-    /**
-     * <p>
-     * runTransient.
-     * </p>
-     */
-    public void runTransient() {
+    /** {@inheritDoc} */
+    @Override
+    public void runTransient(double dt) {
         run();
     }
 

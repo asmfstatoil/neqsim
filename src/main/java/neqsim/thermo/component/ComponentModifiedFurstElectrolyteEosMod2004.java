@@ -29,24 +29,6 @@ public class ComponentModifiedFurstElectrolyteEosMod2004 extends ComponentSrk {
      * <p>
      * Constructor for ComponentModifiedFurstElectrolyteEosMod2004.
      * </p>
-     */
-    public ComponentModifiedFurstElectrolyteEosMod2004() {}
-
-    /**
-     * <p>
-     * Constructor for ComponentModifiedFurstElectrolyteEosMod2004.
-     * </p>
-     *
-     * @param moles a double
-     */
-    public ComponentModifiedFurstElectrolyteEosMod2004(double moles) {
-        numberOfMoles = moles;
-    }
-
-    /**
-     * <p>
-     * Constructor for ComponentModifiedFurstElectrolyteEosMod2004.
-     * </p>
      *
      * @param component_name a {@link java.lang.String} object
      * @param moles a double
@@ -398,12 +380,11 @@ public class ComponentModifiedFurstElectrolyteEosMod2004 extends ComponentSrk {
         if (getIonicCharge() != 0) {
             return 0.0;
         }
-        double ans2 = 0.0;
-        for (int i = 0; i < numberOfComponents; i++) {
-            if (phase.getComponent(i).getIonicCharge() == 0) {
-                ans2 += phase.getComponent(i).getNumberOfMolesInPhase();
-            }
-        }
+        /*
+         * double ans2 = 0.0; for (int i = 0; i < numberOfComponents; i++) { if
+         * (phase.getComponent(i).getIonicCharge() == 0) { ans2 +=
+         * phase.getComponent(i).getNumberOfMolesInPhase(); } }
+         */
         return 0.0;
         // return getDiElectricConstant(temperature)/ans2 -
         // ((PhaseModifiedFurstElectrolyteEosMod2004)
@@ -429,12 +410,11 @@ public class ComponentModifiedFurstElectrolyteEosMod2004 extends ComponentSrk {
                         .getIonicCharge() != 0) {
             return 0.0;
         }
-        double ans2 = 0.0;
-        for (int i = 0; i < numberOfComponents; i++) {
-            if (phase.getComponent(i).getIonicCharge() == 0) {
-                ans2 += phase.getComponent(i).getNumberOfMolesInPhase();
-            }
-        }
+        /*
+         * double ans2 = 0.0; for (int i = 0; i < numberOfComponents; i++) { if
+         * (phase.getComponent(i).getIonicCharge() == 0) { ans2 +=
+         * phase.getComponent(i).getNumberOfMolesInPhase(); } }
+         */
         return 0.0;
         // return -getDiElectricConstant(temperature)/(ans2*ans2) -
         // ((ComponentModifiedFurstElectrolyteEosMod2004)((PhaseModifiedFurstElectrolyteEosMod2004)
@@ -459,12 +439,11 @@ public class ComponentModifiedFurstElectrolyteEosMod2004 extends ComponentSrk {
         if (getIonicCharge() != 0) {
             return 0.0;
         }
-        double ans2 = 0.0;
-        for (int i = 0; i < numberOfComponents; i++) {
-            if (phase.getComponent(i).getIonicCharge() == 0) {
-                ans2 += phase.getComponent(i).getNumberOfMolesInPhase();
-            }
-        }
+        /*
+         * double ans2 = 0.0; for (int i = 0; i < numberOfComponents; i++) { if
+         * (phase.getComponent(i).getIonicCharge() == 0) { ans2 +=
+         * phase.getComponent(i).getNumberOfMolesInPhase(); } }
+         */
         return 0.0;
         // return getDiElectricConstantdT(temperature)/ans2 -
         // ((PhaseModifiedFurstElectrolyteEosMod2004)

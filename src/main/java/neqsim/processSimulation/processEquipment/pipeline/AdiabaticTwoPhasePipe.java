@@ -1,7 +1,6 @@
 package neqsim.processSimulation.processEquipment.pipeline;
 
 import neqsim.fluidMechanics.flowSystem.FlowSystemInterface;
-import neqsim.processSimulation.mechanicalDesign.pipeline.PipelineMechanicalDeisgn;
 import neqsim.processSimulation.processEquipment.stream.Stream;
 import neqsim.processSimulation.processEquipment.stream.StreamInterface;
 import neqsim.thermo.system.SystemInterface;
@@ -39,8 +38,40 @@ public class AdiabaticTwoPhasePipe extends Pipeline {
      * Constructor for AdiabaticTwoPhasePipe.
      * </p>
      */
+    @Deprecated
     public AdiabaticTwoPhasePipe() {
-        mechanicalDesign = new PipelineMechanicalDeisgn(this);
+    }
+
+    /**
+     * <p>
+     * Constructor for AdiabaticTwoPhasePipe.
+     * </p>
+     *
+     * @param inStream a {@link neqsim.processSimulation.processEquipment.stream.StreamInterface}
+     *        object
+     */
+    @Deprecated
+    public AdiabaticTwoPhasePipe(StreamInterface inStream) {
+        this("AdiabaticTwoPhasePipe", inStream);
+    }
+
+    /**
+     * Constructor for AdiabaticTwoPhasePipe.
+     * 
+     * @param name
+     */
+    public AdiabaticTwoPhasePipe(String name) {
+        super(name);
+    }
+
+    /**
+     * Constructor for AdiabaticTwoPhasePipe.
+     * 
+     * @param name
+     * @param inStream
+     */
+    public AdiabaticTwoPhasePipe(String name, StreamInterface inStream) {
+        super(name, inStream);
     }
 
     /**
@@ -56,29 +87,10 @@ public class AdiabaticTwoPhasePipe extends Pipeline {
         insideDiameter = nominalDiameter / 1000.0;
     }
 
-    /**
-     * <p>
-     * Constructor for AdiabaticTwoPhasePipe.
-     * </p>
-     *
-     * @param inStream a {@link neqsim.processSimulation.processEquipment.stream.StreamInterface}
-     *        object
-     */
-    public AdiabaticTwoPhasePipe(StreamInterface inStream) {
-        this.inStream = inStream;
-        outStream = (Stream) inStream.clone();
-    }
-
     /** {@inheritDoc} */
     @Override
     public SystemInterface getThermoSystem() {
         return outStream.getThermoSystem();
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public void setName(String name) {
-        this.name = name;
     }
 
     /** {@inheritDoc} */
@@ -302,13 +314,7 @@ public class AdiabaticTwoPhasePipe extends Pipeline {
 
     /** {@inheritDoc} */
     @Override
-    public String getName() {
-        return name;
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public void runTransient() {
+    public void runTransient(double dt) {
         run();
     }
 

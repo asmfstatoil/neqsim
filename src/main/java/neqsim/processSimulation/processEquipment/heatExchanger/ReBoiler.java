@@ -27,7 +27,10 @@ public class ReBoiler extends ProcessEquipmentBaseClass {
      * Constructor for ReBoiler.
      * </p>
      */
-    public ReBoiler() {}
+    @Deprecated
+    public ReBoiler() {
+        super("ReBoiler");
+    }
 
     /**
      * <p>
@@ -37,7 +40,21 @@ public class ReBoiler extends ProcessEquipmentBaseClass {
      * @param inStream a {@link neqsim.processSimulation.processEquipment.stream.StreamInterface}
      *        object
      */
+    @Deprecated
     public ReBoiler(StreamInterface inStream) {
+        this("ReBoiler", inStream);
+    }
+
+    /**
+     * <p>
+     * Constructor for ReBoiler.
+     * </p>
+     *
+     * @param inStream a {@link neqsim.processSimulation.processEquipment.stream.StreamInterface}
+     *        object
+     */
+    public ReBoiler(String name, StreamInterface inStream) {
+        super(name);
         this.inStream = inStream;
         outStream = inStream.clone();
     }
@@ -83,12 +100,10 @@ public class ReBoiler extends ProcessEquipmentBaseClass {
         System.out.println("out Temperature " + reboilerDuty);
     }
 
-    /**
-     * <p>
-     * runTransient.
-     * </p>
-     */
-    public void runTransient() {}
+    /** {@inheritDoc} */
+    @Override
+    public void runTransient(double dt) {
+    }
 
     /**
      * <p>

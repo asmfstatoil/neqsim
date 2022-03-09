@@ -34,8 +34,9 @@ public class SimpleAbsorber extends Separator implements AbsorberInterface {
      * Constructor for SimpleAbsorber.
      * </p>
      */
+    @Deprecated
     public SimpleAbsorber() {
-        mechanicalDesign = new AbsorberMechanicalDesign(this);
+        this("SimpleAbsorber");
     }
 
     /**
@@ -45,15 +46,36 @@ public class SimpleAbsorber extends Separator implements AbsorberInterface {
      *
      * @param inStream1 a {@link neqsim.processSimulation.processEquipment.stream.Stream} object
      */
+    @Deprecated
     public SimpleAbsorber(Stream inStream1) {
-        mechanicalDesign = new AbsorberMechanicalDesign(this);
+        this("SimpleAbsorber", inStream1);
+    }
 
+    /**
+     * 
+     * @param name
+     */
+    public SimpleAbsorber(String name) {
+        super(name);
+    }
+
+    /**
+     * <p>
+     * Constructor for SimpleAbsorber.
+     * </p>
+     *
+     * @param name
+     * @param inStream1 a {@link neqsim.processSimulation.processEquipment.stream.Stream} object
+     */
+    public SimpleAbsorber(String name, Stream inStream1) {
+        this(name);
         outStream = new Stream[2];
         inStream = new Stream[2];
         this.inStream[0] = inStream1;
         this.inStream[1] = inStream1;
         outStream[0] = inStream1.clone();
         outStream[1] = inStream1.clone();
+        setName(name);
 
         SystemInterface systemOut1 = inStream1.getThermoSystem().clone();
         outStream[0].setThermoSystem(systemOut1);
@@ -73,11 +95,16 @@ public class SimpleAbsorber extends Separator implements AbsorberInterface {
     }
 
     /** {@inheritDoc} */
+    public AbsorberMechanicalDesign getMechanicalDesign() {
+        return new AbsorberMechanicalDesign(this);
+    }
+
+    /** {@inheritDoc} */
     @Override
     public void setName(String name) {
+        super.setName(name);
         // outStream[0].setName(name + "_Sout1");
         // outStream[1].setName(name + "_Sout2");
-        super.setName(name);
     }
 
     /**
@@ -226,7 +253,9 @@ public class SimpleAbsorber extends Separator implements AbsorberInterface {
      * runTransient.
      * </p>
      */
-    public void runTransient() {}
+    @Override
+    public void runTransient(double dt) {
+    }
 
     /** {@inheritDoc} */
     @Override

@@ -1,7 +1,6 @@
 package neqsim.processSimulation.processEquipment.pipeline;
 
 import neqsim.fluidMechanics.flowSystem.FlowSystemInterface;
-import neqsim.processSimulation.mechanicalDesign.pipeline.PipelineMechanicalDeisgn;
 import neqsim.processSimulation.processEquipment.stream.Stream;
 import neqsim.processSimulation.processEquipment.stream.StreamInterface;
 import neqsim.thermodynamicOperations.ThermodynamicOperations;
@@ -35,8 +34,43 @@ public class AdiabaticPipe extends Pipeline {
      * Constructor for AdiabaticPipe.
      * </p>
      */
+    @Deprecated
     public AdiabaticPipe() {
-        mechanicalDesign = new PipelineMechanicalDeisgn(this);
+        this("AdiabaticPipe");
+    }
+
+    /**
+     * <p>
+     * Constructor for AdiabaticPipe.
+     * </p>
+     *
+     * @param inStream a {@link neqsim.processSimulation.processEquipment.stream.StreamInterface}
+     *        object
+     */
+    @Deprecated
+    public AdiabaticPipe(StreamInterface inStream) {
+        this("AdiabaticPipe", inStream);
+    }
+
+    /**
+     * Constructor for AdiabaticPipe.
+     * 
+     * @param name
+     */
+    public AdiabaticPipe(String name) {
+        super(name);
+    }
+
+    /**
+     * Constructor for AdiabaticPipe.
+     * 
+     * @param name
+     * @param inStream
+     */
+    public AdiabaticPipe(String name, StreamInterface inStream) {
+        this(name);
+        this.inStream = inStream;
+        outStream = (Stream) inStream.clone();
     }
 
     /**
@@ -50,25 +84,6 @@ public class AdiabaticPipe extends Pipeline {
     public void setPipeSpecification(double nominalDiameter, String pipeSec) {
         pipeSpecification = pipeSec;
         insideDiameter = nominalDiameter / 1000.0;
-    }
-
-    /**
-     * <p>
-     * Constructor for AdiabaticPipe.
-     * </p>
-     *
-     * @param inStream a {@link neqsim.processSimulation.processEquipment.stream.StreamInterface}
-     *        object
-     */
-    public AdiabaticPipe(StreamInterface inStream) {
-        this.inStream = inStream;
-        outStream = (Stream) inStream.clone();
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public void setName(String name) {
-        this.name = name;
     }
 
     /** {@inheritDoc} */
@@ -233,13 +248,7 @@ public class AdiabaticPipe extends Pipeline {
 
     /** {@inheritDoc} */
     @Override
-    public String getName() {
-        return name;
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public void runTransient() {
+    public void runTransient(double dt) {
         run();
     }
 

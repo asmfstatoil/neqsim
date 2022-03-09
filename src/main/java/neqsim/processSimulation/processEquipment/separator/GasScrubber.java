@@ -34,10 +34,9 @@ public class GasScrubber extends Separator {
      * Constructor for GasScrubber.
      * </p>
      */
+    @Deprecated
     public GasScrubber() {
-        super();
-        mechanicalDesign = new GasScrubberMechanicalDesign(this);
-        this.setOrientation("vertical");
+        this("GasScrubber");
     }
 
     /**
@@ -47,9 +46,19 @@ public class GasScrubber extends Separator {
      *
      * @param inletStream a {@link neqsim.processSimulation.processEquipment.stream.Stream} object
      */
+    @Deprecated
     public GasScrubber(Stream inletStream) {
-        this();
-        this.setInletStream(inletStream);
+        this("GasScrubber", inletStream);
+    }
+
+    /**
+     * Constructor for GasScrubber.
+     * 
+     * @param name
+     */
+    public GasScrubber(String name) {
+        super(name);
+        this.setOrientation("vertical");
     }
 
     /**
@@ -61,15 +70,12 @@ public class GasScrubber extends Separator {
      * @param inletStream a {@link neqsim.processSimulation.processEquipment.stream.Stream} object
      */
     public GasScrubber(String name, Stream inletStream) {
-        this();
-        this.name = name;
-        this.setInletStream(inletStream);
+        super(name, inletStream);
+        this.setOrientation("vertical");
     }
 
-    /** {@inheritDoc} */
-    @Override
-    public void setName(String name) {
-        this.name = name;
+    public GasScrubberMechanicalDesign getMechanicalDesign() {
+        return new GasScrubberMechanicalDesign(this);
     }
 
     /**
@@ -84,11 +90,11 @@ public class GasScrubber extends Separator {
 
         thermoSystem = inletStream.getThermoSystem().clone();
         gasSystem = thermoSystem.phaseToSystem(thermoSystem.getPhases()[0]);
-        gasOutStream = new Stream(gasSystem);
+        gasOutStream = new Stream("gasOutStream", gasSystem);
 
         thermoSystem = inletStream.getThermoSystem().clone();
         liquidSystem = thermoSystem.phaseToSystem(thermoSystem.getPhases()[1]);
-        liquidOutStream = new Stream(liquidSystem);
+        liquidOutStream = new Stream("liquidOutStream", liquidSystem);
     }
 
     /**
@@ -99,7 +105,7 @@ public class GasScrubber extends Separator {
      * @param type a {@link java.lang.String} object
      */
     public void addScrubberSection(String type) {
-        scrubberSection.add(new SeparatorSection(type, this));
+        scrubberSection.add(new SeparatorSection("section" + scrubberSection.size() + 1, type, this));
     }
 
     /** {@inheritDoc} */
@@ -146,14 +152,6 @@ public class GasScrubber extends Separator {
 
     /** {@inheritDoc} */
     @Override
-    public String getName() {
-        return name;
+    public void runTransient(double dt) {
     }
-
-    /**
-     * <p>
-     * runTransient.
-     * </p>
-     */
-    public void runTransient() {}
 }

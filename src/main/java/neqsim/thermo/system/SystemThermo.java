@@ -131,9 +131,10 @@ abstract class SystemThermo implements SystemInterface {
     public SystemThermo(double T, double P) {
         this();
         if (T < 0.0 || P < 0.0) {
-            logger.error("Negative input temperature or pressure");
+            String msg = "Negative input temperature or pressure";
+            logger.error(msg);
             neqsim.util.exception.InvalidInputException e =
-                    new neqsim.util.exception.InvalidInputException();
+                    new neqsim.util.exception.InvalidInputException(msg);
             throw new RuntimeException(e);
         }
         beta[0] = 1.0;
@@ -247,15 +248,19 @@ abstract class SystemThermo implements SystemInterface {
             if (index != -1) {
                 addComponent(index, addSystem.getPhase(0).getComponent(i).getNumberOfmoles());
             } else {
-            	/*
-            	if(addSystem.getPhase(0).getComponent(i).isIsTBPfraction()) {
-            		addTBPfraction(addSystem.getPhase(0).getComponent(i).getComponentName(), addSystem.getPhase(0).getComponent(i).getNumberOfmoles(), addSystem.getPhase(0).getComponent(i).getMolarMass(), addSystem.getPhase(0).getComponent(i).getNormalLiquidDensity());
-            		changeComponentName(addSystem.getPhase(0).getComponent(i).getComponentName()+"_PC", addSystem.getPhase(0).getComponent(i).getComponentName().replaceFirst("_PC", ""));
-            	}
-                addComponent(addSystem.getPhase(0).getComponent(i).getComponentName(),
-                        addSystem.getPhase(0).getComponent(i).getNumberOfmoles());
-                        */
-            	addComponent(addSystem.getComponent(i));
+                /*
+                 * if(addSystem.getPhase(0).getComponent(i).isIsTBPfraction()) {
+                 * addTBPfraction(addSystem.getPhase(0).getComponent(i).getComponentName(),
+                 * addSystem.getPhase(0).getComponent(i).getNumberOfmoles(),
+                 * addSystem.getPhase(0).getComponent(i).getMolarMass(),
+                 * addSystem.getPhase(0).getComponent(i).getNormalLiquidDensity());
+                 * changeComponentName(addSystem.getPhase(0).getComponent(i).getComponentName()+
+                 * "_PC",
+                 * addSystem.getPhase(0).getComponent(i).getComponentName().replaceFirst("_PC",
+                 * "")); } addComponent(addSystem.getPhase(0).getComponent(i).getComponentName(),
+                 * addSystem.getPhase(0).getComponent(i).getNumberOfmoles());
+                 */
+                addComponent(addSystem.getComponent(i));
             }
         }
         if (addedNewComponent) {
@@ -695,11 +700,9 @@ abstract class SystemThermo implements SystemInterface {
                     * ThermodynamicConstantsInterface.standardStateTemperature / 101325.0 / 1.0e6;
         } else if (flowunit.equals("kg/hr")) {
             return totalNumberOfMoles * getMolarMass() * 3600.0;
-        }
-        else if (flowunit.equals("kg/day")) {
-            return totalNumberOfMoles * getMolarMass() * 3600.0*24.0;
-        }
-        else if (flowunit.equals("m3/hr")) {
+        } else if (flowunit.equals("kg/day")) {
+            return totalNumberOfMoles * getMolarMass() * 3600.0 * 24.0;
+        } else if (flowunit.equals("m3/hr")) {
             // return getVolume() / 1.0e5 * 3600.0;
             initPhysicalProperties("density");
             return totalNumberOfMoles * getMolarMass() * 3600.0 / getDensity("kg/m3");
@@ -718,7 +721,7 @@ abstract class SystemThermo implements SystemInterface {
         } else if (flowunit.equals("mole/hr")) {
             return totalNumberOfMoles * 3600.0;
         } else {
-            throw new RuntimeException("failed.. unit: " + flowunit + " not suported");
+            throw new RuntimeException("failed.. unit: " + flowunit + " not supported");
         }
     }
 
@@ -735,46 +738,6 @@ abstract class SystemThermo implements SystemInterface {
             getPhase(i).getComponent(name).setComponentName(newName);
         }
     }
-
-    /** {@inheritDoc} */
-    @Override
-    public void addComponent(String componentName, double value, String name, int phase) {
-        if (!neqsim.util.database.NeqSimDataBase.hasComponent(componentName)) {
-            logger.error("No component with name: " + componentName + " in database");
-            return;
-        }
-        neqsim.util.database.NeqSimDataBase database = new neqsim.util.database.NeqSimDataBase();
-        java.sql.ResultSet dataSet =
-                database.getResultSet(("SELECT * FROM comp WHERE name='" + componentName + "'"));
-        double molarmass = 0.0, stddens = 0.0, boilp = 0.0;
-        try {
-            dataSet.next();
-            molarmass = Double.parseDouble(dataSet.getString("molarmass")) / 1000.0;
-            stddens = Double.parseDouble(dataSet.getString("stddens"));
-            boilp = Double.parseDouble(dataSet.getString("normboil"));
-        } catch (Exception e) {
-            logger.error("failed " + e.toString());
-            throw new RuntimeException(e);
-        } finally {
-            try {
-                dataSet.close();
-                if (database.getStatement() != null) {
-                    database.getStatement().close();
-                }
-                if (database.getConnection() != null) {
-                    database.getConnection().close();
-                }
-            } catch (Exception e) {
-                logger.error("error", e);
-            }
-        }
-        neqsim.util.unit.Unit unit =
-                new neqsim.util.unit.RateUnit(value, name, molarmass, stddens, boilp);
-        double SIval = unit.getSIvalue();
-        // System.out.println("number of moles " + SIval);
-        this.addComponent(componentName, SIval, phase);
-    }
-
     /** {@inheritDoc} */
     @Override
     public void addSalt(String componentName, double value) {
@@ -801,9 +764,10 @@ abstract class SystemThermo implements SystemInterface {
     public void addTBPfraction(String componentName, double numberOfMoles, double molarMass,
             double density) {
         if (density < 0.0 || molarMass < 0.0) {
-            logger.error("Negative input molar mass or density.");
+            String msg = "Negative input molar mass or density.";
+            logger.error(msg);
             neqsim.util.exception.InvalidInputException e =
-                    new neqsim.util.exception.InvalidInputException();
+                    new neqsim.util.exception.InvalidInputException(msg);
             throw new RuntimeException(e);
         }
 
@@ -939,9 +903,10 @@ abstract class SystemThermo implements SystemInterface {
             double density, double criticalTemperature, double criticalPressure,
             double acentricFactor) {
         if (density < 0.0 || molarMass < 0.0) {
-            logger.error("Negative input molar mass or density.");
+            String msg = "Negative input molar mass or density.";
+            logger.error(msg);
             neqsim.util.exception.InvalidInputException e =
-                    new neqsim.util.exception.InvalidInputException();
+                    new neqsim.util.exception.InvalidInputException(msg);
             throw new RuntimeException(e);
         }
 
@@ -1085,69 +1050,43 @@ abstract class SystemThermo implements SystemInterface {
 
     /** {@inheritDoc} */
     @Override
-    public void addComponent(String componentName, double value, String name) {
-        if (!neqsim.util.database.NeqSimDataBase.hasComponent(componentName)) {
-            logger.error("No component with name: " + componentName + " in database");
-            return;
-        }
-        neqsim.util.database.NeqSimDataBase database = new neqsim.util.database.NeqSimDataBase();
-        java.sql.ResultSet dataSet =
-                database.getResultSet(("SELECT * FROM comp WHERE name='" + componentName + "'"));
-        double molarmass = 0.0, stddens = 0.0, boilp = 0.0;
-        try {
-            dataSet.next();
-            molarmass = Double.parseDouble(dataSet.getString("molarmass")) / 1000.0;
-            stddens = Double.parseDouble(dataSet.getString("stddens"));
-            boilp = Double.parseDouble(dataSet.getString("normboil"));
-        } catch (Exception e) {
-            logger.error("failed " + e.toString());
-        } finally {
-            try {
-                dataSet.close();
-            } catch (Exception e) {
-                logger.error("error", e);
+    public void addComponent(ComponentInterface inComponent) {
+        if (inComponent.isIsTBPfraction()) {
+            addTBPfraction(inComponent.getComponentName(), inComponent.getNumberOfmoles(),
+                    inComponent.getMolarMass(), inComponent.getNormalLiquidDensity());
+            String componentName = inComponent.getComponentName();
+            changeComponentName(componentName + "_PC", componentName.replaceFirst("_PC", ""));
+            for (int i = 0; i < numberOfPhases; i++) {
+                getPhase(i).getComponent(componentName)
+                        .setAttractiveTerm(inComponent.getAttractiveTermNumber());
+                getPhase(i).getComponent(componentName).setTC(inComponent.getTC());
+                getPhase(i).getComponent(componentName).setPC(inComponent.getPC());
+                getPhase(i).getComponent(componentName).setMolarMass(inComponent.getMolarMass());
+                getPhase(i).getComponent(componentName).setComponentType("TBPfraction");
+                getPhase(i).getComponent(componentName)
+                        .setNormalLiquidDensity(inComponent.getNormalLiquidDensity());
+                getPhase(i).getComponent(componentName)
+                        .setNormalBoilingPoint(inComponent.getNormalBoilingPoint());
+                getPhase(i).getComponent(componentName)
+                        .setAcentricFactor(inComponent.getAcentricFactor());
+                getPhase(i).getComponent(componentName)
+                        .setCriticalVolume(inComponent.getCriticalVolume());
+                getPhase(i).getComponent(componentName).setRacketZ(inComponent.getRacketZ());
+                getPhase(i).getComponent(componentName).setRacketZCPA(inComponent.getRacketZCPA());
+                getPhase(i).getComponent(componentName).setIsTBPfraction(true);
+                getPhase(i).getComponent(componentName)
+                        .setParachorParameter(inComponent.getParachorParameter());
+                getPhase(i).getComponent(componentName)
+                        .setTriplePointTemperature(inComponent.getTriplePointTemperature());
+                getPhase(i).getComponent(componentName).setIdealGasEnthalpyOfFormation(
+                        inComponent.getIdealGasEnthalpyOfFormation());
+                getPhase(i).getComponent(componentName).setCpA(inComponent.getCpA());
+                getPhase(i).getComponent(componentName).setCpB(inComponent.getCpB());
+                getPhase(i).getComponent(componentName).setCpC(inComponent.getCpC());
+                getPhase(i).getComponent(componentName).setCpD(inComponent.getCpD());
             }
-        }
-        neqsim.util.unit.Unit unit =
-                new neqsim.util.unit.RateUnit(value, name, molarmass, stddens, boilp);
-        double SIval = unit.getSIvalue();
-        // System.out.println("number of moles " + SIval);
-        this.addComponent(componentName, SIval);
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public void addComponent(String componentName, double moles, double TC, double PC, double acs) {
-        String comNam = componentName;
-        if (getPhase(0).hasComponent(componentName)) {
-            addComponent(componentName, moles);
         } else {
-            addComponent("default", moles);
-            comNam = "default";
-            // componentNames.set(componentNames.indexOf("default"), componentName);
-        }
-        for (int i = 0; i < getMaxNumberOfPhases(); i++) {
-            getPhase(i).getComponent(comNam).setComponentName(componentName);
-            getPhase(i).getComponent(componentName).setTC(TC);
-            getPhase(i).getComponent(componentName).setPC(PC);
-            getPhase(i).getComponent(componentName).setAcentricFactor(acs);
-        }
-        if (comNam.equals("default")) {
-            componentNames.remove("default");
-            componentNames.add(componentName);
-        }
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public void addComponent(int componentIndex, double moles) {
-        if (componentIndex >= getPhase(0).getNumberOfComponents()) {
-            logger.error("componentIndex higher than number of components in database");
-            return;
-        }
-        setTotalNumberOfMoles(getTotalNumberOfMoles() + moles);
-        for (int i = 0; i < getMaxNumberOfPhases(); i++) {
-            getPhase(i).addMolesChemReac(componentIndex, moles, moles);
+            addComponent(inComponent.getComponentName(), inComponent.getNumberOfmoles());
         }
     }
 
@@ -1156,44 +1095,13 @@ abstract class SystemThermo implements SystemInterface {
     public void addComponent(String name) {
         addComponent(name, 0.0);
     }
-    
-    /** {@inheritDoc} */
-    @Override
-    public void addComponent(ComponentInterface inComponent) {
-    	if(inComponent.isIsTBPfraction()) {
-    		addTBPfraction(inComponent.getComponentName(), inComponent.getNumberOfmoles(), inComponent.getMolarMass(), inComponent.getNormalLiquidDensity());
-    		String componentName = inComponent.getComponentName();
-    		changeComponentName(componentName+"_PC", componentName.replaceFirst("_PC", ""));
-    		for (int i = 0; i < numberOfPhases; i++) {
-                getPhase(i).getComponent(componentName).setAttractiveTerm(inComponent.getAttractiveTermNumber());
-                getPhase(i).getComponent(componentName).setTC(inComponent.getTC());
-                getPhase(i).getComponent(componentName).setPC(inComponent.getPC());
-                getPhase(i).getComponent(componentName).setMolarMass(inComponent.getMolarMass());
-                getPhase(i).getComponent(componentName).setComponentType("TBPfraction");
-                getPhase(i).getComponent(componentName).setNormalLiquidDensity(inComponent.getNormalLiquidDensity());
-                getPhase(i).getComponent(componentName).setNormalBoilingPoint(inComponent.getNormalBoilingPoint());
-                getPhase(i).getComponent(componentName).setAcentricFactor(inComponent.getAcentricFactor());
-                getPhase(i).getComponent(componentName).setCriticalVolume(inComponent.getCriticalVolume());
-                getPhase(i).getComponent(componentName).setRacketZ(inComponent.getRacketZ());
-                getPhase(i).getComponent(componentName).setRacketZCPA(inComponent.getRacketZCPA());
-                getPhase(i).getComponent(componentName).setIsTBPfraction(true);
-                getPhase(i).getComponent(componentName).setParachorParameter(inComponent.getParachorParameter());
-                getPhase(i).getComponent(componentName).setTriplePointTemperature(inComponent.getTriplePointTemperature());
-                getPhase(i).getComponent(componentName).setIdealGasEnthalpyOfFormation(inComponent.getIdealGasEnthalpyOfFormation());
-                getPhase(i).getComponent(componentName).setCpA(inComponent.getCpA());
-                getPhase(i).getComponent(componentName).setCpB(inComponent.getCpB());
-                getPhase(i).getComponent(componentName).setCpC(inComponent.getCpC());
-                getPhase(i).getComponent(componentName).setCpD(inComponent.getCpD());
-            }
-    	}
-    	else {
-    		addComponent(inComponent.getComponentName(), inComponent.getNumberOfmoles());
-        }
-    }
+
 
     /** {@inheritDoc} */
     @Override
     public void addComponent(String componentName, double moles) {
+        componentName = ComponentInterface.getComponentName(componentName);
+
         int index = 0;
 
         boolean addForFirstTime = true;
@@ -1211,9 +1119,10 @@ abstract class SystemThermo implements SystemInterface {
                 return;
             }
             if (moles < 0.0) {
-                logger.error("Negative input number of moles of component: " + componentName);
+                String msg = "Negative input number of moles of component: " + componentName;
+                logger.error(msg);
                 neqsim.util.exception.InvalidInputException e =
-                        new neqsim.util.exception.InvalidInputException();
+                        new neqsim.util.exception.InvalidInputException(msg);
                 throw new RuntimeException(e);
             }
             setTotalNumberOfMoles(getTotalNumberOfMoles() + moles);
@@ -1241,9 +1150,71 @@ abstract class SystemThermo implements SystemInterface {
         }
     }
 
+
+    /** {@inheritDoc} */
+    @Override
+    public void addComponent(String componentName, double value, String unitName) {
+        componentName = ComponentInterface.getComponentName(componentName);
+
+        if (!neqsim.util.database.NeqSimDataBase.hasComponent(componentName)) {
+            logger.error("No component with name: " + componentName + " in database");
+            return;
+        }
+        neqsim.util.database.NeqSimDataBase database = new neqsim.util.database.NeqSimDataBase();
+        java.sql.ResultSet dataSet =
+                database.getResultSet(("SELECT * FROM comp WHERE name='" + componentName + "'"));
+        double molarmass = 0.0, stddens = 0.0, boilp = 0.0;
+        try {
+            dataSet.next();
+            molarmass = Double.parseDouble(dataSet.getString("molarmass")) / 1000.0;
+            stddens = Double.parseDouble(dataSet.getString("stddens"));
+            boilp = Double.parseDouble(dataSet.getString("normboil"));
+        } catch (Exception e) {
+            logger.error("failed " + e.toString());
+        } finally {
+            try {
+                dataSet.close();
+            } catch (Exception e) {
+                logger.error("error", e);
+            }
+        }
+        neqsim.util.unit.Unit unit =
+                new neqsim.util.unit.RateUnit(value, unitName, molarmass, stddens, boilp);
+        double SIval = unit.getSIvalue();
+        // System.out.println("number of moles " + SIval);
+        this.addComponent(componentName, SIval);
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public void addComponent(String componentName, double moles, double TC, double PC, double acs) {
+        componentName = ComponentInterface.getComponentName(componentName);
+
+        String comNam = componentName;
+        if (getPhase(0).hasComponent(componentName)) {
+            addComponent(componentName, moles);
+        } else {
+            addComponent("default", moles);
+            comNam = "default";
+            // componentNames.set(componentNames.indexOf("default"), componentName);
+        }
+        for (int i = 0; i < getMaxNumberOfPhases(); i++) {
+            getPhase(i).getComponent(comNam).setComponentName(componentName);
+            getPhase(i).getComponent(componentName).setTC(TC);
+            getPhase(i).getComponent(componentName).setPC(PC);
+            getPhase(i).getComponent(componentName).setAcentricFactor(acs);
+        }
+        if (comNam.equals("default")) {
+            componentNames.remove("default");
+            componentNames.add(componentName);
+        }
+    }
+
     /** {@inheritDoc} */
     @Override
     public void addComponent(String componentName, double moles, int phaseNumber) {
+        componentName = ComponentInterface.getComponentName(componentName);
+
         if (!neqsim.util.database.NeqSimDataBase.hasComponent(componentName)) {
             logger.error("No component with name: " + componentName + " in database");
             return;
@@ -1258,8 +1229,10 @@ abstract class SystemThermo implements SystemInterface {
 
         // Add new component
         if (moles < 0.0) {
-            logger.error("Negative input number of moles.");
-            neqsim.util.exception.InvalidInputException e = new neqsim.util.exception.InvalidInputException();
+            String msg = "Negative input number of moles.";
+            logger.error(msg);
+            neqsim.util.exception.InvalidInputException e =
+                    new neqsim.util.exception.InvalidInputException(msg);
             throw new RuntimeException(e);
         }
 
@@ -1277,6 +1250,61 @@ abstract class SystemThermo implements SystemInterface {
             getPhase(i).setAttractiveTerm(attractiveTermNumber);
         }
         numberOfComponents++;
+    }
+
+
+    /** {@inheritDoc} */
+    @Override
+    public void addComponent(String componentName, double value, String name, int phase) {
+        componentName = ComponentInterface.getComponentName(componentName);
+
+        if (!neqsim.util.database.NeqSimDataBase.hasComponent(componentName)) {
+            logger.error("No component with name: " + componentName + " in database");
+            return;
+        }
+        neqsim.util.database.NeqSimDataBase database = new neqsim.util.database.NeqSimDataBase();
+        java.sql.ResultSet dataSet =
+                database.getResultSet(("SELECT * FROM comp WHERE name='" + componentName + "'"));
+        double molarmass = 0.0, stddens = 0.0, boilp = 0.0;
+        try {
+            dataSet.next();
+            molarmass = Double.parseDouble(dataSet.getString("molarmass")) / 1000.0;
+            stddens = Double.parseDouble(dataSet.getString("stddens"));
+            boilp = Double.parseDouble(dataSet.getString("normboil"));
+        } catch (Exception e) {
+            logger.error("failed " + e.toString());
+            throw new RuntimeException(e);
+        } finally {
+            try {
+                dataSet.close();
+                if (database.getStatement() != null) {
+                    database.getStatement().close();
+                }
+                if (database.getConnection() != null) {
+                    database.getConnection().close();
+                }
+            } catch (Exception e) {
+                logger.error("error", e);
+            }
+        }
+        neqsim.util.unit.Unit unit =
+                new neqsim.util.unit.RateUnit(value, name, molarmass, stddens, boilp);
+        double SIval = unit.getSIvalue();
+        // System.out.println("number of moles " + SIval);
+        this.addComponent(componentName, SIval, phase);
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public void addComponent(int index, double moles) {
+        if (index >= getPhase(0).getNumberOfComponents()) {
+            logger.error("componentIndex higher than number of components in database");
+            return;
+        }
+        setTotalNumberOfMoles(getTotalNumberOfMoles() + moles);
+        for (int i = 0; i < getMaxNumberOfPhases(); i++) {
+            getPhase(i).addMolesChemReac(index, moles, moles);
+        }
     }
 
     /** {@inheritDoc} */
@@ -1302,6 +1330,8 @@ abstract class SystemThermo implements SystemInterface {
     /** {@inheritDoc} */
     @Override
     public void removeComponent(String name) {
+        name = ComponentInterface.getComponentName(name);
+
         setTotalNumberOfMoles(
                 getTotalNumberOfMoles() - phaseArray[0].getComponent(name).getNumberOfmoles());
         for (int i = 0; i < getMaxNumberOfPhases(); i++) {
@@ -4077,11 +4107,11 @@ abstract class SystemThermo implements SystemInterface {
     @Override
     public void setStandard(String standardName) {
         if (standardName.equals("ISO1992")) {
-            this.standard = new neqsim.standards.gasQuality.Standard_ISO6976();
+            this.standard = new neqsim.standards.gasQuality.Standard_ISO6976(this);
         } else if (standardName.equals("Draft_ISO18453")) {
             this.standard = new neqsim.standards.gasQuality.Draft_ISO18453(this);
         } else {
-            this.standard = new neqsim.standards.gasQuality.Standard_ISO6976();
+            this.standard = new neqsim.standards.gasQuality.Standard_ISO6976(this);
         }
     }
 
@@ -4280,9 +4310,10 @@ abstract class SystemThermo implements SystemInterface {
             // if (tempModel.getCharacterization().characterize()) {
             // tempModel.addPlusFraction(6, 100);
             // }
-            logger.info("creatore database ......");
-            logger.info("done ... creatore database ......");
-            tempModel.createDatabase(true);
+            if (NeqSimDataBase.createTemporaryTables()) {
+                logger.info("done ... create database ......");
+                tempModel.createDatabase(true);
+            }
             logger.info("done ... set mixing rule ......");
             tempModel.autoSelectMixingRule();
             if (model.equals("Electrolyte-ScRK-EOS")) {// ||
@@ -4610,7 +4641,7 @@ abstract class SystemThermo implements SystemInterface {
     @Override
     public double calcHenrysConstant(String component) {
         if (numberOfPhases != 2) {
-            logger.error("cant calculated Henrys constant - two phases must be present.");
+            logger.error("Can't calculate Henrys constant - two phases must be present.");
             return 0;
         } else {
             int compNumb = getPhase(getPhaseIndex(0)).getComponent(component).getComponentNumber();
@@ -4715,87 +4746,19 @@ abstract class SystemThermo implements SystemInterface {
     /** {@inheritDoc} */
     @Override
     public void setMolarComposition(double[] molefractions) {
-        double totalFlow = getTotalNumberOfMoles();
-        if (totalFlow < 1e-100) {
-            logger.error("Total flow can not be 0 when setting molar composition ");
-            neqsim.util.exception.InvalidInputException e =
-                    new neqsim.util.exception.InvalidInputException();
-            throw new RuntimeException(e);
-        }
-        double sum = 0;
-        for (double value : molefractions) {
-            sum += value;
-        }
-        setEmptyFluid();
-        for (int compNumb = 0; compNumb < numberOfComponents; compNumb++) {
-            addComponent(compNumb, totalFlow * molefractions[compNumb] / sum);
-        }
-        for (int i = 0; i < getNumberOfPhases(); i++) {
-            init(0, i);
-        }
+        setMolarComposition(molefractions, "");
     }
 
     /** {@inheritDoc} */
     @Override
     public void setMolarCompositionPlus(double[] molefractions) {
-        double totalFlow = getTotalNumberOfMoles();
-        if (totalFlow < 1e-100) {
-            logger.error("Total flow can not be 0 when setting molar composition ");
-            neqsim.util.exception.InvalidInputException e =
-                    new neqsim.util.exception.InvalidInputException();
-            throw new RuntimeException(e);
-        }
-        double sum = 0;
-        for (double value : molefractions) {
-            sum += value;
-        }
-        setEmptyFluid();
-        for (int compNumb = 0; compNumb < numberOfComponents - getCharacterization()
-                .getLumpingModel().getNumberOfLumpedComponents(); compNumb++) {
-            addComponent(compNumb, totalFlow * molefractions[compNumb] / sum);
-        }
-        int ii = 0;
-        for (int compNumb = numberOfComponents - getCharacterization().getLumpingModel()
-                .getNumberOfLumpedComponents(); compNumb < numberOfComponents; compNumb++) {
-            addComponent(compNumb, totalFlow
-                    * getCharacterization().getLumpingModel().getFractionOfHeavyEnd(ii++)
-                    * molefractions[numberOfComponents
-                            - getCharacterization().getLumpingModel().getNumberOfLumpedComponents()]
-                    / sum);
-        }
-        for (int i = 0; i < getNumberOfPhases(); i++) {
-            init(0, i);
-        }
+        setMolarComposition(molefractions, "Plus");
     }
 
     /** {@inheritDoc} */
     @Override
     public void setMolarCompositionOfPlusFluid(double[] molefractions) {
-        double totalFlow = getTotalNumberOfMoles();
-        if (totalFlow < 1e-100) {
-            logger.error("Total flow can not be 0 when setting molar composition ");
-            neqsim.util.exception.InvalidInputException e =
-                    new neqsim.util.exception.InvalidInputException();
-            throw new RuntimeException(e);
-        }
-        double sum = 0;
-        for (double value : molefractions) {
-            sum += value;
-        }
-        setEmptyFluid();
-        int compNumb = 0;
-        for (compNumb = 0; compNumb < molefractions.length - 1; compNumb++) {
-            addComponent(compNumb, totalFlow * molefractions[compNumb] / sum);
-        }
-        for (int j = 0; j < getCharacterization().getLumpingModel().getNumberOfLumpedComponents()
-                - 1; j++) {
-            // addComponent(compNumb, totalFlow * molefractions[molefractions.length - 1]
-            // * getCharacterization().getLumpingModel().getFractionOfHeavyEnd(j) / sum);
-            compNumb++;
-        }
-        for (int i = 0; i < getNumberOfPhases(); i++) {
-            init(0, i);
-        }
+        setMolarComposition(molefractions, "PlusFluid");
     }
 
     /** {@inheritDoc} */
@@ -5130,5 +5093,70 @@ abstract class SystemThermo implements SystemInterface {
     @Override
     public void setForcePhaseTypes(boolean forcePhaseTypes) {
         this.forcePhaseTypes = forcePhaseTypes;
+    }
+
+    /** @{inheritDoc} */
+    @Override
+    public SystemProperties getProperties() {
+        return new SystemProperties(this);
+    }
+
+    private void setMolarComposition(double[] molefractions, String type) {
+        double totalFlow = getTotalNumberOfMoles();
+        if (totalFlow < 1e-100) {
+            String msg = "Total flow can not be 0 when setting molar composition";
+            logger.error(msg);
+            neqsim.util.exception.InvalidInputException e =
+                    new neqsim.util.exception.InvalidInputException(msg);
+            throw new RuntimeException(e);
+        }
+        double sum = 0;
+        for (double value : molefractions) {
+            sum += value;
+        }
+        setEmptyFluid();
+
+        switch (type) {
+            case "PlusFluid":
+                // todo: really skip last component of molefraction?
+                for (int compNumb = 0; compNumb < molefractions.length - 1; compNumb++) {
+                    addComponent(compNumb, totalFlow * molefractions[compNumb] / sum);
+                }
+                for (int j = 0; j < getCharacterization().getLumpingModel()
+                        .getNumberOfLumpedComponents() - 1; j++) {
+                    // addComponent(compNumb, totalFlow * molefractions[molefractions.length - 1]
+                    // * getCharacterization().getLumpingModel().getFractionOfHeavyEnd(j) / sum);
+                }
+                break;
+            case "Plus":
+                // todo: compNumb can be negative
+                for (int compNumb = 0; compNumb < this.numberOfComponents - getCharacterization()
+                        .getLumpingModel().getNumberOfLumpedComponents(); compNumb++) {
+                    addComponent(compNumb, totalFlow * molefractions[compNumb] / sum);
+                }
+                int ii = 0;
+                for (int compNumb = this.numberOfComponents - getCharacterization()
+                        .getLumpingModel()
+                        .getNumberOfLumpedComponents(); compNumb < this.numberOfComponents; compNumb++) {
+                    addComponent(compNumb, totalFlow
+                            * getCharacterization().getLumpingModel().getFractionOfHeavyEnd(ii++)
+                            * molefractions[this.numberOfComponents - getCharacterization()
+                                    .getLumpingModel().getNumberOfLumpedComponents()]
+                            / sum);
+                }
+                break;
+            default:
+                // NB! It will allow setting composition for only the first items.
+                // for (int compNumb = 0; compNumb <= molefractions.length - 1; compNumb++) {
+                // NB! Can fail because len(molefractions) < this.numberOfComponents
+                for (int compNumb = 0; compNumb <= this.numberOfComponents - 1; compNumb++) {
+                    addComponent(compNumb, totalFlow * molefractions[compNumb] / sum);
+                }
+                break;
+        }
+
+        for (int i = 0; i < getNumberOfPhases(); i++) {
+            init(0, i);
+        }
     }
 }

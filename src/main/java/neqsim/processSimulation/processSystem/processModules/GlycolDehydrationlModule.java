@@ -43,7 +43,9 @@ public class GlycolDehydrationlModule extends ProcessModuleBaseClass {
     String glycolTypeName = "TEG";
     double reboilerTemperature = 273.15 + 204.0, regenerationPressure = 1.4;
 
-    public GlycolDehydrationlModule() {}
+    public GlycolDehydrationlModule(String name) {
+        super(name);
+    }
 
     /** {@inheritDoc} */
     @Override
@@ -157,16 +159,16 @@ public class GlycolDehydrationlModule extends ProcessModuleBaseClass {
         }
         isInitializedModule = true;
 
-        absorbtionColumn = new SimpleTEGAbsorber();
+        absorbtionColumn = new SimpleTEGAbsorber("absorbtionColumn");
         absorbtionColumn.addGasInStream(gasStreamToAbsorber);
         absorbtionColumn.addSolventInStream(leanTEGStreamToAbsorber);
 
-        valveHP = new ThrottlingValve(absorbtionColumn.getLiquidOutStream());
+        valveHP = new ThrottlingValve("valveHP", absorbtionColumn.getLiquidOutStream());
         valveHP.setOutletPressure(flashPressure);
 
         glycolFlashDrum = new Separator("flash drum", valveHP.getOutStream());
 
-        valveMP = new ThrottlingValve(glycolFlashDrum.getLiquidOutStream());
+        valveMP = new ThrottlingValve("valveMP", glycolFlashDrum.getLiquidOutStream());
         valveMP.setOutletPressure(regenerationPressure);
 
         /*
@@ -177,26 +179,24 @@ public class GlycolDehydrationlModule extends ProcessModuleBaseClass {
          * 
          */
 
-        Heater reboiler = new Heater(valveMP.getOutStream());
-        reboiler.setName("reboiler");
+        Heater reboiler = new Heater("reboiler", valveMP.getOutStream());
         reboiler.setOutTemperature(reboilerTemperature);
 
         strippingGas.setTemperature(reboilerTemperature, "K");
         strippingGas.setPressure(regenerationPressure, "bara");
-        stripperColumn = new Separator(reboiler.getOutStream());
+        stripperColumn = new Separator("stripperColumn", reboiler.getOutStream());
         stripperColumn.addStream(strippingGas);
 
-        heatExchanger1 = new Cooler(stripperColumn.getLiquidOutStream());
+        heatExchanger1 = new Cooler("heatExchanger1", stripperColumn.getLiquidOutStream());
         heatExchanger1.setOutTemperature(100.0);
 
-        HPpump = new Pump(heatExchanger1.getOutStream());
-        HPpump.setName("HP lean TEG pump");
+        HPpump = new Pump("HP lean TEG pump", heatExchanger1.getOutStream());
         HPpump.setOutletPressure(gasStreamToAbsorber.getPressure());
 
-        heatExchanger2 = new Cooler(HPpump.getOutStream());
+        heatExchanger2 = new Cooler("heatExchanger2", HPpump.getOutStream());
         heatExchanger2.setOutTemperature(273.15 + 40.0);
 
-        heatExchanger3 = new Cooler(stripperColumn.getGasOutStream());
+        heatExchanger3 = new Cooler("heatExchanger3", stripperColumn.getGasOutStream());
         heatExchanger3.setOutTemperature(273.15 + 30.0);
 
         waterSeparator = new Separator("watersep", heatExchanger3.getOutStream());
@@ -224,7 +224,7 @@ public class GlycolDehydrationlModule extends ProcessModuleBaseClass {
     /** {@inheritDoc} */
     @Override
     public void runTransient(double dt) {
-        getOperations().runTransient();
+        getOperations().runTransient(dt);
     }
 
     /** {@inheritDoc} */
@@ -438,7 +438,7 @@ public class GlycolDehydrationlModule extends ProcessModuleBaseClass {
         testSystem.setMixingRule(10);
         testSystem.setTotalFlowRate(5, "MSm^3/day");
 
-        Stream gasinletStream = new Stream(testSystem);
+        Stream gasinletStream = new Stream("gasinletStream", testSystem);
 
         neqsim.thermo.system.SystemInterface strippingGasSystem =
                 new neqsim.thermo.system.SystemSrkCPAstatoil((273.15 + 40.0), 70.0);
@@ -452,14 +452,14 @@ public class GlycolDehydrationlModule extends ProcessModuleBaseClass {
         strippingGasSystem.setMixingRule(10);
         strippingGasSystem.setTotalFlowRate(0.005, "MSm^3/day");
 
-        Stream strippingGasStream = new Stream(strippingGasSystem);
+        Stream strippingGasStream = new Stream("strippingGasStream", strippingGasSystem);
 
-        StreamSaturatorUtil saturator = new StreamSaturatorUtil(gasinletStream);
+        StreamSaturatorUtil saturator = new StreamSaturatorUtil("saturator", gasinletStream);
 
         Separator separator = new Separator("Separator 1", saturator.getOutStream());
 
         neqsim.processSimulation.processSystem.processModules.GlycolDehydrationlModule TEGplant =
-                new neqsim.processSimulation.processSystem.processModules.GlycolDehydrationlModule();
+                new neqsim.processSimulation.processSystem.processModules.GlycolDehydrationlModule("TEGplant");
         TEGplant.addInputStream("gasStreamToAbsorber", saturator.getOutStream());
         TEGplant.addInputStream("strippingGas", strippingGasStream);
         TEGplant.setSpecification("water dew point specification", 273.15 - 10.0);

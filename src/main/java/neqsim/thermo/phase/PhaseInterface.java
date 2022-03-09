@@ -55,8 +55,8 @@ public interface PhaseInterface extends ThermodynamicConstantsInterface, Cloneab
      * molefraction/wtfraction/molespersec/volumefraction
      * </p>
      *
-     * @param unit The unit as a string -
-     *             molefraction/wtfraction/molespersec/volumefraction
+     * @param unit Supported units are molefraction, wtfraction, molespersec,
+     *             volumefraction
      * @return composition array with unit
      */
 	public double[] getComposition(String unit);
@@ -551,7 +551,7 @@ public interface PhaseInterface extends ThermodynamicConstantsInterface, Cloneab
 
 	/**
      * <p>
-     * Set the pressure
+     * Set the pressure in bara (absolute pressure in bar)
      * </p>
      *
      * @param pres a double

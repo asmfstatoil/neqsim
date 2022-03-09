@@ -9,133 +9,290 @@ import neqsim.processSimulation.processEquipment.ProcessEquipmentInterface;
 import neqsim.processSimulation.processEquipment.separator.Separator;
 
 public class ProcessSystemTest {
-    ProcessSystem p;
+  ProcessSystem p;
+  String _name = "TestProcess";
 
-    @BeforeEach
-    public void setUp() {
-        p = new ProcessSystem();
-    }
 
-    @Test
-    public void testXMLbuild() {
-        Gson gson = new Gson();
-        String test = gson.toJson(p);
-    }
+  @BeforeEach
+  public void setUp() {
+    p = new ProcessSystem();
+    p.setName(_name);
+  }
 
-    @Test
-    public void testGetName() {
-        String name = "TestProsess";
-        p.setName(name);
-        Assertions.assertEquals(p.getName(), name);
-    }
+  @Test
+  public void testXMLbuild() {
+    Gson gson = new Gson();
+    String test = gson.toJson(p);
+  }
 
-    @Test
-    public void testSetTimeStep() {
-        double timeStep = p.getTimeStep() * 2;
-        Assertions.assertEquals(p.getTimeStep(), timeStep / 2);
-        Assertions.assertNotEquals(p.getTimeStep(), timeStep);
+  @Test
+  void testGetName() {
+    Assertions.assertEquals(_name, p.getName());
+  }
 
-        p.setTimeStep(timeStep);
-        Assertions.assertEquals(p.getTimeStep(), timeStep);
-        Assertions.assertNotEquals(p.getTimeStep(), timeStep / 2);
-    }
+  @Test
+  public void testSetTimeStep() {
+    double timeStep = p.getTimeStep() * 2;
+    Assertions.assertEquals(timeStep / 2, p.getTimeStep());
+    Assertions.assertNotEquals(timeStep, p.getTimeStep());
 
-    @Test
-    public void testHasUnitName() {
-        String sepName = "TestSep";
-        Assertions.assertFalse(p.hasUnitName(sepName));
-        p.add(new Separator(sepName));
-        Assertions.assertTrue(p.hasUnitName(sepName));
-    }
+    p.setTimeStep(timeStep);
+    Assertions.assertEquals(timeStep, p.getTimeStep());
+    Assertions.assertNotEquals(timeStep / 2, p.getTimeStep());
+  }
 
-    @Test
-    void testAdd() {
-        String sepName = "TestSep";
-        Separator sep = new Separator();
-        sep.setName(sepName);
-        p.add(sep);
+  @Test
+  public void testHasUnitName() {
+    String sepName = "TestSep";
+    Assertions.assertFalse(p.hasUnitName(sepName));
+    p.add(new Separator(sepName));
+    Assertions.assertTrue(p.hasUnitName(sepName));
+  }
 
-        ArrayList<ProcessEquipmentInterface> list = p.getUnitOperations();
+  @Test
+  void testAdd() {
+    String sepName = "TestSep";
+    Separator sep = new Separator("sep");
+    sep.setName(sepName);
+    p.add(sep);
 
-        Assertions.assertTrue(sep == p.getUnit(sepName));
+    ArrayList<ProcessEquipmentInterface> list = p.getUnitOperations();
 
-        Assertions.assertEquals(list.size(), 1);
-        Assertions.assertEquals(p.size(), 1);
+    Assertions.assertTrue(sep == p.getUnit(sepName));
 
-        Assertions.assertTrue((Separator) list.get(0) == sep);
+    Assertions.assertEquals(1, list.size());
+    Assertions.assertEquals(1, p.size());
 
-        p.removeUnit(sepName);
-        Assertions.assertNull(p.getUnit(sepName));
-        Assertions.assertEquals(p.size(), 0);
+    Assertions.assertTrue((Separator) list.get(0) == sep);
 
-        list = p.getUnitOperations();
+    p.removeUnit(sepName);
+    Assertions.assertNull(p.getUnit(sepName));
+    Assertions.assertEquals(0, p.size());
 
-        Assertions.assertEquals(list.size(), 0);
+    list = p.getUnitOperations();
 
-        p.add(sep);
-        Assertions.assertEquals(p.size(), 1);
+    Assertions.assertEquals(0, list.size());
 
-        p.clear();
-        Assertions.assertEquals(p.size(), 0);
+    p.add(sep);
+    Assertions.assertEquals(1, p.size());
 
-        p.add(sep);
-        Assertions.assertEquals(p.size(), 1);
+    p.clear();
+    Assertions.assertEquals(0, p.size());
 
-        p.clearAll();
-        Assertions.assertEquals(p.size(), 0);
-    }
+    p.add(sep);
+    Assertions.assertEquals(1, p.size());
 
-    @Test
-    public void testAddUnitTwice() {
-        Separator sep = new Separator();
-        p.add(sep);
-        p.add(sep); // Won't add the copy
-        Assertions.assertEquals(p.size(), 1);
-    }
+    p.clearAll();
+    Assertions.assertEquals(0, p.size());
+  }
 
-    @Test
-    public void testRemoveUnit() {
-        Separator sep = new Separator();
-        p.add(sep);
-        Assertions.assertEquals(p.size(), 1);
-        p.removeUnit("");
-        Assertions.assertEquals(p.size(), 0);
-    }
+  @Test
+  public void testAddUnitTwice() {
+    Separator sep = new Separator("sep");
+    p.add(sep);
+    p.add(sep); // Won't add the copy
+    Assertions.assertEquals(1, p.size());
+  }
 
-    @Test
-    public void testAddUnitsWithNoName() {
-        Separator sep = new Separator();
-        p.add(sep);
-        sep = new Separator();
-        p.add(sep);
-        Assertions.assertEquals(p.size(), 2);
-        p.removeUnit("Separator2");
-        Assertions.assertEquals(p.size(), 1);
-        p.removeUnit("");
-        Assertions.assertEquals(p.size(), 0);
-    }
+  @Test
+  public void testRemoveUnit() {
+    Separator sep = new Separator("Separator");
+    p.add(sep);
+    Assertions.assertEquals(1, p.size());
+    p.removeUnit("Separator");
+    Assertions.assertEquals(0, p.size());
+  }
 
-    @Test
-    public void testGetUnitNumber() {
-        Separator sep = new Separator();
-        p.add(sep);
-        Separator sep2 = new Separator();
-        p.add(sep2);
+  @Test
+  public void testAddUnitsWithNoName() {
+    Separator sep = new Separator();
+    p.add(sep);
+    sep = new Separator();
+    p.add(sep);
+    Assertions.assertEquals(2, p.size());
+    p.removeUnit("Separator2");
+    Assertions.assertEquals(1, p.size());
+    p.removeUnit("Separator");
+    Assertions.assertEquals(0, p.size());
+  }
 
-        Assertions.assertEquals(p.getUnitNumber(""), 0);
-        Assertions.assertEquals(p.getUnitNumber("Separator2"), 1);
+  @Test
+  public void testGetUnitNumber() {
+    Separator sep = new Separator("Separator");
+    p.add(sep);
+    Separator sep2 = new Separator("Separator2");
+    p.add(sep2);
 
-        p.removeUnit("");
-        p.add(sep);
+    Assertions.assertEquals(0, p.getUnitNumber("Separator"));
+    Assertions.assertEquals(1, p.getUnitNumber("Separator2"));
 
-        Assertions.assertEquals(p.getUnitNumber("Separator2"), 0);
-        Assertions.assertEquals(p.getUnitNumber(""), 1);
-    }
+    p.removeUnit("Separator");
+    p.add(sep);
 
-    @Test
-    public void testSetSurroundingTemperature() {
-        double temp = 200;
-        p.setSurroundingTemperature(temp);
-        Assertions.assertEquals(p.getSurroundingTemperature(), temp);
-    }
+    Assertions.assertEquals(0, p.getUnitNumber("Separator2"));
+    Assertions.assertEquals(1, p.getUnitNumber("Separator"));
+  }
+
+  @Test
+  public void testSetSurroundingTemperature() {
+    double temp = 200;
+    p.setSurroundingTemperature(temp);
+    Assertions.assertEquals(temp, p.getSurroundingTemperature());
+  }
+
+  @Test
+  void testClear() {
+    p.clear();
+  }
+
+  @Test
+  void testClearAll() {
+    p.clearAll();
+  }
+
+  @Test
+  void testCopy() {
+    ProcessSystem sys2 = p.copy();
+    Assertions.assertTrue(p.equals(sys2));
+    Assertions.assertEquals(p, sys2);
+  }
+
+  @Test
+  void testDisplayResult() {}
+
+  @Test
+  void testGetAllUnitNames() {
+
+  }
+
+  @Test
+  void testGetConditionMonitor() {
+
+  }
+
+  @Test
+  void testGetCoolerDuty() {
+
+  }
+
+  @Test
+  void testGetCostEstimator() {
+
+  }
+
+  @Test
+  void testGetEntropyProduction() {
+
+  }
+
+  @Test
+  void testGetExergyChange() {
+
+  }
+
+  @Test
+  void testGetHeaterDuty() {
+
+  }
+
+  @Test
+  void testGetMeasurementDevice() {
+
+  }
+
+  @Test
+  void testGetMechanicalWeight() {
+
+  }
+
+
+
+  @Test
+  void testGetPower() {
+
+  }
+
+  @Test
+  void testGetSurroundingTemperature() {
+
+  }
+
+  @Test
+  void testGetSystemMechanicalDesign() {
+
+  }
+
+  @Test
+  void testGetUnit() {
+
+  }
+
+
+  @Test
+  void testGetUnitOperations() {
+
+  }
+
+
+  @Test
+  void testOpen() {
+
+  }
+
+  @Test
+  void testPrintLogFile() {
+
+  }
+
+
+  @Test
+  void testReplaceObject() {
+
+  }
+
+  @Test
+  void testReportMeasuredValues() {
+
+  }
+
+  @Test
+  void testReportResults() {
+
+  }
+
+  @Test
+  void testRun() {
+
+  }
+
+  @Test
+  void testRunAsThread() {
+
+  }
+
+  @Test
+  void testSave() {
+
+  }
+
+  @Test
+  void testSetFluid() {
+
+  }
+
+  @Test
+  void testSetName() {}
+
+  @Test
+  void testSetSystemMechanicalDesign() {
+
+  }
+
+  @Test
+  void testSize() {
+
+  }
+
+  @Test
+  void testView() {}
 }

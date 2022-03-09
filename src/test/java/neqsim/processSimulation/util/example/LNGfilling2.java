@@ -36,7 +36,7 @@ public class LNGfilling2 {
 
         Stream stream_1 = new Stream("Methane Stream", testSystem);
 
-        Tank tank = new neqsim.processSimulation.processEquipment.tank.Tank();
+        Tank tank = new neqsim.processSimulation.processEquipment.tank.Tank("tank");
         tank.addStream(stream_1);
 
         Stream liqstream = tank.getLiquidOutStream();
@@ -54,7 +54,7 @@ public class LNGfilling2 {
         tank.getGasOutStream().getThermoSystem().setTotalNumberOfMoles(1e-6);
         tank.getLiquidOutStream().getThermoSystem().setTotalNumberOfMoles(0.000001);
 
-        operations.runTransient();
+        operations.runTransient(1);
         // operations.displayResult();
     }
 }

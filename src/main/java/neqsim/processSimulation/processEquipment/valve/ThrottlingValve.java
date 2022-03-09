@@ -36,7 +36,9 @@ public class ThrottlingValve extends ProcessEquipmentBaseClass implements ValveI
      * Constructor for ThrottlingValve.
      * </p>
      */
-    public ThrottlingValve() {}
+    public ThrottlingValve() {
+        this("ThrottlingValve");
+    }
 
     /**
      * <p>
@@ -46,7 +48,31 @@ public class ThrottlingValve extends ProcessEquipmentBaseClass implements ValveI
      * @param inletStream a {@link neqsim.processSimulation.processEquipment.stream.StreamInterface}
      *        object
      */
+    @Deprecated
     public ThrottlingValve(StreamInterface inletStream) {
+        this("ThrottlingValve", inletStream);
+    }
+
+    /**
+     * * Constructor for ThrottlingValve.
+     * 
+     * @param name
+     */
+    public ThrottlingValve(String name) {
+        super(name);
+    }
+
+    /**
+     * <p>
+     * Constructor for ThrottlingValve.
+     * </p>
+     *
+     * @param name a {@link java.lang.String} object
+     * @param inletStream a {@link neqsim.processSimulation.processEquipment.stream.StreamInterface}
+     *        object
+     */
+    public ThrottlingValve(String name, StreamInterface inletStream) {
+        super(name);
         setInletStream(inletStream);
     }
 
@@ -62,33 +88,13 @@ public class ThrottlingValve extends ProcessEquipmentBaseClass implements ValveI
         return inletStream.getFluid().getPressure(unit) - thermoSystem.getPressure(unit);
     }
 
-    /**
-     * <p>
-     * Constructor for ThrottlingValve.
-     * </p>
-     *
-     * @param name a {@link java.lang.String} object
-     * @param inletStream a {@link neqsim.processSimulation.processEquipment.stream.StreamInterface}
-     *        object
-     */
-    public ThrottlingValve(String name, StreamInterface inletStream) {
-        this.name = name;
-        setInletStream(inletStream);
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public void setName(String name) {
-        this.name = name;
-    }
-
     /** {@inheritDoc} */
     @Override
     public void setInletStream(StreamInterface inletStream) {
         this.inletStream = inletStream;
 
         thermoSystem = inletStream.getThermoSystem().clone();
-        outStream = new Stream(thermoSystem);
+        outStream = new Stream("outStream", thermoSystem);
     }
 
     /** {@inheritDoc} */
@@ -231,12 +237,6 @@ public class ThrottlingValve extends ProcessEquipmentBaseClass implements ValveI
 
     /** {@inheritDoc} */
     @Override
-    public String getName() {
-        return name;
-    }
-
-    /** {@inheritDoc} */
-    @Override
     public void runTransient(double dt) {
         runController(dt);
 
@@ -252,6 +252,7 @@ public class ThrottlingValve extends ProcessEquipmentBaseClass implements ValveI
         } else {
             thermoOps.PHflash(enthalpy, 0);
         }
+        thermoSystem.initPhysicalProperties("density");
         outStream.setThermoSystem(thermoSystem);
         // if(getPercentValveOpening()<99){
         molarFlow =
@@ -292,7 +293,7 @@ public class ThrottlingValve extends ProcessEquipmentBaseClass implements ValveI
      */
     public void runController(double dt) {
         if (hasController) {
-            getController().run(this.percentValveOpening, dt);
+            getController().runTransient(this.percentValveOpening, dt);
             this.percentValveOpening = getController().getResponse();
             if (this.percentValveOpening > 100) {
                 this.percentValveOpening = 100;
@@ -300,7 +301,7 @@ public class ThrottlingValve extends ProcessEquipmentBaseClass implements ValveI
             if (this.percentValveOpening < 0) {
                 this.percentValveOpening = 1e-10;
             }
-            System.out.println("valve opening " + this.percentValveOpening + " %");
+            //System.out.println("valve opening " + this.percentValveOpening + " %");
         }
     }
 

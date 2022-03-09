@@ -92,37 +92,6 @@ abstract class Component implements ComponentInterface {
      * <p>
      * Constructor for Component.
      * </p>
-     */
-    // Class methods
-    public Component() {}
-
-    /**
-     * <p>
-     * Constructor for Component.
-     * </p>
-     *
-     * @param number a int
-     * @param moles a double
-     */
-    public Component(int number, double moles) {
-        numberOfMoles = moles;
-    }
-
-    /**
-     * <p>
-     * Constructor for Component.
-     * </p>
-     *
-     * @param moles a double
-     */
-    public Component(double moles) {
-        numberOfMoles = moles;
-    }
-
-    /**
-     * <p>
-     * Constructor for Component.
-     * </p>
      *
      * @param number a int
      * @param TC a double
@@ -201,6 +170,7 @@ abstract class Component implements ComponentInterface {
     @Override
     public void createComponent(String component_name, double moles, double molesInPhase,
             int compnumber) {
+        component_name = ComponentInterface.getComponentName(component_name);
         componentName = component_name;
         numberOfMoles = moles;
         numberOfMolesInPhase = molesInPhase;
@@ -527,10 +497,15 @@ abstract class Component implements ComponentInterface {
     @Override
     public void init(double temperature, double pressure, double totalNumberOfMoles, double beta,
             int type) {
+
+        if (totalNumberOfMoles == 0) {
+            throw new RuntimeException(new neqsim.util.exception.InvalidInputException(
+                    "Component", "init", "Input totalNumberOfMoles must be larger than 0"));
+        }
         if (type == 0) {
-            z = numberOfMoles / totalNumberOfMoles;
             K = Math.exp(Math.log(criticalPressure / pressure) + 5.373 * (1.0 + srkacentricFactor)
                     * (1.0 - criticalTemperature / temperature));
+            z = numberOfMoles / totalNumberOfMoles;
             x = z;
             // System.out.println("K " + K);
         }
@@ -2303,7 +2278,7 @@ abstract class Component implements ComponentInterface {
         } else if (flowunit.equals("mole/hr")) {
             return numberOfMolesInPhase * 3600.0;
         } else {
-            throw new RuntimeException("failed.. unit: " + flowunit + " not suported");
+            throw new RuntimeException("failed.. unit: " + flowunit + " not supported");
         }
     }
 
@@ -2323,7 +2298,7 @@ abstract class Component implements ComponentInterface {
         } else if (flowunit.equals("mole/hr")) {
             return numberOfMoles * 3600.0;
         } else {
-            throw new RuntimeException("failed.. unit: " + flowunit + " not suported");
+            throw new RuntimeException("failed.. unit: " + flowunit + " not supported");
         }
     }
 }

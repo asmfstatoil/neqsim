@@ -9,7 +9,6 @@ import javax.swing.JDialog;
 import javax.swing.JFrame;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
-import neqsim.processSimulation.mechanicalDesign.absorber.AbsorberMechanicalDesign;
 import neqsim.processSimulation.processEquipment.stream.Stream;
 import neqsim.processSimulation.processEquipment.stream.StreamInterface;
 import neqsim.thermo.system.SystemInterface;
@@ -44,8 +43,8 @@ public class WaterStripperColumn extends SimpleAbsorber {
      * Constructor for WaterStripperColumn.
      * </p>
      */
+    @Deprecated
     public WaterStripperColumn() {
-        mechanicalDesign = new AbsorberMechanicalDesign(this);
     }
 
     /**
@@ -56,14 +55,7 @@ public class WaterStripperColumn extends SimpleAbsorber {
      * @param name a {@link java.lang.String} object
      */
     public WaterStripperColumn(String name) {
-        this.name = name;
-        mechanicalDesign = new AbsorberMechanicalDesign(this);
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public void setName(String name) {
-        this.name = name;
+        super(name);
     }
 
     /** {@inheritDoc} */
@@ -251,7 +243,8 @@ public class WaterStripperColumn extends SimpleAbsorber {
 
     /** {@inheritDoc} */
     @Override
-    public void runTransient() {}
+    public void runTransient(double dt) {
+    }
 
     /**
      * <p>
@@ -495,12 +488,6 @@ public class WaterStripperColumn extends SimpleAbsorber {
         dialogContentPane.add(scrollpane);
         dialog.pack();
         dialog.setVisible(true);
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public String getName() {
-        return name;
     }
 
     /**

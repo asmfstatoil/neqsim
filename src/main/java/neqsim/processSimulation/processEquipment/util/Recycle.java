@@ -37,7 +37,10 @@ public class Recycle extends ProcessEquipmentBaseClass implements MixerInterface
      * Constructor for Recycle.
      * </p>
      */
-    public Recycle() {}
+    @Deprecated
+    public Recycle() {
+        this("Recycle");
+    }
 
     /**
      * <p>
@@ -196,7 +199,7 @@ public class Recycle extends ProcessEquipmentBaseClass implements MixerInterface
 
     /** {@inheritDoc} */
     @Override
-    public void runTransient() {
+    public void runTransient(double dt) {
         run();
     }
 

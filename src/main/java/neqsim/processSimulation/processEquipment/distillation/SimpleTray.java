@@ -23,8 +23,12 @@ public class SimpleTray extends neqsim.processSimulation.processEquipment.mixer.
      * <p>
      * Constructor for SimpleTray.
      * </p>
+     * 
+     * @param name
      */
-    public SimpleTray() {}
+    public SimpleTray(String name) {
+        super(name);
+    }
 
     /**
      * <p>
@@ -155,7 +159,7 @@ public class SimpleTray extends neqsim.processSimulation.processEquipment.mixer.
 
     /** {@inheritDoc} */
     @Override
-    public void runTransient() {}
+    public void runTransient(double dt) {}
 
     /**
      * <p>

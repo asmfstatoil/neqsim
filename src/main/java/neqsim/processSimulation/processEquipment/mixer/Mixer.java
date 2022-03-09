@@ -5,6 +5,7 @@ import java.awt.FlowLayout;
 import java.text.DecimalFormat;
 import java.text.FieldPosition;
 import java.util.ArrayList;
+import java.util.Objects;
 import javax.swing.JDialog;
 import javax.swing.JFrame;
 import javax.swing.JScrollPane;
@@ -40,7 +41,9 @@ public class Mixer extends ProcessEquipmentBaseClass implements MixerInterface {
      * Constructor for Mixer.
      * </p>
      */
-    public Mixer() {}
+    public Mixer() {
+        super("Mixer");
+    }
 
     /**
      * <p>
@@ -199,7 +202,7 @@ public class Mixer extends ProcessEquipmentBaseClass implements MixerInterface {
 
     /** {@inheritDoc} */
     @Override
-    public void runTransient() {
+    public void runTransient(double dt) {
         run();
     }
 
@@ -361,12 +364,6 @@ public class Mixer extends ProcessEquipmentBaseClass implements MixerInterface {
 
     /** {@inheritDoc} */
     @Override
-    public String getName() {
-        return name;
-    }
-
-    /** {@inheritDoc} */
-    @Override
     public void setPressure(double pres) {
         for (int k = 0; k < streams.size(); k++) {
             streams.get(k).getThermoSystem().setPressure(pres);
@@ -455,5 +452,32 @@ public class Mixer extends ProcessEquipmentBaseClass implements MixerInterface {
         }
         getOutStream().getThermoSystem().init(3);
         return getOutStream().getThermoSystem().getEntropy(unit) - entrop;
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public int hashCode() {
+        final int prime = 31;
+        int result = super.hashCode();
+        result = prime * result + Objects.hash(isSetOutTemperature, mixedStream, numberOfInputStreams,
+                outTemperature, streams);
+        return result;
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj)
+            return true;
+        if (!super.equals(obj))
+            return false;
+        if (getClass() != obj.getClass())
+            return false;
+        Mixer other = (Mixer) obj;
+        return isSetOutTemperature == other.isSetOutTemperature
+                && Objects.equals(mixedStream, other.mixedStream)
+                && numberOfInputStreams == other.numberOfInputStreams && Double
+                        .doubleToLongBits(outTemperature) == Double.doubleToLongBits(other.outTemperature)
+                && Objects.equals(streams, other.streams);
     }
 }

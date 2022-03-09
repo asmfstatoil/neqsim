@@ -5,7 +5,11 @@
  */
 package neqsim.processSimulation.processEquipment;
 
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.Objects;
+import org.apache.commons.lang.SerializationUtils;
+import neqsim.processSimulation.SimulationBaseClass;
 import neqsim.processSimulation.controllerDevice.ControllerDeviceInterface;
 import neqsim.processSimulation.mechanicalDesign.MechanicalDesign;
 import neqsim.processSimulation.processEquipment.stream.EnergyStream;
@@ -19,23 +23,18 @@ import neqsim.thermo.system.SystemInterface;
  * @author ESOL
  * @version $Id: $Id
  */
-public abstract class ProcessEquipmentBaseClass implements ProcessEquipmentInterface {
+public abstract class ProcessEquipmentBaseClass extends SimulationBaseClass
+        implements ProcessEquipmentInterface {
     private static final long serialVersionUID = 1000;
 
     private ControllerDeviceInterface controller = null;
     ControllerDeviceInterface flowValveController = null;
     public boolean hasController = false;
-    public String name = new String();
-    public MechanicalDesign mechanicalDesign = new MechanicalDesign(this);
     private String specification = "TP";
     public String[][] report = new String[0][0];
     public HashMap<String, String> properties = new HashMap<String, String>();
     public EnergyStream energyStream = new EnergyStream();
     private boolean isSetEnergyStream = false;
-
-    public ProcessEquipmentBaseClass() {
-        mechanicalDesign = new MechanicalDesign(this);
-    }
 
     /**
      * <p>
@@ -45,8 +44,7 @@ public abstract class ProcessEquipmentBaseClass implements ProcessEquipmentInter
      * @param name a {@link java.lang.String} object
      */
     public ProcessEquipmentBaseClass(String name) {
-        this();
-        this.name = name;
+        super(name);
     }
 
     /** {@inheritDoc} */
@@ -71,24 +69,18 @@ public abstract class ProcessEquipmentBaseClass implements ProcessEquipmentInter
         return getThermoSystem();
     }
 
-    ;
-
     /** {@inheritDoc} */
     @Override
     public void displayResult() {}
 
-    ;
-
-    /** {@inheritDoc} */
-    @Override
-    public String getName() {
-        return name;
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public void setName(String name) {
-        this.name = name;
+    /**
+     * Create deep copy.
+     * 
+     * @return
+     */
+    public ProcessEquipmentInterface copy() {
+        byte[] bytes = SerializationUtils.serialize(this);
+        return (ProcessEquipmentInterface) SerializationUtils.deserialize(bytes);
     }
 
     /**
@@ -138,18 +130,7 @@ public abstract class ProcessEquipmentBaseClass implements ProcessEquipmentInter
     /** {@inheritDoc} */
     @Override
     public MechanicalDesign getMechanicalDesign() {
-        return mechanicalDesign;
-    }
-
-    /**
-     * <p>
-     * Setter for the field <code>mechanicalDesign</code>.
-     * </p>
-     *
-     * @param mechanicalDesign the mechanicalDesign to set
-     */
-    public void setMechanicalDesign(MechanicalDesign mechanicalDesign) {
-        this.mechanicalDesign = mechanicalDesign;
+        return new MechanicalDesign(this);
     }
 
     /** {@inheritDoc} */
@@ -271,5 +252,37 @@ public abstract class ProcessEquipmentBaseClass implements ProcessEquipmentInter
      */
     public String[][] getResultTable() {
         return null;
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public int hashCode() {
+        final int prime = 31;
+        int result = 1;
+        result = prime * result + Arrays.deepHashCode(report);
+        result = prime * result
+                + Objects.hash(conditionAnalysisMessage, controller, energyStream, flowValveController,
+                        hasController, isSetEnergyStream, name, properties, specification);
+        return result;
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj)
+            return true;
+        if (obj == null)
+            return false;
+        if (getClass() != obj.getClass())
+            return false;
+        ProcessEquipmentBaseClass other = (ProcessEquipmentBaseClass) obj;
+        return Objects.equals(conditionAnalysisMessage, other.conditionAnalysisMessage)
+                && Objects.equals(controller, other.controller)
+                && Objects.equals(energyStream, other.energyStream)
+                && Objects.equals(flowValveController, other.flowValveController)
+                && hasController == other.hasController && isSetEnergyStream == other.isSetEnergyStream
+                && Objects.equals(name, other.name) && Objects.equals(properties, other.properties)
+                && Arrays.deepEquals(report, other.report)
+                && Objects.equals(specification, other.specification);
     }
 }

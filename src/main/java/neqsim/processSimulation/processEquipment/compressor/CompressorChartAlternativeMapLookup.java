@@ -191,10 +191,10 @@ public class CompressorChartAlternativeMapLookup
                 return c;
             }
         }
-
-        logger.error("Input ref. speed does not match any speed in the chart.");
+        String msg = "Input ref. speed does not match any speed in the chart.";
+        logger.error(msg);
         neqsim.util.exception.InvalidInputException e =
-                new neqsim.util.exception.InvalidInputException();
+                new neqsim.util.exception.InvalidInputException(msg);
         throw new RuntimeException(e);
     }
 
@@ -362,7 +362,7 @@ public class CompressorChartAlternativeMapLookup
         testFluid.setTotalFlowRate(5.4, "MSm3/day");
 
         Stream stream_1 = new Stream("Stream1", testFluid);
-        Compressor comp1 = new Compressor(true);
+        Compressor comp1 = new Compressor("cmp1", true);
         comp1.setInletStream(stream_1);
         comp1.setUsePolytropicCalc(true);
         // comp1.getAntiSurge().setActive(true);

@@ -9,7 +9,6 @@ import javax.swing.JDialog;
 import javax.swing.JFrame;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
-import neqsim.processSimulation.mechanicalDesign.absorber.AbsorberMechanicalDesign;
 import neqsim.processSimulation.processEquipment.ProcessEquipmentInterface;
 import neqsim.processSimulation.processEquipment.stream.Stream;
 import neqsim.processSimulation.processEquipment.stream.StreamInterface;
@@ -44,8 +43,8 @@ public class SimpleTEGAbsorber extends SimpleAbsorber {
      * Constructor for SimpleTEGAbsorber.
      * </p>
      */
+    @Deprecated
     public SimpleTEGAbsorber() {
-        mechanicalDesign = new AbsorberMechanicalDesign(this);
     }
 
     /**
@@ -56,9 +55,7 @@ public class SimpleTEGAbsorber extends SimpleAbsorber {
      * @param name a {@link java.lang.String} object
      */
     public SimpleTEGAbsorber(String name) {
-        super();
-        setName(name);
-        mechanicalDesign = new AbsorberMechanicalDesign(this);
+        super(name);
     }
 
     /** {@inheritDoc} */
@@ -256,7 +253,8 @@ public class SimpleTEGAbsorber extends SimpleAbsorber {
 
     /** {@inheritDoc} */
     @Override
-    public void runTransient() {}
+    public void runTransient(double dt) {
+    }
 
     /**
      * <p>

@@ -17,6 +17,7 @@ import neqsim.standards.salesContract.BaseContract;
 import neqsim.standards.salesContract.ContractInterface;
 import neqsim.thermo.system.SystemInterface;
 import neqsim.thermodynamicOperations.ThermodynamicOperations;
+import neqsim.util.NamedBaseClass;
 
 /**
  * <p>
@@ -26,8 +27,7 @@ import neqsim.thermodynamicOperations.ThermodynamicOperations;
  * @author ESOL
  * @version $Id: $Id
  */
-public abstract class Standard implements StandardInterface {
-    protected String name = "Base Standard";
+public abstract class Standard extends NamedBaseClass implements StandardInterface {
     protected String standardDescription = "Base Description";
     protected ContractInterface salesContract = new BaseContract();
     protected String[][] resultTable = null;
@@ -35,17 +35,26 @@ public abstract class Standard implements StandardInterface {
     protected ThermodynamicOperations thermoOps;
     private String referenceState = "real"; // "ideal"real
 
-    public Standard() {}
+    /**
+     * Constructor for Standard.
+     * 
+     * @param name
+     * 
+     */
+    public Standard(String name, String description) {
+        super(name);
+        standardDescription = description;
+    }
 
     /**
-     * <p>
      * Constructor for Standard.
-     * </p>
-     *
-     * @param thermoSyst a {@link neqsim.thermo.system.SystemInterface} object
+     * 
+     * @param name
+     * @param thermoSyst
      */
-    public Standard(SystemInterface thermoSyst) {
-        thermoSystem = thermoSyst;
+    public Standard(String name, String description, SystemInterface thermoSyst) {
+        this(name, description);
+        setThermoSystem(thermoSyst);
     }
 
     /** {@inheritDoc} */
@@ -78,21 +87,6 @@ public abstract class Standard implements StandardInterface {
     @Override
     public ContractInterface getSalesContract() {
         return salesContract;
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public String getName() {
-        return name;
-    }
-
-    /**
-     * Setter for property name.
-     *
-     * @param name New value of property name.
-     */
-    public void setName(String name) {
-        this.name = name;
     }
 
     /** {@inheritDoc} */
