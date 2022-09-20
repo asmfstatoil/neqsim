@@ -11,7 +11,7 @@ import neqsim.thermo.system.SystemSrkEos;
  * @author ESOL
  *
  */
-class StreamTest {
+class StreamTest extends neqsim.NeqSimTest{
     static neqsim.thermo.system.SystemInterface testSystem = null;
     double pressure_inlet = 85.0;
     double temperature_inlet = 35.0;
@@ -51,7 +51,7 @@ class StreamTest {
             testSystem.initProperties();
         });
         Assertions.assertEquals(
-                "neqsim.util.exception.InvalidInputException: Phase:init - Input totalNumberOfMoles must be larger than zero.",
+            "neqsim.util.exception.InvalidInputException: PhaseSrkEos:init - Input totalNumberOfMoles must be larger than zero.",
                 thrown.getMessage());
     }
 }

@@ -8,6 +8,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Objects;
 import javax.xml.bind.annotation.XmlRootElement;
+import java.util.UUID;
 import org.apache.commons.lang.SerializationUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -58,8 +59,8 @@ public class ProcessSystem extends SimulationBaseClass {
 
   /**
    * Constructor for ProcessSystem.
-   * 
-   * @param name
+   *
+   * @param name name of process
    */
   public ProcessSystem(String name) {
     super(name);
@@ -375,11 +376,9 @@ public class ProcessSystem extends SimulationBaseClass {
 
   /** {@inheritDoc} */
   @Override
-  public void run() {
-    boolean isConverged = true;
+  public void run(UUID id) {
     boolean hasResycle = false;
     // boolean hasAdjuster = false;
-    int iter = 0;
 
     // Initializing recycle controller
     recycleController.clear();
@@ -394,30 +393,34 @@ public class ProcessSystem extends SimulationBaseClass {
     }
     recycleController.init();
 
+    boolean isConverged = true;
+    int iter = 0;
     do {
       iter++;
       isConverged = true;
       for (int i = 0; i < unitOperations.size(); i++) {
-        if (!unitOperations.get(i).getClass().getSimpleName().equals("Recycle"))
+        if (!unitOperations.get(i).getClass().getSimpleName().equals("Recycle")) {
           try {
-            ((Runnable) unitOperations.get(i)).run();
-          } catch (Exception e) {
-            // String error = e.getMessage();
-            e.printStackTrace();
+            ((ProcessEquipmentInterface) unitOperations.get(i)).run();
+          } catch (Exception ex) {
+            // String error = ex.getMessage();
+            logger.error(ex.getMessage());
           }
+        }
         if (unitOperations.get(i).getClass().getSimpleName().equals("Recycle")
             && recycleController.doSolveRecycle((Recycle) unitOperations.get(i))) {
           try {
-            ((Runnable) unitOperations.get(i)).run();
-          } catch (Exception e) {
-            // String error = e.getMessage();
-            e.printStackTrace();
+            ((ProcessEquipmentInterface) unitOperations.get(i)).run();
+          } catch (Exception ex) {
+            // String error = ex.getMessage();
+            logger.error(ex.getMessage());
           }
         }
       }
       if (!recycleController.solvedAll() || recycleController.hasHigherPriorityLevel()) {
         isConverged = false;
       }
+
       if (recycleController.solvedCurrentPriorityLevel()) {
         recycleController.nextPriorityLevel();
       } else if (recycleController.hasLoverPriorityLevel() && !recycleController.solvedAll()) {
@@ -430,6 +433,7 @@ public class ProcessSystem extends SimulationBaseClass {
           if (!((neqsim.processSimulation.processEquipment.util.Adjuster) unitOperations.get(i))
               .solved()) {
             isConverged = false;
+            break;
           }
         }
       }
@@ -450,13 +454,19 @@ public class ProcessSystem extends SimulationBaseClass {
     } while ((!isConverged || (iter < 2 && hasResycle)) && iter < 100);
 
     for (int i = 0; i < unitOperations.size(); i++) {
-      if (unitOperations.get(i).getClass().getSimpleName().equals("Adjuster")) {
-        if (!((neqsim.processSimulation.processEquipment.util.Adjuster) unitOperations.get(i))
-            .solved()) {
-          isConverged = false;
-        }
-      }
+      ((ProcessEquipmentInterface) unitOperations.get(i)).setCalculationIdentifier(id);
     }
+
+    setCalculationIdentifier(id);
+  }
+
+  /**
+   * <p>
+   * runTransient.
+   * </p>
+   */
+  public void runTransient() {
+    runTransient(getTimeStep(), UUID.randomUUID());
   }
 
   /**
@@ -464,16 +474,18 @@ public class ProcessSystem extends SimulationBaseClass {
    * runTransient.
    * </p>
    *
-   * @param deltat a double
+   * @param dt Delta time [s]
+   * @param id Calculation identifier
    */
   @Override
-  public void runTransient(double dt) {
+  public void runTransient(double dt, UUID id) {
     setTimeStep(dt);
-    time += dt;
+    increaseTime(dt);
 
     for (int i = 0; i < unitOperations.size(); i++) {
-      unitOperations.get(i).runTransient(dt);
+      unitOperations.get(i).runTransient(dt, id);
     }
+
     timeStepNumber++;
     signalDB[timeStepNumber] = new String[1 + 3 * measurementDevices.size()];
     for (int i = 0; i < measurementDevices.size(); i++) {
@@ -483,6 +495,7 @@ public class ProcessSystem extends SimulationBaseClass {
           Double.toString(measurementDevices.get(i).getMeasuredValue());
       signalDB[timeStepNumber][3 * i + 3] = measurementDevices.get(i).getUnit();
     }
+    setCalculationIdentifier(id);
   }
 
   @Override
@@ -524,15 +537,6 @@ public class ProcessSystem extends SimulationBaseClass {
 
   /**
    * <p>
-   * runTransient.
-   * </p>
-   */
-  public void runTransient() {
-    runTransient(getTimeStep());
-  }
-
-  /**
-   * <p>
    * size.
    * </p>
    *
@@ -559,7 +563,7 @@ public class ProcessSystem extends SimulationBaseClass {
   public void displayResult() {
     try {
       thisThread.join();
-    } catch (Exception e) {
+    } catch (Exception ex) {
       System.out.println("Thread did not finish");
     }
     for (int i = 0; i < unitOperations.size(); i++) {
@@ -582,16 +586,17 @@ public class ProcessSystem extends SimulationBaseClass {
   public void reportMeasuredValues() {
     try {
       thisThread.join();
-    } catch (Exception e) {
+    } catch (Exception ex) {
       System.out.println("Thread did not finish");
     }
     for (int i = 0; i < measurementDevices.size(); i++) {
       System.out.println("Measurements Device Name: " + measurementDevices.get(i).getName());
       System.out.println("Value: " + measurementDevices.get(i).getMeasuredValue() + " "
           + measurementDevices.get(i).getUnit());
-      if (measurementDevices.get(i).isOnlineSignal())
+      if (measurementDevices.get(i).isOnlineSignal()) {
         System.out.println("Online value: " + measurementDevices.get(i).getOnlineSignal().getValue()
             + " " + measurementDevices.get(i).getOnlineSignal().getUnit());
+      }
     }
   }
 
@@ -606,9 +611,9 @@ public class ProcessSystem extends SimulationBaseClass {
     try (ObjectOutputStream out = new ObjectOutputStream(new FileOutputStream(filePath, false))) {
       out.writeObject(this);
       logger.info("process file saved to:  " + filePath);
-    } catch (Exception e) {
-      logger.error(e.toString());
-      e.printStackTrace();
+    } catch (Exception ex) {
+      logger.error(ex.toString());
+      logger.error(ex.getMessage());
     }
   }
 
@@ -625,9 +630,9 @@ public class ProcessSystem extends SimulationBaseClass {
         new ObjectInputStream(new FileInputStream(filePath))) {
       return (ProcessSystem) objectinputstream.readObject();
       // logger.info("process file open ok: " + filePath);
-    } catch (Exception e) {
-      // logger.error(e.toString());
-      e.printStackTrace();
+    } catch (Exception ex) {
+      // logger.error(ex.toString());
+      logger.error(ex.getMessage());
     }
     return null;
   }
@@ -791,8 +796,9 @@ public class ProcessSystem extends SimulationBaseClass {
       return power / 1.0e6;
     } else if (unit.equals("kW")) {
       return power / 1.0e3;
-    } else
+    } else {
       return power;
+    }
   }
 
   /**
@@ -914,12 +920,15 @@ public class ProcessSystem extends SimulationBaseClass {
   /** {@inheritDoc} */
   @Override
   public boolean equals(Object obj) {
-    if (this == obj)
+    if (this == obj) {
       return true;
-    if (obj == null)
+    }
+    if (obj == null) {
       return false;
-    if (getClass() != obj.getClass())
+    }
+    if (getClass() != obj.getClass()) {
       return false;
+    }
     ProcessSystem other = (ProcessSystem) obj;
     return Objects.equals(measurementDevices, other.measurementDevices)
         && Objects.equals(name, other.name)

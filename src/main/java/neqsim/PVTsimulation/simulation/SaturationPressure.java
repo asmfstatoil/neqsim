@@ -43,6 +43,11 @@ public class SaturationPressure extends BasePVTsimulation {
             thermoOps.TPflash();
         } while (getThermoSystem().getNumberOfPhases() > 1
                 && getThermoSystem().getPressure() < 1000.0);
+        
+        if(getThermoSystem().getPressure()>1000.0) {
+          return getThermoSystem().getPressure();
+        }
+        
         double minPres = getThermoSystem().getPressure() - 10.0;
         double maxPres = getThermoSystem().getPressure();
         int iteration = 0;
@@ -95,10 +100,10 @@ public class SaturationPressure extends BasePVTsimulation {
         tempSystem.addPlusFraction("C11", 4.58, 256.2 / 1000.0, 0.8398);
         tempSystem.getCharacterization().characterisePlusFraction();
         tempSystem.createDatabase(true);
-        tempSystem.setMixingRule(9);// "HV", "UNIFAC_UMRPRU");
+        tempSystem.setMixingRule(9); // "HV", "UNIFAC_UMRPRU");
         tempSystem.init(0);
         tempSystem.init(1);
-        tempSystem.saveFluid(928);
+        //tempSystem.saveFluid(928);
 
         SimulationInterface satPresSim = new SaturationPressure(tempSystem);
         satPresSim.run();

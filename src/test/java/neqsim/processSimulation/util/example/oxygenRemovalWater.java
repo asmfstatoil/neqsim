@@ -20,11 +20,11 @@ public class oxygenRemovalWater {
      * @param args an array of {@link java.lang.String} objects
      */
     public static void main(String[] args) {
-        neqsim.thermo.Fluid.setHasWater(true);
-        neqsim.thermo.system.SystemInterface fluid1 =
-                neqsim.thermo.Fluid.create("air").autoSelectModel();
+        neqsim.thermo.Fluid fluidCreator = new neqsim.thermo.Fluid();
+        fluidCreator.setHasWater(true);
+        neqsim.thermo.system.SystemInterface fluid1 = fluidCreator.create("air").autoSelectModel();
         fluid1.setMultiPhaseCheck(true);
-        neqsim.thermo.system.SystemInterface fluid2 = neqsim.thermo.Fluid.create("water");
+        neqsim.thermo.system.SystemInterface fluid2 = fluidCreator.create("water");
         fluid1.setPressure(1.01325);
         fluid1.setTemperature(273.15 + 10);
         fluid1.setTotalFlowRate(1.0, "kg/hr");
@@ -39,12 +39,12 @@ public class oxygenRemovalWater {
         mix.addStream(stream_air);
         // mix.addStream(stream_water);
 
-        Separator separator = new Separator("separator", mix.getOutStream());
+        Separator separator = new Separator("separator", mix.getOutletStream());
 
         Heater heater1 = new Heater("heater1", separator.getLiquidOutStream());
         heater1.setOutTemperature(273.15 + 20);
 
-        ThrottlingValve LP_valve = new ThrottlingValve("LPventil", heater1.getOutStream());
+        ThrottlingValve LP_valve = new ThrottlingValve("LPventil", heater1.getOutletStream());
         LP_valve.setOutletPressure(30.0e-3);
 
         neqsim.processSimulation.processSystem.ProcessSystem operations =

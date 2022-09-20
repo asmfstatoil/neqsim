@@ -3,10 +3,12 @@
  *
  * Created on 21. august 2001, 20:44
  */
+
 package neqsim.processSimulation.processEquipment.pipeline;
 
 import neqsim.fluidMechanics.flowSystem.FlowSystemInterface;
 import neqsim.processSimulation.SimulationInterface;
+import neqsim.processSimulation.processEquipment.TwoPortInterface;
 
 /**
  * <p>
@@ -16,7 +18,7 @@ import neqsim.processSimulation.SimulationInterface;
  * @author esol
  * @version $Id: $Id
  */
-public interface PipeLineInterface extends SimulationInterface {
+public interface PipeLineInterface extends SimulationInterface, TwoPortInterface {
     /**
      * <p>
      * setNumberOfLegs.

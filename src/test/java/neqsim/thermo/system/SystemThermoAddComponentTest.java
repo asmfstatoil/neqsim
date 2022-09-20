@@ -4,7 +4,7 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-public class SystemThermoAddComponentTest {
+public class SystemThermoAddComponentTest extends neqsim.NeqSimTest{
     SystemInterface sys;
 
     @BeforeEach
@@ -19,7 +19,6 @@ public class SystemThermoAddComponentTest {
          * sys.setMixingRule(2);
          */
     }
-
 
     @Test
     void testAddComponent() {

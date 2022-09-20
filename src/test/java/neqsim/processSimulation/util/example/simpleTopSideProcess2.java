@@ -21,8 +21,9 @@ public class simpleTopSideProcess2 {
      * @param args an array of {@link java.lang.String} objects
      */
     public static void main(String args[]) {
-        neqsim.thermo.Fluid.setHasWater(true);
-        neqsim.thermo.system.SystemInterface fluid = neqsim.thermo.Fluid.create("gas condensate");
+        neqsim.thermo.Fluid fluidCreator = new neqsim.thermo.Fluid();
+        fluidCreator.setHasWater(true);
+        neqsim.thermo.system.SystemInterface fluid = fluidCreator.create("gas condensate");
         fluid.setTemperature(45.0, "C");
         fluid.setPressure(5.0, "bara");
         Stream stream_inlet = new Stream("Stream1", fluid);
@@ -32,7 +33,7 @@ public class simpleTopSideProcess2 {
         mixer_inlet.addStream(stream_inlet);
 
         ThreePhaseSeparator separator_inlet =
-                new ThreePhaseSeparator("Separator 1", mixer_inlet.getOutStream());
+            new ThreePhaseSeparator("Separator 1", mixer_inlet.getOutletStream());
 
         Stream stream_gasFromSep =
                 new Stream("stream_gasFromSep", separator_inlet.getGasOutStream());
@@ -40,7 +41,7 @@ public class simpleTopSideProcess2 {
         Heater cooler1 = new Heater("cooler1", stream_gasFromSep);
         cooler1.setOutTemperature(285.25);
 
-        Separator scrubber = new Separator("Scrubber 1", cooler1.getOutStream());
+        Separator scrubber = new Separator("Scrubber 1", cooler1.getOutletStream());
 
         Recycle recyleOp = new Recycle("resyc");
         recyleOp.addStream(scrubber.getLiquidOutStream());

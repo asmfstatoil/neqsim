@@ -1,5 +1,7 @@
 package neqsim.standards.gasQuality;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import neqsim.thermo.system.SystemGERGwaterEos;
 import neqsim.thermo.system.SystemInterface;
 import neqsim.thermodynamicOperations.ThermodynamicOperations;
@@ -13,96 +15,101 @@ import neqsim.thermodynamicOperations.ThermodynamicOperations;
  * @version $Id: $Id
  */
 public class Draft_ISO18453 extends neqsim.standards.Standard {
-    String dewPointTemperatureUnit = "C", pressureUnit = "bar";
-    double dewPointTemperature = 273.0, dewPointTemperatureSpec = -12.0;
-    double specPressure = 70.0;
-    double initTemperature = 273.15;
-    SystemInterface thermoSystem;
-    ThermodynamicOperations thermoOps;
+  private static final long serialVersionUID = 1L;
+  static Logger logger = LogManager.getLogger(Draft_ISO18453.class);
 
-    /**
-     * <p>
-     * Constructor for Draft_ISO18453.
-     * </p>
-     *
-     * @param thermoSystem a {@link neqsim.thermo.system.SystemInterface} object
-     */
-    public Draft_ISO18453(SystemInterface thermoSystem) {
-        super("Draft_ISO18453", "water dew point calculation method");
+  String dewPointTemperatureUnit = "C";
+  String pressureUnit = "bar";
+  double dewPointTemperature = 273.0;
+  double dewPointTemperatureSpec = -12.0;
+  double specPressure = 70.0;
+  double initTemperature = 273.15;
+  SystemInterface thermoSystem;
+  ThermodynamicOperations thermoOps;
 
-        if (thermoSystem.getModelName().equals("GERGwater")) {
-            this.thermoSystem = thermoSystem;
-        } else {
-            // System.out.println("setting model GERG water...");
-            this.thermoSystem = new SystemGERGwaterEos(initTemperature, specPressure);
-            for (int i = 0; i < thermoSystem.getPhase(0).getNumberOfComponents(); i++) {
-                this.thermoSystem.addComponent(thermoSystem.getPhase(0).getComponent(i).getName(),
-                        thermoSystem.getPhase(0).getComponent(i).getNumberOfmoles());
-            }
-        }
+  /**
+   * <p>
+   * Constructor for Draft_ISO18453.
+   * </p>
+   *
+   * @param thermoSystem a {@link neqsim.thermo.system.SystemInterface} object
+   */
+  public Draft_ISO18453(SystemInterface thermoSystem) {
+    super("Draft_ISO18453", "water dew point calculation method");
 
-        this.thermoSystem.setTemperature(273.15);
-        this.thermoSystem.setPressure(1.0);
-        this.thermoSystem.setMixingRule(8);
-        thermoSystem.init(0);
-        thermoSystem.init(1);
-
-        this.thermoOps = new ThermodynamicOperations(this.thermoSystem);
+    if (thermoSystem.getModelName().equals("GERGwater")) {
+      this.thermoSystem = thermoSystem;
+    } else {
+      // System.out.println("setting model GERG water...");
+      this.thermoSystem = new SystemGERGwaterEos(initTemperature, specPressure);
+      for (int i = 0; i < thermoSystem.getPhase(0).getNumberOfComponents(); i++) {
+        this.thermoSystem.addComponent(thermoSystem.getPhase(0).getComponent(i).getName(),
+            thermoSystem.getPhase(0).getComponent(i).getNumberOfmoles());
+      }
     }
 
-    /** {@inheritDoc} */
-    @Override
-    public void calculate() {
-        this.thermoSystem.setTemperature(initTemperature);
-        this.thermoSystem.setPressure(specPressure);
+    this.thermoSystem.setTemperature(273.15);
+    this.thermoSystem.setPressure(1.0);
+    this.thermoSystem.setMixingRule(8);
+    thermoSystem.init(0);
+    thermoSystem.init(1);
 
-        try {
-            this.thermoOps.waterDewPointTemperatureFlash();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        dewPointTemperature = this.thermoSystem.getTemperature() - 273.15;
-    }
+    this.thermoOps = new ThermodynamicOperations(this.thermoSystem);
+  }
 
-    /** {@inheritDoc} */
-    @Override
-    public double getValue(String returnParameter, java.lang.String returnUnit) {
-        if (returnParameter.equals("dewPointTemperature")) {
-            return dewPointTemperature;
-        } else {
-            return dewPointTemperature;
-        }
-    }
+  /** {@inheritDoc} */
+  @Override
+  public void calculate() {
+    this.thermoSystem.setTemperature(initTemperature);
+    this.thermoSystem.setPressure(specPressure);
 
-    /** {@inheritDoc} */
-    @Override
-    public double getValue(String returnParameter) {
-        if (returnParameter.equals("dewPointTemperature")) {
-            return dewPointTemperature;
-        }
-        if (returnParameter.equals("pressure")) {
-            return this.thermoSystem.getPressure();
-        } else {
-            return dewPointTemperature;
-        }
+    try {
+      this.thermoOps.waterDewPointTemperatureFlash();
+    } catch (Exception ex) {
+      logger.error(ex.getMessage());
     }
+    dewPointTemperature = this.thermoSystem.getTemperature() - 273.15;
+  }
 
-    /** {@inheritDoc} */
-    @Override
-    public String getUnit(String returnParameter) {
-        if (returnParameter.equals("dewPointTemperature")) {
-            return dewPointTemperatureUnit;
-        }
-        if (returnParameter.equals("pressureUnit")) {
-            return this.pressureUnit;
-        } else {
-            return dewPointTemperatureUnit;
-        }
+  /** {@inheritDoc} */
+  @Override
+  public double getValue(String returnParameter, java.lang.String returnUnit) {
+    if (returnParameter.equals("dewPointTemperature")) {
+      return dewPointTemperature;
+    } else {
+      return dewPointTemperature;
     }
+  }
 
-    /** {@inheritDoc} */
-    @Override
-    public boolean isOnSpec() {
-        return dewPointTemperature < getSalesContract().getWaterDewPointTemperature();
+  /** {@inheritDoc} */
+  @Override
+  public double getValue(String returnParameter) {
+    if (returnParameter.equals("dewPointTemperature")) {
+      return dewPointTemperature;
     }
+    if (returnParameter.equals("pressure")) {
+      return this.thermoSystem.getPressure();
+    } else {
+      return dewPointTemperature;
+    }
+  }
+
+  /** {@inheritDoc} */
+  @Override
+  public String getUnit(String returnParameter) {
+    if (returnParameter.equals("dewPointTemperature")) {
+      return dewPointTemperatureUnit;
+    }
+    if (returnParameter.equals("pressureUnit")) {
+      return this.pressureUnit;
+    } else {
+      return dewPointTemperatureUnit;
+    }
+  }
+
+  /** {@inheritDoc} */
+  @Override
+  public boolean isOnSpec() {
+    return dewPointTemperature < getSalesContract().getWaterDewPointTemperature();
+  }
 }

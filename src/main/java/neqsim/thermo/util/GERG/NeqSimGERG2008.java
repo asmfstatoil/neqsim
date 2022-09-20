@@ -20,6 +20,7 @@ public class NeqSimGERG2008 {
     double[] normalizedGERGComposition = new double[21 + 1];
     double[] notNormalizedGERGComposition = new double[21 + 1];
     PhaseInterface phase = null;
+    GERG2008 GERG2008 = new GERG2008();
 
     /**
      * <p>
@@ -105,7 +106,7 @@ public class NeqSimGERG2008 {
      */
     public double getMolarMass() {
         doubleW mm = new doubleW(0.0);
-        neqsim.thermo.util.GERG.GERG2008.MolarMassGERG(normalizedGERGComposition, mm);
+        GERG2008.MolarMassGERG(normalizedGERGComposition, mm);
         return mm.val / 1.0e3;
     }
 
@@ -122,7 +123,7 @@ public class NeqSimGERG2008 {
         StringW herr = new StringW("");
         doubleW D = new doubleW(0.0);
         double pressure = phase.getPressure() * 100.0;
-        neqsim.thermo.util.GERG.GERG2008.DensityGERG(flag, phase.getTemperature(), pressure,
+        GERG2008.DensityGERG(flag, phase.getTemperature(), pressure,
                 normalizedGERGComposition, D, ierr, herr);
         return D.val;
     }
@@ -180,7 +181,6 @@ public class NeqSimGERG2008 {
      * @return an array of {@link double} objects
      */
     public double[] propertiesGERG() {
-        // int _x_offset = 0;
         doubleW p = new doubleW(0.0);
         doubleW z = new doubleW(0.0);
         doubleW dpdd = new doubleW(0.0);

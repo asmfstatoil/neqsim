@@ -8,22 +8,17 @@
 	<version>${revision}${sha1}${changelist}</version>
 
 	<properties>
-		<revision>2.3.1</revision>
+		<revision>2.3.3</revision>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
-		<sha1 />
-		<changelist />
+		<sha1/>
+		<changelist/>
 	</properties>
 
 	<repositories>
 		<repository>
 			<id>central</id>
 			<url>https://repo1.maven.org/maven2/</url>
-		</repository>
-		<repository>
-			<id>unidata-all</id>
-			<name>Unidata All</name>
-			<url>https://artifacts.unidata.ucar.edu/repository/unidata-all/</url>
 		</repository>
 	</repositories>
 
@@ -37,12 +32,12 @@
 		<dependency>
 			<groupId>org.apache.logging.log4j</groupId>
 			<artifactId>log4j-api</artifactId>
-			<version>2.17.1</version>
+			<version>2.18.0</version>
 		</dependency>
 		<dependency>
 			<groupId>org.apache.logging.log4j</groupId>
 			<artifactId>log4j-core</artifactId>
-			<version>2.17.1</version>
+			<version>2.18.0</version>
 		</dependency>
 		<dependency>
 			<groupId>org.junit.jupiter</groupId>
@@ -69,17 +64,17 @@
 		<dependency>
 			<groupId>org.apache.derby</groupId>
 			<artifactId>derby</artifactId>
-			<version>10.14.2.0</version>
+			<version>10.15.2.0</version>
+		</dependency>
+		<dependency>
+ 			<groupId>org.apache.derby</groupId>
+			<artifactId>derbytools</artifactId>
+			<version>10.15.2.0</version>
 		</dependency>
 		<dependency>
 			<groupId>org.ejml</groupId>
 			<artifactId>ejml-all</artifactId>
-			<version>0.40</version>
-		</dependency>
-		<dependency>
-			<groupId>com.lowagie</groupId>
-			<artifactId>itext</artifactId>
-			<version>1.4.8</version>
+			<version>0.41</version>
 		</dependency>
 		<dependency>
 			<groupId>gov.nist.math</groupId>
@@ -89,35 +84,22 @@
 		<dependency>
 			<groupId>org.jfree</groupId>
 			<artifactId>jcommon</artifactId>
-			<version>1.0.23</version>
+			<version>1.0.24</version>
 		</dependency>
 		<dependency>
 			<groupId>org.jfree</groupId>
 			<artifactId>jfreechart</artifactId>
-			<version>1.5.1</version>
+			<version>1.5.3</version>
 		</dependency>
 		<dependency>
 			<groupId>com.googlecode.matrix-toolkits-java</groupId>
 			<artifactId>mtj</artifactId>
 			<version>1.0.4</version>
 		</dependency>
-		<!-- https://mvnrepository.com/artifact/edu.ucar/netcdf4 -->
-		<dependency>
-			<groupId>edu.ucar</groupId>
-			<artifactId>netcdf4</artifactId>
-			<version>4.6.16.1</version>
-			<scope>provided</scope>
-		</dependency>
 		<dependency>
 			<groupId>org.ojalgo</groupId>
 			<artifactId>ojalgo</artifactId>
 			<version>48.4.2</version>
-			<scope>provided</scope>
-		</dependency>
-		<dependency>
-			<groupId>edu.wisc.ssec</groupId>
-			<artifactId>visad</artifactId>
-			<version>2.0-20130124</version>
 			<scope>provided</scope>
 		</dependency>
 	</dependencies>
@@ -197,8 +179,8 @@
 				<artifactId>maven-compiler-plugin</artifactId>
 				<version>3.9.0</version>
 				<configuration>
-					<source>1.8</source>
-					<target>1.8</target>
+					<source>11</source>
+					<target>11</target>
 					<encoding>${project.build.sourceEncoding}</encoding>
 					<!-- Uncomment below to get compiler warnings 
 					<compilerArgs>
