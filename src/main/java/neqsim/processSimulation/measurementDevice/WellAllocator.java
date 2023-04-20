@@ -7,30 +7,61 @@ import neqsim.processSimulation.util.monitor.WellAllocatorResponse;
 import neqsim.thermo.system.SystemInterface;
 import neqsim.thermo.system.SystemSrkEos;
 
+/**
+ * <p>WellAllocator class.</p>
+ *
+ * @author ASMF
+ * @version $Id: $Id
+ */
 public class WellAllocator extends MeasurementDeviceBaseClass {
 
+  private static final long serialVersionUID = 1L;
   protected StreamInterface wellStream = null;
   protected StreamInterface exportGasStream = null;
   protected StreamInterface exportOilStream = null;
 
+  /**
+   * <p>Constructor for WellAllocator.</p>
+   */
   public WellAllocator() {
     name = "Well Allocator";
   }
 
+  /**
+   * <p>Constructor for WellAllocator.</p>
+   *
+   * @param stream a {@link neqsim.processSimulation.processEquipment.stream.StreamInterface} object
+   */
   public WellAllocator(StreamInterface stream) {
     name = "Well Allocator";
     this.wellStream = stream;
   }
 
+  /**
+   * <p>Constructor for WellAllocator.</p>
+   *
+   * @param streamname a {@link java.lang.String} object
+   * @param stream a {@link neqsim.processSimulation.processEquipment.stream.StreamInterface} object
+   */
   public WellAllocator(String streamname, StreamInterface stream) {
     this(stream);
     name = streamname;
   }
 
+  /**
+   * <p>Setter for the field <code>exportGasStream</code>.</p>
+   *
+   * @param stream a {@link neqsim.processSimulation.processEquipment.stream.StreamInterface} object
+   */
   public void setExportGasStream(StreamInterface stream) {
     this.exportGasStream = stream;
   }
 
+  /**
+   * <p>Setter for the field <code>exportOilStream</code>.</p>
+   *
+   * @param stream a {@link neqsim.processSimulation.processEquipment.stream.StreamInterface} object
+   */
   public void setExportOilStream(StreamInterface stream) {
     this.exportOilStream = stream;
   }
@@ -69,6 +100,11 @@ public class WellAllocator extends MeasurementDeviceBaseClass {
     return 0.0;
   }
 
+  /**
+   * <p>main.</p>
+   *
+   * @param args an array of {@link java.lang.String} objects
+   */
   public static void main(String[] args) {
     SystemInterface testFluid = new SystemSrkEos(338.15, 50.0);
     testFluid.addComponent("nitrogen", 1.205);
@@ -120,7 +156,5 @@ public class WellAllocator extends MeasurementDeviceBaseClass {
     System.out.println("gas flow " + responsAl.gasExportRate);
     System.out.println("oil flow " + responsAl.oilExportRate);
     System.out.println("total flow " + responsAl.totalExportRate);
-
   }
-
 }
