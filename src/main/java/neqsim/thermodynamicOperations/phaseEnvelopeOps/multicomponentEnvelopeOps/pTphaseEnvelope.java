@@ -514,10 +514,10 @@ public class pTphaseEnvelope extends BaseOperation {
        * neqsim.dataPresentation.fileHandeling.createNetCDF.netCDF2D.NetCdf2D();
        * file2.setOutputFileName(name2); file2.setXvalues(points2[0], "temp", "sec");
        * file2.setYvalues(points2[1], "pres", "meter"); file2.createFile(); } } catch (Exception e3)
-       * { logger.error("error", e3); }
+       * { logger.error(ex.getMessage(), e3); }
        */
-    } catch (Exception e4) {
-      logger.error("error", e4);
+    } catch (Exception ex) {
+      logger.error(ex.getMessage(), ex);
     }
   }
 
@@ -531,7 +531,7 @@ public class pTphaseEnvelope extends BaseOperation {
     try {
       opsHyd.hydrateEquilibriumLine(10.0, 300.0);
     } catch (Exception ex) {
-      logger.error("error", ex);
+      logger.error(ex.getMessage(), ex);
     }
 
     // double[][] hydData = opsHyd.getData();
@@ -787,15 +787,14 @@ public class pTphaseEnvelope extends BaseOperation {
 
     try {
       if (beta <= 0.5) {
-        initTc = system.getPhase(0).getComponents()[lc].getTC(); // closer to bubble point
-                                                                 // get the lightest
-                                                                 // component
+        // closer to bubble point get the lightest component
+
+        initTc = system.getPhase(0).getComponents()[lc].getTC();
         initPc = system.getPhase(0).getComponents()[lc].getPC();
         initAc = system.getPhase(0).getComponents()[lc].getAcentricFactor();
       } else if (beta > 0.5) {
-        initTc = system.getPhase(0).getComponents()[hc].getTC(); // closer to dew point get
-                                                                 // the heaviest
-                                                                 // component
+        // closer to dew point get the heaviest component
+        initTc = system.getPhase(0).getComponents()[hc].getTC();
         initPc = system.getPhase(0).getComponents()[hc].getPC();
         initAc = system.getPhase(0).getComponents()[hc].getAcentricFactor();
       }

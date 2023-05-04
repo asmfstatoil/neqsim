@@ -152,13 +152,12 @@ public class PotentialTheoryAdsorption implements AdsorptionInterface {
    * </p>
    */
   public void readDBParameters() {
-    neqsim.util.database.NeqSimDataBase database = new neqsim.util.database.NeqSimDataBase();
-    java.sql.ResultSet dataSet = null;
     for (int comp = 0; comp < system.getPhase(0).getNumberOfComponents(); comp++) {
-      try {
-        dataSet = database.getResultSet(("SELECT * FROM adsorptionparameters WHERE name='"
-            + system.getPhase(0).getComponent(comp).getComponentName() + "' AND Solid='"
-            + solidMaterial + "'"));
+      try (neqsim.util.database.NeqSimDataBase database = new neqsim.util.database.NeqSimDataBase();
+          java.sql.ResultSet dataSet =
+              database.getResultSet(("SELECT * FROM adsorptionparameters WHERE name='"
+                  + system.getPhase(0).getComponent(comp).getComponentName() + "' AND Solid='"
+                  + solidMaterial + "'"))) {
         dataSet.next();
 
         eps0[comp] = Double.parseDouble(dataSet.getString("eps"));
@@ -175,15 +174,7 @@ public class PotentialTheoryAdsorption implements AdsorptionInterface {
         eps0[comp] = 7.2;
         beta[comp] = 2.0;
         z0[comp] = 3.2;
-        // logger.error(ex.getMessage());
-      } finally {
-        try {
-          if (dataSet != null) {
-            dataSet.close();
-          }
-        } catch (Exception ex) {
-          logger.error("error closing adsorption database.....", ex);
-        }
+        // logger.error(ex.getMessage(), ex);
       }
     }
   }

@@ -312,7 +312,7 @@ public class WaterStripperColumn extends SimpleAbsorber {
       mixedStream.getThermoSystem().init(0);
       mixStream();
       double enthalpy = calcMixStreamEnthalpy();
-      //// System.out.println("temp guess " + guessTemperature());
+      // System.out.println("temp guess " + guessTemperature());
       mixedStream.getThermoSystem().setTemperature(guessTemperature());
       ThermodynamicOperations testOps = new ThermodynamicOperations(mixedStream.getThermoSystem());
       testOps.TPflash();
@@ -385,7 +385,7 @@ public class WaterStripperColumn extends SimpleAbsorber {
       }
       setCalculationIdentifier(id);
     } catch (Exception ex) {
-      logger.error(ex.getMessage());
+      logger.error(ex.getMessage(), ex);
     }
   }
 

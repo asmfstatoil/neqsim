@@ -70,13 +70,6 @@ public class ComponentPR extends ComponentEos {
 
   /** {@inheritDoc} */
   @Override
-  public void init(double temperature, double pressure, double totalNumberOfMoles, double beta,
-      int type) {
-    super.init(temperature, pressure, totalNumberOfMoles, beta, type);
-  }
-
-  /** {@inheritDoc} */
-  @Override
   public double calca() {
     return .45724333333 * R * R * criticalTemperature * criticalTemperature / criticalPressure;
   }
@@ -159,7 +152,7 @@ public class ComponentPR extends ComponentEos {
     if (componentName.equals("MEG")) {
       return 0.00000000000000000007101030813216131;
     }
-    return aT * 1e-5 * Math.pow(b * 1e-5, 2.0 / 3.0) * (AA * TR + BB); /// Math.pow(ThermodynamicConstantsInterface.avagadroNumber,
-                                                                       /// 2.0 / 3.0);
+    return aT * 1e-5 * Math.pow(b * 1e-5, 2.0 / 3.0) * (AA * TR + BB);
+    // Math.pow(ThermodynamicConstantsInterface.avagadroNumber, 2.0 / 3.0);
   }
 }

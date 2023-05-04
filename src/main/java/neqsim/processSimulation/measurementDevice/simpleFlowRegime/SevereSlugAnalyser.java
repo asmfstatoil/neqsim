@@ -18,7 +18,9 @@ import neqsim.thermodynamicOperations.ThermodynamicOperations;
  * @version $Id: $Id
  */
 public class SevereSlugAnalyser extends MeasurementDeviceBaseClass {
+  private static final long serialVersionUID = 1L;
   static Logger logger = LogManager.getLogger(SevereSlugAnalyser.class);
+
   FluidSevereSlug fluidSevereS;
   Pipe pipe;
   SevereSlugAnalyser severeSlug;
@@ -642,6 +644,7 @@ public class SevereSlugAnalyser extends MeasurementDeviceBaseClass {
    *
    * @return a double
    */
+  @Override
   public double getMeasuredValue() {
     SystemInterface fluid = streamS.getThermoSystem();
     ThermodynamicOperations ops = new ThermodynamicOperations(fluid);

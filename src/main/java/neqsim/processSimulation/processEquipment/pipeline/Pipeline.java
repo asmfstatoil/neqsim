@@ -93,10 +93,12 @@ public class Pipeline extends TwoPortEquipment implements PipeLineInterface {
   }
 
   /**
-   * <p>getMechanicalDesign.</p>
+   * {@inheritDoc}
    *
-   * @return a {@link neqsim.processSimulation.mechanicalDesign.pipeline.PipelineMechanicalDesign} object
+   * @return a {@link neqsim.processSimulation.mechanicalDesign.pipeline.PipelineMechanicalDesign}
+   *         object
    */
+  @Override
   public PipelineMechanicalDesign getMechanicalDesign() {
     return new PipelineMechanicalDesign(this);
   }
@@ -307,7 +309,7 @@ public class Pipeline extends TwoPortEquipment implements PipeLineInterface {
           / outStream.getThermoSystem().getPhase(phase).getPhysicalProperties().getDensity()
           / (3.14 * pipeDiameters[node] * pipeDiameters[node] / 4.0);
     } catch (Exception ex) {
-      logger.error(ex.getMessage());
+      logger.error(ex.getMessage(), ex);
     } finally {
     }
     return 0.0;

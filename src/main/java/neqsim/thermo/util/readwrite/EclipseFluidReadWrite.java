@@ -19,6 +19,7 @@ import neqsim.thermo.system.SystemInterface;
  */
 public class EclipseFluidReadWrite {
   static Logger logger = LogManager.getLogger(EclipseFluidReadWrite.class);
+
   /** Constant <code>pseudoName=""</code> */
   public static String pseudoName = "";
 
@@ -101,7 +102,7 @@ public class EclipseFluidReadWrite {
         }
       }
     } catch (Exception ex) {
-      logger.error(ex.getMessage());
+      logger.error(ex.getMessage(), ex);
     }
   }
 
@@ -337,8 +338,8 @@ public class EclipseFluidReadWrite {
         } else {
           // fluid.changeComponentName(name, names.get(counter));
         }
-
       }
+
       // System.out.println(st);
       fluid.setMixingRule(2);
       fluid.useVolumeCorrection(true);
@@ -356,7 +357,7 @@ public class EclipseFluidReadWrite {
 
       // fluid.display();
     } catch (Exception ex) {
-      logger.error(ex.getMessage());
+      logger.error(ex.getMessage(), ex);
     }
     return fluid;
   }

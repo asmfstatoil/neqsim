@@ -30,6 +30,7 @@ import neqsim.thermodynamicOperations.ThermodynamicOperations;
 public class Compressor extends TwoPortEquipment implements CompressorInterface {
   private static final long serialVersionUID = 1000;
   static Logger logger = LogManager.getLogger(Compressor.class);
+
   public SystemInterface thermoSystem;
   private double outTemperature = 298.15;
   private boolean useOutTemperature = false;
@@ -131,8 +132,11 @@ public class Compressor extends TwoPortEquipment implements CompressorInterface 
   /**
    * {@inheritDoc}
    *
-   * @return a {@link neqsim.processSimulation.mechanicalDesign.compressor.CompressorMechanicalDesign} object
+   * @return a
+   *         {@link neqsim.processSimulation.mechanicalDesign.compressor.CompressorMechanicalDesign}
+   *         object
    */
+  @Override
   public CompressorMechanicalDesign getMechanicalDesign() {
     return new CompressorMechanicalDesign(this);
   }
@@ -155,7 +159,7 @@ public class Compressor extends TwoPortEquipment implements CompressorInterface 
     try {
       this.outStream = inletStream.clone();
     } catch (Exception ex) {
-      logger.error(ex.getMessage());
+      logger.error(ex.getMessage(), ex);
     }
   }
 
@@ -1222,18 +1226,26 @@ public class Compressor extends TwoPortEquipment implements CompressorInterface 
   }
 
   /**
-   * <p>Getter for the field <code>propertyProfile</code>.</p>
+   * <p>
+   * Getter for the field <code>propertyProfile</code>.
+   * </p>
    *
-   * @return a {@link neqsim.processSimulation.processEquipment.compressor.CompressorPropertyProfile} object
+   * @return a
+   *         {@link neqsim.processSimulation.processEquipment.compressor.CompressorPropertyProfile}
+   *         object
    */
   public CompressorPropertyProfile getPropertyProfile() {
     return propertyProfile;
   }
 
   /**
-   * <p>Setter for the field <code>propertyProfile</code>.</p>
+   * <p>
+   * Setter for the field <code>propertyProfile</code>.
+   * </p>
    *
-   * @param propertyProfile a {@link neqsim.processSimulation.processEquipment.compressor.CompressorPropertyProfile} object
+   * @param propertyProfile a
+   *        {@link neqsim.processSimulation.processEquipment.compressor.CompressorPropertyProfile}
+   *        object
    */
   public void setPropertyProfile(CompressorPropertyProfile propertyProfile) {
     this.propertyProfile = propertyProfile;
