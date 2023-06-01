@@ -44,7 +44,7 @@ public class PhaseGEUniquac extends PhaseGE {
    * @param phase a {@link neqsim.thermo.phase.PhaseInterface} object
    * @param alpha an array of {@link double} objects
    * @param Dij an array of {@link double} objects
-   * @param mixRule an array of {@link java.lang.String} objects
+   * @param mixRule an array of {@link String} objects
    * @param intparam an array of {@link double} objects
    */
   public PhaseGEUniquac(PhaseInterface phase, double[][] alpha, double[][] Dij, String[][] mixRule,
@@ -69,19 +69,6 @@ public class PhaseGEUniquac extends PhaseGE {
   public void addComponent(String name, double moles, double molesInPhase, int compNumber) {
     super.addComponent(name, molesInPhase);
     componentArray[compNumber] = new ComponentGEUniquac(name, moles, molesInPhase, compNumber);
-  }
-
-  /** {@inheritDoc} */
-  @Override
-  public void setMixingRule(int type) {
-    super.setMixingRule(type);
-  }
-
-  /** {@inheritDoc} */
-  @Override
-  public void init(double totalNumberOfMoles, int numberOfComponents, int type, int phase,
-      double beta) {
-    super.init(totalNumberOfMoles, numberOfComponents, type, phase, beta);
   }
 
   /** {@inheritDoc} */

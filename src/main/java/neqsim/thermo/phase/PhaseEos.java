@@ -76,8 +76,11 @@ abstract class PhaseEos extends Phase implements PhaseEosInterface {
 
   /** {@inheritDoc} */
   @Override
-  public void init(double totalNumberOfMoles, int numberOfComponents, int type, int phase,
+  public void init(double totalNumberOfMoles, int numberOfComponents, int type, PhaseType phase,
       double beta) {
+    if (phase.getValue() > 1) {
+      phase = PhaseType.LIQUID;
+    }
     if (!mixingRuleDefined) {
       setMixingRule(1);
     }
@@ -95,12 +98,11 @@ abstract class PhaseEos extends Phase implements PhaseEosInterface {
     }
 
     if (type != 0) {
-      phaseTypeName = phase == 0 ? "liquid" : "gas";
       try {
         if (calcMolarVolume) {
           molarVolume = molarVolume(pressure, temperature,
               getA() / numberOfMolesInPhase / numberOfMolesInPhase, getB() / numberOfMolesInPhase,
-              phase);
+              phase.getValue());
         }
       } catch (Exception ex) {
         logger.error("Failed to solve for molarVolume within the iteration limit.");
@@ -127,7 +129,6 @@ abstract class PhaseEos extends Phase implements PhaseEosInterface {
         loc_ATT = calcATT(this, temperature, pressure, numberOfComponents);
       }
 
-      // logger.info("V/b" + (getVolume()/getB()) + " Z " + getZ());
       double sumHydrocarbons = 0.0;
       double sumAqueous = 0.0;
       for (int i = 0; i < numberOfComponents; i++) {
@@ -144,8 +145,7 @@ abstract class PhaseEos extends Phase implements PhaseEosInterface {
       } else if (sumHydrocarbons > sumAqueous) {
         setType(PhaseType.OIL);
       } else {
-        // setType(PhaseType.AQUEOUS); // todo: this breaks tests
-        phaseTypeName = "aqueous";
+        setType(PhaseType.AQUEOUS);
       }
 
       // if ((hasComponent("water") && getVolume() / getB() < 1.75 &&
@@ -155,7 +155,7 @@ abstract class PhaseEos extends Phase implements PhaseEosInterface {
       // getComponent("DEG").getx() > 0.1) || (hasComponent("methanol") &&
       // getComponent("methanol").getx() > 0.5 || (hasComponent("ethanol") &&
       // getComponent("ethanol").getx() > 0.5))) {
-      // phaseTypeName = "aqueous";
+      // setType(PhaseType.AQUEOUS);
       // }
     }
   }
@@ -403,7 +403,7 @@ abstract class PhaseEos extends Phase implements PhaseEosInterface {
 
   /** {@inheritDoc} */
   @Override
-  public java.lang.String getMixingRuleName() {
+  public String getMixingRuleName() {
     return mixRule.getMixingRuleName();
   }
 

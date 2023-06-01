@@ -44,11 +44,15 @@ abstract class Phase implements PhaseInterface {
   public String thermoPropertyModelName = null;
 
   /**
-   * Mole fraction of this phase in system.
-   * <code>beta = numberOfMolesInPhase/numberOfMolesInSystem</code>
+   * Mole fraction of this phase of system.
+   * <code>beta = numberOfMolesInPhase/numberOfMolesInSystem</code>. NB! numberOfMolesInSystem is
+   * not known to the phase.
    */
   double beta = 1.0;
-  /** Number of moles in phase. <code>numberOfMolesInPhase = numberOfMolesInSystem*beta</code> */
+  /**
+   * Number of moles in phase. <code>numberOfMolesInPhase = numberOfMolesInSystem*beta</code>. NB!
+   * numberOfMolesInSystem is not known to the phase.
+   */
   public double numberOfMolesInPhase = 0;
 
   private int initType = 0;
@@ -57,11 +61,7 @@ abstract class Phase implements PhaseInterface {
   double pressure = 0;
 
   protected PhaseInterface[] refPhase = null;
-
-  protected int phaseType = 0;
-  protected String phaseTypeName = "gas";
   protected PhaseType pt = PhaseType.GAS;
-
 
   /**
    * <p>
@@ -87,7 +87,7 @@ abstract class Phase implements PhaseInterface {
     for (int i = 0; i < numberOfComponents; i++) {
       clonedPhase.componentArray[i] = this.componentArray[i].clone();
     }
-    // System.out.println("cloed length: " + componentArray.length);
+    // System.out.println("cloned length: " + componentArray.length);
     if (physicalPropertyHandler != null) {
       clonedPhase.physicalPropertyHandler = this.physicalPropertyHandler.clone();
     }
@@ -172,30 +172,33 @@ abstract class Phase implements PhaseInterface {
 
   /** {@inheritDoc} */
   @Override
-  public void addMolesChemReac(int component, double dn) {
-    numberOfMolesInPhase += dn;
-    componentArray[component].addMolesChemReac(dn);
-  }
-
-  /** {@inheritDoc} */
-  @Override
   public void addMolesChemReac(int component, double dn, double totdn) {
+    if (getComponent(component).getNumberOfMolesInPhase() + dn < 0.0) {
+      if (getComponent(component).getNumberOfMolesInPhase() + dn > -1e-5) {
+        dn = -getComponent(component).getNumberOfMolesInPhase();
+      } else {
+        String msg = "will lead to negative number of moles of component " + component + ":"
+            + getComponent(component).getName() + " in phase.";
+        logger.error(msg);
+        neqsim.util.exception.InvalidInputException ex =
+            new neqsim.util.exception.InvalidInputException(this, "addMolesChemReac", "dn", msg);
+        throw new RuntimeException(ex);
+      }
+    }
+
+    if (numberOfMolesInPhase + dn < 0.0) {
+      if (numberOfMolesInPhase + dn > -1e-5) {
+        dn = -numberOfMolesInPhase;
+      } else {
+        String msg = "will lead to negative number of moles in phase.";
+        logger.error(msg);
+        neqsim.util.exception.InvalidInputException ex =
+            new neqsim.util.exception.InvalidInputException(this, "addMolesChemReac", "dn", msg);
+        throw new RuntimeException(ex);
+      }
+    }
     numberOfMolesInPhase += dn;
     componentArray[component].addMolesChemReac(dn, totdn);
-    if (numberOfMolesInPhase < 0.0 || getComponent(component).getNumberOfMolesInPhase() < 0.0) {
-      String msg = "Negative number of moles in phase.";
-      logger.error(msg);
-      neqsim.util.exception.InvalidInputException ex =
-          new neqsim.util.exception.InvalidInputException(this, "addMolesChemReac", msg);
-      throw new RuntimeException(ex);
-    }
-    if (getComponent(component).getNumberOfMolesInPhase() < 0.0) {
-      String msg = "Negative number of moles of component " + component;
-      logger.error(msg);
-      neqsim.util.exception.InvalidInputException ex =
-          new neqsim.util.exception.InvalidInputException(this, "addMolesChemReac", msg);
-      throw new RuntimeException(ex);
-    }
   }
 
   /** {@inheritDoc} */
@@ -410,12 +413,12 @@ abstract class Phase implements PhaseInterface {
   /** {@inheritDoc} */
   @Override
   public void init() {
-    init(numberOfMolesInPhase / beta, numberOfComponents, initType, phaseType, beta);
+    init(numberOfMolesInPhase / beta, numberOfComponents, initType, getType(), beta);
   }
 
   /** {@inheritDoc} */
   @Override
-  public void init(double totalNumberOfMoles, int numberOfComponents, int type, int phase,
+  public void init(double totalNumberOfMoles, int numberOfComponents, int type, PhaseType phase,
       double beta) {
     if (totalNumberOfMoles <= 0) {
       throw new RuntimeException(new neqsim.util.exception.InvalidInputException(this, "init",
@@ -424,8 +427,8 @@ abstract class Phase implements PhaseInterface {
 
     this.beta = beta;
     numberOfMolesInPhase = beta * totalNumberOfMoles;
-    if (this.phaseType != phase) {
-      this.phaseType = phase;
+    if (this.pt != phase) {
+      setType(phase);
       // setPhysicalProperties(physicalPropertyType);
     }
     this.setInitType(type);
@@ -1240,7 +1243,7 @@ abstract class Phase implements PhaseInterface {
    * </p>
    *
    * @param onlyPure a boolean
-   * @param name a {@link java.lang.String} object
+   * @param name a {@link String} object
    */
   public void initRefPhases(boolean onlyPure, String name) {
     refPhase = new PhaseInterface[numberOfComponents];
@@ -1284,7 +1287,7 @@ abstract class Phase implements PhaseInterface {
         refPhase[i].addComponent(name, 10.0, 10.0, 1);
         refPhase[i].setAttractiveTerm(this.getComponent(i).getAttractiveTermNumber());
         refPhase[i].setMixingRule(this.getMixingRuleNumber());
-        refPhase[i].init(refPhase[i].getNumberOfMolesInPhase(), 2, 0, this.getPhaseType(), 1.0);
+        refPhase[i].init(refPhase[i].getNumberOfMolesInPhase(), 2, 0, this.getType(), 1.0);
       }
     }
   }
@@ -1304,7 +1307,7 @@ abstract class Phase implements PhaseInterface {
     }
     refPhase[k].setTemperature(temperature);
     refPhase[k].setPressure(pressure);
-    refPhase[k].init(refPhase[k].getNumberOfMolesInPhase(), 1, 1, this.getPhaseType(), 1.0);
+    refPhase[k].init(refPhase[k].getNumberOfMolesInPhase(), 1, 1, this.getType(), 1.0);
     refPhase[k].getComponent(0).fugcoef(refPhase[k]);
     return refPhase[k].getComponent(0).getLogFugacityCoefficient();
   }
@@ -1335,7 +1338,7 @@ abstract class Phase implements PhaseInterface {
     }
     refPhase[k].setTemperature(temperature);
     refPhase[k].setPressure(pressure);
-    refPhase[k].init(refPhase[k].getNumberOfMolesInPhase(), 2, 1, this.getPhaseType(), 1.0);
+    refPhase[k].init(refPhase[k].getNumberOfMolesInPhase(), 2, 1, this.getType(), 1.0);
     refPhase[k].getComponent(0).fugcoef(refPhase[k]);
     return refPhase[k].getComponent(0).getLogFugacityCoefficient();
   }
@@ -1347,7 +1350,7 @@ abstract class Phase implements PhaseInterface {
     dilphase.addMoles(k, -(1.0 - 1e-10) * dilphase.getComponent(k).getNumberOfMolesInPhase());
     dilphase.getComponent(k).setx(1e-10);
     dilphase.init(dilphase.getNumberOfMolesInPhase(), dilphase.getNumberOfComponents(), 1,
-        dilphase.getPhaseType(), 1.0);
+        dilphase.getType(), 1.0);
     dilphase.getComponent(k).fugcoef(dilphase);
     return dilphase.getComponent(k).getLogFugacityCoefficient();
   }
@@ -1400,7 +1403,6 @@ abstract class Phase implements PhaseInterface {
   @Override
   public double getActivityCoefficient(int k) {
     double fug = 0.0;
-
     double oldFug = getComponent(k).getLogFugacityCoefficient();
     if (getComponent(k).getReferenceStateType().equals("solvent")) {
       fug = getLogPureComponentFugacity(k);
@@ -1958,20 +1960,6 @@ abstract class Phase implements PhaseInterface {
   @Override
   public final void setType(PhaseType pt) {
     this.pt = pt;
-    this.phaseType = pt.getValue();
-    this.phaseTypeName = pt.getDesc();
-  }
-
-  /** {@inheritDoc} */
-  @Override
-  public final int getPhaseType() {
-    return phaseType;
-  }
-
-  /** {@inheritDoc} */
-  @Override
-  public String getPhaseTypeName() {
-    return phaseTypeName;
   }
 
   /** {@inheritDoc} */
@@ -2173,7 +2161,7 @@ abstract class Phase implements PhaseInterface {
    * Getter for the field <code>thermoPropertyModelName</code>.
    * </p>
    *
-   * @return a {@link java.lang.String} object
+   * @return a {@link String} object
    */
   public String getThermoPropertyModelName() {
     return thermoPropertyModelName;

@@ -108,7 +108,7 @@ public class PhaseModifiedFurstElectrolyteEosMod2004 extends PhaseSrkEos {
 
   /** {@inheritDoc} */
   @Override
-  public void init(double totalNumberOfMoles, int numberOfComponents, int type, int phase,
+  public void init(double totalNumberOfMoles, int numberOfComponents, int type, PhaseType phase,
       double beta) {
     super.init(totalNumberOfMoles, numberOfComponents, type, phase, beta);
     if (type == 0) {
@@ -411,7 +411,7 @@ public class PhaseModifiedFurstElectrolyteEosMod2004 extends PhaseSrkEos {
    * @return a double
    */
   public double calcGammaLRdV() {
-    if (phaseType == 1) {
+    if (pt.getValue() == 1) {
       return 0.0;
     }
     // return 0.0; // problem ved ren komponent
