@@ -31,7 +31,7 @@ Install extensions [Language Support for Java(TM) by Red Hat](https://marketplac
     },
     "java.format.settings.url": "https://raw.githubusercontent.com/google/styleguide/gh-pages/eclipse-java-google-style.xml",
     "java.saveActions.organizeImports": true,
-    "java.checkstyle.version": "10.3",
+    "java.checkstyle.version": "10.11.0",
     "java.checkstyle.configuration": "https://github.com/checkstyle/checkstyle/blob/master/src/main/resources/google_checks.xml"
 ```
 

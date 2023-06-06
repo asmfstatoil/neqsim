@@ -31,10 +31,7 @@
       },
       "java.format.settings.url": "https://raw.githubusercontent.com/google/styleguide/gh-pages/eclipse-java-google-style.xml",
       "java.saveActions.organizeImports": true,
-      "editor.tabSize": 2,
-      "editor.insertSpaces": true,
-      "editor.detectIndentation": false,
-      "java.checkstyle.version": "10.3",
+      "java.checkstyle.version": "10.11.0",
       "java.checkstyle.configuration": "${workspaceFolder}/checkstyle_neqsim.xml",
     },
 
