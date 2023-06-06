@@ -160,7 +160,6 @@ public class NeqSimDataBase
     this.statement = statement;
   }
 
-
   /**
    * <p>
    * Execute query using execute.
@@ -407,7 +406,6 @@ public class NeqSimDataBase
     }
   }
 
-
   /**
    * Drops and re-creates table from contents in csv file.
    * 
@@ -424,12 +422,12 @@ public class NeqSimDataBase
    * @param path Path to csv file to
    */
   public static void updateTable(String tableName, String path) {
+    URL url = NeqSimDataBase.class.getClassLoader().getResource(path);
+    if (url == null) {
+      throw new RuntimeException(new neqsim.util.exception.InvalidInputException("NeqSimDataBase",
+          "updateTable", "path", "- Resource " + path + " not found"));
+    }
     try (neqsim.util.database.NeqSimDataBase database = new neqsim.util.database.NeqSimDataBase()) {
-      URL url = database.getClass().getClassLoader().getResource(path);
-      if (url == null) {
-        throw new RuntimeException(new neqsim.util.exception.InvalidInputException("NeqSimDataBase",
-            "updateTable", "path", "- Resource " + path + " not found"));
-      }
       database.execute("DROP TABLE IF EXISTS " + tableName);
       String sqlString = "CREATE TABLE " + tableName + " AS SELECT * FROM CSVREAD('" + url + "')";
       database.execute(sqlString);
