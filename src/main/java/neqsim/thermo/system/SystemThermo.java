@@ -1313,10 +1313,16 @@ public abstract class SystemThermo implements SystemInterface {
       return;
     }
 
-    for (PhaseInterface tmpPhase : phaseArray) {
-      // TODO: adding moles to all phases, not just the active ones.
+    if (!this.isBetaValid()) {
+      logger.error("Beta array contains invalid values");
+      return;
+    }
+
+    for (int phaseNum = 0; phaseNum < getNumberOfPhases(); phaseNum++) {
+      PhaseInterface tmpPhase = getPhase(phaseNum);
       if (tmpPhase != null) {
-        tmpPhase.addMolesChemReac(index, moles, moles);
+        double currBeta = this.beta[getPhaseIndex(tmpPhase)];
+        tmpPhase.addMolesChemReac(index, currBeta * moles, currBeta * moles);
       }
     }
     setTotalNumberOfMoles(getTotalNumberOfMoles() + moles);
@@ -2396,7 +2402,10 @@ public abstract class SystemThermo implements SystemInterface {
   /** {@inheritDoc} */
   @Override
   public int getPhaseIndex(String phaseTypeName) {
+<<<<<<< HEAD
     // TODO: returning first if not found, not same as the others.
+=======
+>>>>>>> c4107698 (bugfix: systemthermo addcomponent could add moles multiple times)
     for (int i = 0; i < numberOfPhases; i++) {
       if (getPhase(i).getPhaseTypeName().equals(phaseTypeName)) {
         return phaseIndex[i];
@@ -3135,6 +3144,25 @@ public abstract class SystemThermo implements SystemInterface {
     }
     return sum;
   }
+
+  <<<<<<<HEAD=======
+
+  public final boolean isBetaValid() {
+    for (double b : this.beta) {
+      if (b < 0) {
+        return false;
+      }
+      if (b > 1.0) {
+        return false;
+      }
+    }
+
+    return getSumBeta() == 1;
+  }
+
+  >>>>>>>
+
+  c4107698 (bugfix: systemthermo addcomponent could add moles multiple times)
 
   /** {@inheritDoc} */
   @Override
