@@ -2,6 +2,7 @@ package neqsim.thermodynamicOperations.flashOps;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+
 import neqsim.thermo.phase.PhaseType;
 import neqsim.thermo.system.SystemInterface;
 import neqsim.thermodynamicOperations.ThermodynamicOperations;
@@ -27,7 +28,8 @@ public class TPflash extends Flash {
    * Constructor for TPflash.
    * </p>
    */
-  public TPflash() {}
+  public TPflash() {
+  }
 
   /**
    * <p>
@@ -91,7 +93,7 @@ public class TPflash extends Flash {
     try {
       system.calcBeta();
     } catch (Exception ex) {
-      logger.error("error in beta calc", ex);
+      logger.warn("Not able to calculate beta");
       system.setBeta(oldBeta);
     }
     if (system.getBeta() > 1.0 - betaTolerance) {
@@ -167,7 +169,6 @@ public class TPflash extends Flash {
    * </p>
    */
   public void resetK() {
-
     for (i = 0; i < system.getPhase(0).getNumberOfComponents(); i++) {
       lnK[i] = lnOldK[i];
       system.getPhase(0).getComponents()[i].setK(Math.exp(lnK[i]));

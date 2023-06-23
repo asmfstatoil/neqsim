@@ -10,7 +10,7 @@
 	<version>${revision}${sha1}${changelist}</version>
 
 	<properties>
-		<revision>2.5.0</revision>
+		<revision>2.5.2</revision>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 		<sha1 />
@@ -206,6 +206,14 @@
 					<show>private</show>
 					<nohelp>true</nohelp>
 				</configuration>
+				<executions>
+					<execution>
+						<id>attach-javadocs</id>
+						<goals>
+							<goal>jar</goal>
+						</goals>
+					</execution>
+				</executions>
 			</plugin>
 			<plugin>
 				<artifactId>maven-surefire-plugin</artifactId>
@@ -222,9 +230,6 @@
 				<configuration>
 					<excludes>
 						<exclude>neqsim/physicalProperties/util/parameterFitting/**/*</exclude>
-						<exclude>neqsim/fluidMechanics/util/parameterFitting/**/*</exclude>
-						<exclude>neqsim/PVTsimulation/util/parameterFitting/**/*</exclude>
-						<exclude>neqsim/thermo/util/parameterFitting/**/*</exclude>
 						<exclude>neqsim/statistics/util/parameterFitting/**/*</exclude>
 						<exclude>neqsim/PVTsimulation/util/parameterfitting/**/*</exclude>
 					</excludes>
@@ -247,6 +252,19 @@
 						<phase>test</phase>
 						<goals>
 							<goal>report</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-source-plugin</artifactId>
+				<version>3.3.0</version>
+				<executions>
+					<execution>
+						<id>attach-sources</id>
+						<goals>
+							<goal>jar-no-fork</goal>
 						</goals>
 					</execution>
 				</executions>

@@ -146,7 +146,6 @@ public class Recycle extends ProcessEquipmentBaseClass implements MixerInterface
     if (numberOfInputStreams == 0) {
       mixedStream = streams.get(0).clone();
       // mixedStream.getThermoSystem().setNumberOfPhases(2);
-      // mixedStream.getThermoSystem().reInitPhaseType();
       // mixedStream.getThermoSystem().init(0);
       // mixedStream.getThermoSystem().init(3);
     }
@@ -331,8 +330,8 @@ public class Recycle extends ProcessEquipmentBaseClass implements MixerInterface
     mixedStream.setCalculationIdentifier(id);
     setError(massBalanceCheck());
     setErrorFlow(massBalanceCheck2());
-    logger.info(name + " comp recycle error: " + getError());
-    logger.info(name + " flow recycle error: " + getErrorFlow());
+    logger.debug("comp recycle error: " + getError());
+    logger.debug("flow recycle error: " + getErrorFlow());
     lastIterationStream = (Stream) mixedStream.clone();
     outletStream.setThermoSystem(mixedStream.getThermoSystem());
     outletStream.setCalculationIdentifier(id);

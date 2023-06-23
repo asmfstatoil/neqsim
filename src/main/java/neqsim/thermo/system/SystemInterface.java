@@ -654,6 +654,16 @@ public interface SystemInterface extends Cloneable, java.io.Serializable {
 
   /**
    * <p>
+   * getPhase.
+   * </p>
+   *
+   * @param pt a {@link neqsim.thermo.phase.PhaseType} object
+   * @return a {@link neqsim.thermo.phase.PhaseInterface} object
+   */
+  public PhaseInterface getPhase(PhaseType pt);
+
+  /**
+   * <p>
    * getPhaseIndexOfPhase.
    * </p>
    *
@@ -1011,9 +1021,7 @@ public interface SystemInterface extends Cloneable, java.io.Serializable {
    *
    * @param phaseTypeName PhaseType to look for
    * @return True if system contains a phase of requested type
-   * @deprecated Replaced by {@link hasPhaseType}
    */
-  @Deprecated
   public default boolean hasPhaseType(String phaseTypeName) {
     return hasPhaseType(PhaseType.byDesc(phaseTypeName));
   }
@@ -1026,7 +1034,7 @@ public interface SystemInterface extends Cloneable, java.io.Serializable {
    * @return True if system contains a solid phase
    */
   public default boolean hasSolidPhase() {
-    return hasPhaseType(PhaseType.SOLID);
+    return hasPhaseType(PhaseType.SOLID); // || hasPhaseType(PhaseType.SOLIDCOMPLEX);
   }
 
   /**
@@ -1425,7 +1433,8 @@ public interface SystemInterface extends Cloneable, java.io.Serializable {
 
   /**
    * <p>
-   * Indexed setter for property phaseIndex.
+   * Indexed setter for property phaseIndex. NB! Transfers the pressure and temperature from the
+   * currently existing phase object at index numb
    * </p>
    *
    * @param phase a {@link neqsim.thermo.phase.PhaseInterface} object
@@ -2426,9 +2435,7 @@ public interface SystemInterface extends Cloneable, java.io.Serializable {
    *
    * @param phaseTypeName Name of phase type to look for
    * @return Phase number
-   * @deprecated Replaced by getPhaseNumberOfPhase
    */
-  @Deprecated
   public default int getPhaseNumberOfPhase(String phaseTypeName) {
     return getPhaseNumberOfPhase(PhaseType.byDesc(phaseTypeName));
   }
