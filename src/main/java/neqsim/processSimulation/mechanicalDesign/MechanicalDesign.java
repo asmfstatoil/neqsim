@@ -95,9 +95,8 @@ public class MechanicalDesign implements java.io.Serializable {
   // private String valveDesignStandard="Statoil";
   private double tensileStrength = 483; // MPa
   private double jointEfficiency = 1.0; // fully radiographed
-  private MaterialPlateDesignStandard materialPlateDesignStandard =
-      new MaterialPlateDesignStandard();
-  private MaterialPipeDesignStandard materialPipeDesignStandard = new MaterialPipeDesignStandard();
+  private MaterialPlateDesignStandard materialPlateDesignStandard;
+  private MaterialPipeDesignStandard materialPipeDesignStandard;
   private String construtionMaterial = "steel";
   private double corrosionAllowanse = 0.0; // mm
   private double pressureMarginFactor = 0.1;

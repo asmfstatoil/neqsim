@@ -21,13 +21,6 @@ public class DesignStandard implements java.io.Serializable {
    * <p>
    * Constructor for DesignStandard.
    * </p>
-   */
-  public DesignStandard() {}
-
-  /**
-   * <p>
-   * Constructor for DesignStandard.
-   * </p>
    *
    * @param name a {@link java.lang.String} object
    * @param equipmentInn a {@link neqsim.processSimulation.mechanicalDesign.MechanicalDesign} object
@@ -35,6 +28,8 @@ public class DesignStandard implements java.io.Serializable {
   public DesignStandard(String name, MechanicalDesign equipmentInn) {
     equipment = equipmentInn;
     standardName = name;
+
+
   }
 
   /**

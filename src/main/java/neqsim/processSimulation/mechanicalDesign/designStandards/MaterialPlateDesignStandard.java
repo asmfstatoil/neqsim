@@ -20,13 +20,6 @@ public class MaterialPlateDesignStandard extends DesignStandard {
    * <p>
    * Constructor for MaterialPlateDesignStandard.
    * </p>
-   */
-  public MaterialPlateDesignStandard() {}
-
-  /**
-   * <p>
-   * Constructor for MaterialPlateDesignStandard.
-   * </p>
    *
    * @param name a {@link java.lang.String} object
    * @param equipmentInn a {@link neqsim.processSimulation.mechanicalDesign.MechanicalDesign} object

@@ -2,6 +2,7 @@ package neqsim.util.database;
 
 import java.net.URL;
 import java.sql.Connection;
+import java.sql.DatabaseMetaData;
 import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -179,9 +180,7 @@ public class NeqSimDataBase
       }
       return getStatement().execute(sqlString);
     } catch (Exception ex) {
-      logger.error("error in NeqSimDataBase ", ex);
-      // TODO: should be checked against database type.
-      logger.error("The database must be registered on the local DBMS to work.");
+      // logger.error("error in NeqSimDataBase ", ex);
       throw new RuntimeException(ex);
     }
   }
@@ -392,6 +391,28 @@ public class NeqSimDataBase
     }
   }
 
+
+  /**
+   * <p>
+   * hasTable.
+   * </p>
+   *
+   * @param compName a {@link java.lang.String} object
+   * @return a boolean
+   */
+  public static boolean hasTable(String tableName) {
+    try (neqsim.util.database.NeqSimDataBase database = new neqsim.util.database.NeqSimDataBase()) {
+      DatabaseMetaData metaData = database.databaseConnection.getMetaData();
+      ResultSet resultSet = metaData.getTables(null, null, tableName, null);
+      return resultSet.next(); // Returns true if the table exists, false otherwise
+    } catch (SQLException e) {
+      logger.warn("NeqSimDataBase - error occureed when checking if table exists.");
+      return false; // Exception occurred, table existence is unknown
+    } catch (Exception ex) {
+      throw new RuntimeException(ex);
+    }
+  }
+
   /**
    * <p>
    * hasComponent.
@@ -439,7 +460,9 @@ public class NeqSimDataBase
     }
     try (neqsim.util.database.NeqSimDataBase database = new neqsim.util.database.NeqSimDataBase()) {
       database.execute("DROP TABLE IF EXISTS " + tableName);
-      String sqlString = "CREATE TABLE " + tableName + " AS SELECT * FROM CSVREAD('" + url + "')";
+      String url_string = url.toString().replaceFirst("^file:/+", "");
+      String sqlString =
+          "CREATE TABLE " + tableName + " AS SELECT * FROM CSVREAD('" + url_string + "')";
       database.execute(sqlString);
     } catch (Exception ex) {
       logger.error("Failed updating table " + tableName, ex);

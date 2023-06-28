@@ -20,13 +20,6 @@ public class MaterialPipeDesignStandard extends DesignStandard {
    * <p>
    * Constructor for MaterialPipeDesignStandard.
    * </p>
-   */
-  public MaterialPipeDesignStandard() {}
-
-  /**
-   * <p>
-   * Constructor for MaterialPipeDesignStandard.
-   * </p>
    *
    * @param name a {@link java.lang.String} object
    * @param equipmentInn a {@link neqsim.processSimulation.mechanicalDesign.MechanicalDesign} object

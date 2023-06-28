@@ -9,6 +9,7 @@ package neqsim.fluidMechanics.geometryDefinitions.internalGeometry.packings;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import neqsim.util.NamedBaseClass;
+import neqsim.util.database.NeqSimDataBase;
 
 /**
  * <p>
@@ -35,8 +36,10 @@ public abstract class Packing extends NamedBaseClass implements PackingInterface
    */
   public Packing(String name) {
     super(name);
-    try (neqsim.util.database.NeqSimProcessDesignDataBase database =
-        new neqsim.util.database.NeqSimProcessDesignDataBase()) {
+    if (!NeqSimDataBase.hasTable("packing")) {
+      NeqSimDataBase.updateTable("packing");
+    }
+    try (neqsim.util.database.NeqSimDataBase database = new neqsim.util.database.NeqSimDataBase()) {
       System.out.println("init packing");
       java.sql.ResultSet dataSet =
           database.getResultSet(("SELECT * FROM packing WHERE name='" + name + "'"));
