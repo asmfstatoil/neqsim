@@ -461,6 +461,7 @@ public class NeqSimDataBase
     try (neqsim.util.database.NeqSimDataBase database = new neqsim.util.database.NeqSimDataBase()) {
       database.execute("DROP TABLE IF EXISTS " + tableName);
       String url_string = url.toString().replaceFirst("^file:/+", "");
+      // url_string = "file:///" + url_string;
       String sqlString =
           "CREATE TABLE " + tableName + " AS SELECT * FROM CSVREAD('" + url_string + "')";
       database.execute(sqlString);
