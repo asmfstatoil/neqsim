@@ -249,12 +249,12 @@ public class Fluid {
 
   /**
    * <p>
-   * addComponment.
+   * addComponent.
    * </p>
    *
    * @param name a {@link java.lang.String} object
    */
-  public void addComponment(String name) {
+  public void addComponent(String name) {
     fluid.addComponent(name, 1.0);
     fluid.createDatabase(true);
     fluid.setMixingRule(2);
