@@ -147,8 +147,8 @@ public interface ComponentInterface extends ThermodynamicConstantsInterface, Clo
   /**
    * method to return flow rate of a component.
    *
-   * @param flowunit Supported units are kg/sec, kg/min, m3/sec, m3/min, m3/hr, mole/sec, mole/min,
-   *        mole/hr
+   * @param flowunit Supported units are kg/sec, kg/min, kg/hr, tonnes/year, m3/sec, m3/min, m3/hr,
+   *        mole/sec, mole/min, mole/hr
    * @return flow rate in specified unit
    */
   public double getFlowRate(String flowunit);
@@ -156,8 +156,8 @@ public interface ComponentInterface extends ThermodynamicConstantsInterface, Clo
   /**
    * method to return total flow rate of a component.
    *
-   * @param flowunit Supported units are kg/sec, kg/min, mole/sec, mole/min, mole/hr
-   * @return flow rate in specified unit
+   * @param flowunit Supported units are kg/sec, kg/min, kg/hr, mole/sec, mole/min, mole/hr
+   * @return total flow rate in specified unit
    */
   public double getTotalFlowRate(String flowunit);
 
@@ -453,13 +453,51 @@ public interface ComponentInterface extends ThermodynamicConstantsInterface, Clo
 
   /**
    * <p>
-   * fugcoef.
+   * Calculate, set and return fugacity coefficient.
+   * </p>
+   *
+   * @param phase a {@link neqsim.thermo.phase.PhaseInterface} object to get fugacity coefficient
+   *        of.
+   * @return Fugacity coefficient
+   */
+  public double fugcoef(PhaseInterface phase);
+
+  /**
+   * <p>
+   * setFugacityCoefficient.
+   * </p>
+   *
+   * @param val a double
+   */
+  public void setFugacityCoefficient(double val);
+
+  /**
+   * <p>
+   * fugcoefDiffPresNumeric.
    * </p>
    *
    * @param phase a {@link neqsim.thermo.phase.PhaseInterface} object
+   * @param numberOfComponents a int
+   * @param temperature a double
+   * @param pressure a double
    * @return a double
    */
-  public double fugcoef(PhaseInterface phase);
+  public double fugcoefDiffPresNumeric(PhaseInterface phase, int numberOfComponents,
+      double temperature, double pressure);
+
+  /**
+   * <p>
+   * fugcoefDiffTempNumeric.
+   * </p>
+   *
+   * @param phase a {@link neqsim.thermo.phase.PhaseInterface} object
+   * @param numberOfComponents a int
+   * @param temperature a double
+   * @param pressure a double
+   * @return a double
+   */
+  public double fugcoefDiffTempNumeric(PhaseInterface phase, int numberOfComponents,
+      double temperature, double pressure);
 
   /**
    * <p>
@@ -484,15 +522,6 @@ public interface ComponentInterface extends ThermodynamicConstantsInterface, Clo
 
   /**
    * <p>
-   * setStokesCationicDiameter.
-   * </p>
-   *
-   * @param stokesCationicDiameter a double
-   */
-  public void setStokesCationicDiameter(double stokesCationicDiameter);
-
-  /**
-   * <p>
    * logfugcoefdP.
    * </p>
    *
@@ -510,6 +539,53 @@ public interface ComponentInterface extends ThermodynamicConstantsInterface, Clo
    * @return an array of {@link double} objects
    */
   public double[] logfugcoefdN(PhaseInterface phase);
+
+  /**
+   * <p>
+   * setdfugdt.
+   * </p>
+   *
+   * @param val a double
+   */
+  public void setdfugdt(double val);
+
+  /**
+   * <p>
+   * setdfugdp.
+   * </p>
+   *
+   * @param val a double
+   */
+  public void setdfugdp(double val);
+
+  /**
+   * <p>
+   * setdfugdn.
+   * </p>
+   *
+   * @param i a int
+   * @param val a double
+   */
+  public void setdfugdn(int i, double val);
+
+  /**
+   * <p>
+   * setdfugdx.
+   * </p>
+   *
+   * @param i a int
+   * @param val a double
+   */
+  public void setdfugdx(int i, double val);
+
+  /**
+   * <p>
+   * setStokesCationicDiameter.
+   * </p>
+   *
+   * @param stokesCationicDiameter a double
+   */
+  public void setStokesCationicDiameter(double stokesCationicDiameter);
 
   /**
    * <p>
@@ -541,15 +617,6 @@ public interface ComponentInterface extends ThermodynamicConstantsInterface, Clo
   public default double getTripplePointDensity() {
     return getTriplePointDensity();
   }
-
-  /**
-   * <p>
-   * setFugacityCoefficient.
-   * </p>
-   *
-   * @param val a double
-   */
-  public void setFugacityCoefficient(double val);
 
   /**
    * <p>
@@ -998,7 +1065,9 @@ public interface ComponentInterface extends ThermodynamicConstantsInterface, Clo
    *
    * @return a double
    */
-  public double getLogFugacityCoefficient();
+  public default double getLogFugacityCoefficient() {
+    return Math.log(getFugacityCoefficient());
+  }
 
   /**
    * <p>
@@ -1154,11 +1223,9 @@ public interface ComponentInterface extends ThermodynamicConstantsInterface, Clo
   public double getEnthalpy(double temperature);
 
   /**
-   * <p>
-   * getMolarMass.
-   * </p>
+   * Get molar mass of component.
    *
-   * @return a double
+   * @return molar mass in unit kg/mol
    */
   public double getMolarMass();
 
@@ -1552,72 +1619,6 @@ public interface ComponentInterface extends ThermodynamicConstantsInterface, Clo
    * @return a double
    */
   public double getPureComponentHeatOfVaporization(double temperature);
-
-  /**
-   * <p>
-   * fugcoefDiffPresNumeric.
-   * </p>
-   *
-   * @param phase a {@link neqsim.thermo.phase.PhaseInterface} object
-   * @param numberOfComponents a int
-   * @param temperature a double
-   * @param pressure a double
-   * @return a double
-   */
-  public double fugcoefDiffPresNumeric(PhaseInterface phase, int numberOfComponents,
-      double temperature, double pressure);
-
-  /**
-   * <p>
-   * fugcoefDiffTempNumeric.
-   * </p>
-   *
-   * @param phase a {@link neqsim.thermo.phase.PhaseInterface} object
-   * @param numberOfComponents a int
-   * @param temperature a double
-   * @param pressure a double
-   * @return a double
-   */
-  public double fugcoefDiffTempNumeric(PhaseInterface phase, int numberOfComponents,
-      double temperature, double pressure);
-
-  /**
-   * <p>
-   * setdfugdt.
-   * </p>
-   *
-   * @param val a double
-   */
-  public void setdfugdt(double val);
-
-  /**
-   * <p>
-   * setdfugdp.
-   * </p>
-   *
-   * @param val a double
-   */
-  public void setdfugdp(double val);
-
-  /**
-   * <p>
-   * setdfugdn.
-   * </p>
-   *
-   * @param i a int
-   * @param val a double
-   */
-  public void setdfugdn(int i, double val);
-
-  /**
-   * <p>
-   * setdfugdx.
-   * </p>
-   *
-   * @param i a int
-   * @param val a double
-   */
-  public void setdfugdx(int i, double val);
 
   /**
    * <p>

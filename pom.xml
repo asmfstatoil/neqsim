@@ -10,11 +10,11 @@
 	<version>${revision}${sha1}${changelist}</version>
 
 	<properties>
-		<revision>2.5.0</revision>
+		<revision>2.5.8</revision>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
-		<sha1 />
-		<changelist />
+		<sha1/>
+		<changelist/>
 	</properties>
 
 	<repositories>
@@ -29,7 +29,7 @@
 		<dependency>
 			<groupId>com.h2database</groupId>
 			<artifactId>h2</artifactId>
-			<version>2.1.214</version>
+			<version>2.2.224</version>
 		</dependency>
 		<dependency>
 			<groupId>com.thoughtworks.xstream</groupId>
@@ -39,12 +39,12 @@
 		<dependency>
 			<groupId>org.apache.logging.log4j</groupId>
 			<artifactId>log4j-api</artifactId>
-			<version>2.20.0</version>
+			<version>2.21.0</version>
 		</dependency>
 		<dependency>
 			<groupId>org.apache.logging.log4j</groupId>
 			<artifactId>log4j-core</artifactId>
-			<version>2.20.0</version>
+			<version>2.21.0</version>
 		</dependency>
 		<dependency>
 			<groupId>org.junit.jupiter</groupId>
@@ -71,7 +71,7 @@
 		<dependency>
 			<groupId>org.ejml</groupId>
 			<artifactId>ejml-all</artifactId>
-			<version>0.43</version>
+			<version>0.43.1</version>
 		</dependency>
 		<dependency>
 			<groupId>gov.nist.math</groupId>
@@ -96,7 +96,7 @@
 		<dependency>
 			<groupId>org.ojalgo</groupId>
 			<artifactId>ojalgo</artifactId>
-			<version>53.0.0</version>
+			<version>53.1.1</version>
 			<scope>provided</scope>
 		</dependency>
 		<dependency>
@@ -184,7 +184,7 @@
 				<configuration>
 					<release>11</release> <!-- Upgrade jdk version to 11 if you are having issues compiling -->
 					<encoding>${project.build.sourceEncoding}</encoding>
-					<!-- Uncomment below to get compiler warnings 
+					<!-- Uncomment below to get compiler warnings
 					<compilerArgs>
 						<arg>-Xlint</arg>
 					</compilerArgs>
@@ -200,6 +200,14 @@
 					<show>private</show>
 					<nohelp>true</nohelp>
 				</configuration>
+				<executions>
+					<execution>
+						<id>attach-javadocs</id>
+						<goals>
+							<goal>jar</goal>
+						</goals>
+					</execution>
+				</executions>
 			</plugin>
 			<plugin>
 				<artifactId>maven-surefire-plugin</artifactId>
@@ -216,9 +224,6 @@
 				<configuration>
 					<excludes>
 						<exclude>neqsim/physicalProperties/util/parameterFitting/**/*</exclude>
-						<exclude>neqsim/fluidMechanics/util/parameterFitting/**/*</exclude>
-						<exclude>neqsim/PVTsimulation/util/parameterFitting/**/*</exclude>
-						<exclude>neqsim/thermo/util/parameterFitting/**/*</exclude>
 						<exclude>neqsim/statistics/util/parameterFitting/**/*</exclude>
 						<exclude>neqsim/PVTsimulation/util/parameterfitting/**/*</exclude>
 					</excludes>
@@ -241,6 +246,19 @@
 						<phase>test</phase>
 						<goals>
 							<goal>report</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-source-plugin</artifactId>
+				<version>3.3.0</version>
+				<executions>
+					<execution>
+						<id>attach-sources</id>
+						<goals>
+							<goal>jar-no-fork</goal>
 						</goals>
 					</execution>
 				</executions>

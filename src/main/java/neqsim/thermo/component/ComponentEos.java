@@ -34,7 +34,7 @@ import neqsim.thermo.phase.PhaseInterface;
 /**
  * @author Even Solbraa
  */
-abstract class ComponentEos extends Component implements ComponentEosInterface {
+public abstract class ComponentEos extends Component implements ComponentEosInterface {
   private static final long serialVersionUID = 1000;
 
   public double a = 1;
@@ -338,7 +338,8 @@ abstract class ComponentEos extends Component implements ComponentEosInterface {
   public double fugcoef(PhaseInterface phase) {
     double temperature = phase.getTemperature();
     double pressure = phase.getPressure();
-    logFugacityCoefficient = dFdN(phase, phase.getNumberOfComponents(), temperature, pressure)
+    double logFugacityCoefficient =
+        dFdN(phase, phase.getNumberOfComponents(), temperature, pressure)
         - Math.log(pressure * phase.getMolarVolume() / (R * temperature));
     fugacityCoefficient = Math.exp(logFugacityCoefficient);
     return fugacityCoefficient;
