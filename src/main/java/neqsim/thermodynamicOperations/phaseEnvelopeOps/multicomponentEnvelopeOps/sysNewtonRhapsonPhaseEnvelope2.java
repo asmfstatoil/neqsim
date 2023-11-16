@@ -496,20 +496,4 @@ public class sysNewtonRhapsonPhaseEnvelope2 implements java.io.Serializable {
     logger.info("iter: " + iter);
     init();
   }
-
-  /**
-   * <p>
-   * main.
-   * </p>
-   *
-   * @param args an array of {@link java.lang.String} objects
-   */
-  public static void main(String[] args) {
-    /*
-     * sysNewtonRhapson test=new sysNewtonRhapson(); double[] constants = new double[]{0.4,0.4};
-     * test.setx(constants); while (test.nonsol()>1.0e-8) { constants=test.getx();
-     * logger.info(constants[0]+" "+constants[1]); } test.nonsol(); constants=test.getf();
-     * logger.info(constants[0]+" "+constants[1]); System.exit(0);
-     */
-  }
 }
