@@ -4,6 +4,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import neqsim.thermo.ThermodynamicConstantsInterface;
 import neqsim.thermodynamicOperations.ThermodynamicOperations;
 
 class SystemThermoTest extends neqsim.NeqSimTest {
@@ -72,5 +73,21 @@ class SystemThermoTest extends neqsim.NeqSimTest {
     assertEquals(2.0, fluid1.getComponent("methane").getNumberOfmoles());
     assertEquals(1.0, fluid1.getComponent("nitrogen").getNumberOfmoles());
     assertEquals(1.0, fluid1.getComponent("C8_PC").getNumberOfmoles());
+  }
+
+  /**
+   * <p>
+   * testSetPressure
+   * </p>
+   */
+  @Test
+  public void testSetPressure() {
+    neqsim.thermo.system.SystemPrEos fluid = new neqsim.thermo.system.SystemPrEos(298.0, 10.0);
+    fluid.addComponent("nitrogen", 1.0);
+    fluid.setPressure(0.0, "barg");
+
+    assertEquals(ThermodynamicConstantsInterface.referencePressure, fluid.getPressure("bara"),
+        1e-4);
+    assertEquals(0.0, fluid.getPressure("barg"), 1e-4);
   }
 }

@@ -14,7 +14,7 @@ import neqsim.thermo.component.attractiveEosTerm.AttractiveTermInterface;
 import neqsim.thermo.phase.PhaseInterface;
 import neqsim.util.database.NeqSimDataBase;
 
-abstract class Component implements ComponentInterface {
+public abstract class Component implements ComponentInterface {
   private static final long serialVersionUID = 1000;
   static Logger logger = LogManager.getLogger(Component.class);
 
@@ -494,10 +494,13 @@ abstract class Component implements ComponentInterface {
   @Override
   public void addMolesChemReac(double dn, double totdn) {
     if (numberOfMoles + totdn < 0 || numberOfMolesInPhase + dn < 0) {
-      String msg = "will lead to negative number of moles of component in phase";
+      String msg = "will lead to negative number of moles of component in phase for component "
+          + getComponentName() + "  who has " + numberOfMolesInPhase
+          + " in phase  and chage request was " + dn;
       neqsim.util.exception.InvalidInputException ex =
           new neqsim.util.exception.InvalidInputException(this, "addMolesChemReac", "dn", msg);
       throw new RuntimeException(ex);
+      // logger.error(ex.getMessage());
     }
     numberOfMoles += totdn;
     numberOfMolesInPhase += dn;
@@ -2226,12 +2229,12 @@ abstract class Component implements ComponentInterface {
       return numberOfMolesInPhase * getMolarMass() * 3600.0;
     } else if (flowunit.equals("tonnes/year")) {
       return numberOfMolesInPhase * getMolarMass() * 3600.0 * 24.0 * 365.0 / 1000.0;
-    } else if (flowunit.equals("m3/hr")) {
-      return getVoli() / 1.0e5 * 3600.0;
-    } else if (flowunit.equals("m3/min")) {
-      return getVoli() / 1.0e5 * 60.0;
     } else if (flowunit.equals("m3/sec")) {
       return getVoli() / 1.0e5;
+    } else if (flowunit.equals("m3/min")) {
+      return getVoli() / 1.0e5 * 60.0;
+    } else if (flowunit.equals("m3/hr")) {
+      return getVoli() / 1.0e5 * 3600.0;
     } else if (flowunit.equals("mole/sec")) {
       return numberOfMolesInPhase;
     } else if (flowunit.equals("mole/min")) {

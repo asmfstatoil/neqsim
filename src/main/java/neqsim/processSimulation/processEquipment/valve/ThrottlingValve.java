@@ -1,6 +1,7 @@
 package neqsim.processSimulation.processEquipment.valve;
 
 import java.util.UUID;
+import neqsim.processSimulation.mechanicalDesign.valve.ValveMechanicalDesign;
 import neqsim.processSimulation.processEquipment.TwoPortEquipment;
 import neqsim.processSimulation.processEquipment.stream.StreamInterface;
 import neqsim.thermo.system.SystemInterface;
@@ -31,6 +32,7 @@ public class ThrottlingValve extends TwoPortEquipment implements ValveInterface 
   double molarFlow = 0.0;
   private String pressureUnit = "bara";
   private boolean acceptNegativeDP = true;
+  ValveMechanicalDesign valveMechanicalDesign;
 
   /**
    * <p>
@@ -205,6 +207,8 @@ public class ThrottlingValve extends TwoPortEquipment implements ValveInterface 
     // inletStream.getThermoSystem().getDensity());
 
     if (!valveCvSet) {
+      // If valve CV is not set, calculate it from inletstream flow, percent opening and
+      // differential pressure over valve.
       Cv = inStream.getThermoSystem().getTotalNumberOfMoles() / (getPercentValveOpening() / 100.0
           * Math.sqrt(
               (inStream.getThermoSystem().getPressure() - outStream.getThermoSystem().getPressure())
@@ -427,5 +431,21 @@ public class ThrottlingValve extends TwoPortEquipment implements ValveInterface 
    */
   public void setAcceptNegativeDP(boolean acceptNegativeDP) {
     this.acceptNegativeDP = acceptNegativeDP;
+  }
+
+  @Override
+  public void initMechanicalDesign() {
+    valveMechanicalDesign = new ValveMechanicalDesign(this);
+  }
+
+
+  /**
+   * {@inheritDoc}
+   *
+   * @return a {@link neqsim.processSimulation.mechanicalDesign.valve.ValveMechanicalDesign} object
+   */
+  @Override
+  public ValveMechanicalDesign getMechanicalDesign() {
+    return valveMechanicalDesign;
   }
 }

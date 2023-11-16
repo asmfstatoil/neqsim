@@ -376,7 +376,7 @@ public class TPmultiflash extends TPflash {
         err = 0;
 
         if (iter <= 150 || !system.isImplementedCompositionDeriativesofFugacity()) {
-          if (iter % 7 == 0) {
+          if (iter % 7 == 0 && iter < 150) {
             double vec1 = 0.0;
 
             double vec2 = 0.0;
@@ -395,6 +395,9 @@ public class TPmultiflash extends TPflash {
               logWi[i] += lambda / (1.0 - lambda) * deltalogWi[i];
               err += Math.abs((logWi[i] - oldlogw[i]) / oldlogw[i]);
               Wi[j][i] = Math.exp(logWi[i]);
+            }
+            if (err > errOld) {
+              continue;
             }
           } else {
             for (int i = 0; i < system.getPhase(0).getNumberOfComponents(); i++) {
@@ -469,7 +472,13 @@ public class TPmultiflash extends TPflash {
 
           // f.print(10, 10);
           // df.print(10, 10);
-          SimpleMatrix dx = df.plus(identitytimesConst).solve(f).negative();
+          SimpleMatrix dx = null;
+          try {
+            dx = df.plus(identitytimesConst).solve(f).negative();
+          } catch (Exception e) {
+            dx = df.plus(identitytimesConst.scale(0.5)).solve(f).negative();
+          }
+
           // dx.print(10, 10);
 
           for (int i = 0; i < system.getPhase(0).getNumberOfComponents(); i++) {

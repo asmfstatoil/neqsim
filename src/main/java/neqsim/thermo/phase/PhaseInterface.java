@@ -394,10 +394,18 @@ public interface PhaseInterface extends ThermodynamicConstantsInterface, Cloneab
   public double getMolarVolume();
 
   /**
+   * method to return molar volume of the fluid: eventual volume correction included.
+   *
+   * @param unit Supported units are m3/mol, litre/mol
+   * @return molar volume volume in unit
+   */
+  public double getMolarVolume(String unit);
+
+  /**
    * method to return flow rate of a phase.
    *
-   * @param flowunit Supported units are kg/sec, kg/min, m3/sec, m3/min, m3/hr, mole/sec, mole/min,
-   *        mole/hr
+   * @param flowunit Supported units are kg/sec, kg/min, kg/hr, m3/sec, m3/min, m3/hr, ft3/sec,
+   *        mole/sec, mole/min, mole/hr
    * @return flow rate in specified unit
    */
   public double getFlowRate(String flowunit);
@@ -1081,7 +1089,7 @@ public interface PhaseInterface extends ThermodynamicConstantsInterface, Cloneab
   /**
    * method to return phase enthalpy in a specified unit.
    *
-   * @param unit Supported units are J, J/mol, J/kg and kJ/kg
+   * @param unit Supported units are J, J/mol, kJ/kmol, J/kg and kJ/kg
    * @return enthalpy in specified unit
    */
   public double getEnthalpy(String unit);
@@ -1109,9 +1117,9 @@ public interface PhaseInterface extends ThermodynamicConstantsInterface, Cloneab
   public double getViscosity();
 
   /**
-   * method to return viscosity og the phase in a specified unit.
+   * method to return viscosity of the phase in a specified unit.
    *
-   * @param unit Supported units are kg/msec, cP (centipoise)
+   * @param unit Supported units are kg/msec, Pas, cP (centipoise)
    * @return viscosity in specified unit
    */
   public double getViscosity(String unit);
@@ -1438,7 +1446,7 @@ public interface PhaseInterface extends ThermodynamicConstantsInterface, Cloneab
   public double getPressure(String unit);
 
   /**
-   * method to get molar mass of a fluid phase.
+   * Get molar mass of phase.
    *
    * @return molar mass in unit kg/mol
    */

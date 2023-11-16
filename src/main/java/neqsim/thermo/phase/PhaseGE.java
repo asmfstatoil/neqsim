@@ -290,11 +290,11 @@ public class PhaseGE extends Phase implements PhaseGEInterface {
     return getCp();
   }
 
-  // return speed of sound in water constant 1470.0 m/sec
   /** {@inheritDoc} */
   @Override
   public double getZ() {
-    double densityIdealGas = pressure * 1e5 / 8.314 / temperature * getMolarMass();
+    double densityIdealGas =
+        pressure * 1e5 / ThermodynamicConstantsInterface.R / temperature * getMolarMass();
     return densityIdealGas / getDensity("kg/m3");
   }
 
