@@ -87,3 +87,5 @@ test_*.ser
 html/
 latex/
 eclipse_dictionary.txt
+/.apt_generated/
+/.apt_generated_tests/

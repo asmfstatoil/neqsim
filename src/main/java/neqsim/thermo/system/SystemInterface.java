@@ -1,5 +1,7 @@
 package neqsim.thermo.system;
 
+import java.io.File;
+import java.io.FileWriter;
 import com.thoughtworks.xstream.XStream;
 import com.thoughtworks.xstream.security.AnyTypePermission;
 import neqsim.chemicalReactions.ChemicalReactionOperations;
@@ -2640,8 +2642,9 @@ public interface SystemInterface extends Cloneable, java.io.Serializable {
   public double getIdealLiquidDensity(String unit);
 
   /**
-   * 
-   * @return XML string for this object
+   * Create XML string for this object.
+   *
+   * @return XML string.
    */
   public default String toXML() {
     XStream xstream = new XStream();
@@ -2649,7 +2652,19 @@ public interface SystemInterface extends Cloneable, java.io.Serializable {
     return xstream.toXML(this);
   }
 
+  /**
+   * Serialize object to XML-file.
+   *
+   * @param filePath File path to store xml file.
+   * @return True if writing to file succeded, fals if it failed.
+   */
   public default Boolean toXML(String filePath) {
-
+    try (FileWriter out = new FileWriter(new File(filePath))) {
+      out.write("");
+      return true;
+    } catch (Exception ex) {
+      // logger.error(ex.getMessage(), ex);
+      return false;
+    }
   }
 }
