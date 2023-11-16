@@ -1,6 +1,8 @@
 package neqsim.processSimulation.processSystem;
 
 import org.junit.jupiter.api.Test;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import com.thoughtworks.xstream.XStream;
 import com.thoughtworks.xstream.security.AnyTypePermission;
 import neqsim.processSimulation.measurementDevice.HydrateEquilibriumTemperatureAnalyser;
@@ -22,7 +24,7 @@ import neqsim.processSimulation.processEquipment.util.StreamSaturatorUtil;
 import neqsim.processSimulation.processEquipment.valve.ThrottlingValve;
 
 public class ProcessSystemSerializationTest extends neqsim.NeqSimTest {
-  
+
   @Test
   public void runTEGProcessTest2() {
     neqsim.thermo.system.SystemInterface feedGas =
@@ -341,5 +343,10 @@ public class ProcessSystemSerializationTest extends neqsim.NeqSimTest {
     neqsim.processSimulation.processSystem.ProcessSystem operationsCopy =
         (neqsim.processSimulation.processSystem.ProcessSystem) xstream.fromXML(xml);
     operationsCopy.run();
+
+    Gson gson = new GsonBuilder().serializeSpecialFloatingPointValues().create();;
+    String p_as_json = gson.toJson(operationsCopy);
+    ProcessSystem p_from_json = gson.fromJson(p_as_json, ProcessSystem.class);
+    p_from_json.run();
   }
 }

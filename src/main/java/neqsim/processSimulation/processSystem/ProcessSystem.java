@@ -7,7 +7,6 @@ import java.io.ObjectOutputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Objects;
-import javax.xml.bind.annotation.XmlRootElement;
 import java.util.UUID;
 import org.apache.commons.lang.SerializationUtils;
 import org.apache.logging.log4j.LogManager;
@@ -29,14 +28,12 @@ import neqsim.thermo.system.SystemInterface;
  * @author Even Solbraa
  * @version $Id: $Id
  */
-@XmlRootElement
 public class ProcessSystem extends SimulationBaseClass {
   private static final long serialVersionUID = 1000;
   static Logger logger = LogManager.getLogger(ProcessSystem.class);
 
   transient Thread thisThread;
   String[][] signalDB = new String[100][100];
-  private double time = 0;
   private double surroundingTemperature = 288.15;
   private int timeStepNumber = 0;
   private ArrayList<ProcessEquipmentInterface> unitOperations =

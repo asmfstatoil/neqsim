@@ -1,5 +1,7 @@
 package neqsim.thermo.system;
 
+import com.thoughtworks.xstream.XStream;
+import com.thoughtworks.xstream.security.AnyTypePermission;
 import neqsim.chemicalReactions.ChemicalReactionOperations;
 import neqsim.physicalProperties.interfaceProperties.InterphasePropertiesInterface;
 import neqsim.thermo.ThermodynamicConstantsInterface;
@@ -2636,4 +2638,18 @@ public interface SystemInterface extends Cloneable, java.io.Serializable {
    * @return a double
    */
   public double getIdealLiquidDensity(String unit);
+
+  /**
+   * 
+   * @return XML string for this object
+   */
+  public default String toXML() {
+    XStream xstream = new XStream();
+    xstream.addPermission(AnyTypePermission.ANY);
+    return xstream.toXML(this);
+  }
+
+  public default Boolean toXML(String filePath) {
+
+  }
 }
