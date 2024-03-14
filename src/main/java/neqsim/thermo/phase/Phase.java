@@ -130,7 +130,7 @@ public abstract class Phase implements PhaseInterface {
 
   /** {@inheritDoc} */
   @Override
-  public void removeComponent(String name, double moles, double molesInPhase, int compNumber) {
+  public void removeComponent(String name, double moles, double molesInPhase) {
     name = ComponentInterface.getComponentNameFromAlias(name);
 
     ArrayList<ComponentInterface> temp = new ArrayList<ComponentInterface>();
@@ -337,7 +337,8 @@ public abstract class Phase implements PhaseInterface {
     for (int i = 0; i < numberOfComponents; i++) {
       gmix += getComponent(i).getx() * Math.log(getComponent(i).getx());
     }
-    return getExcessGibbsEnergy() + R * temperature * gmix * numberOfMolesInPhase;
+    // todo: is this correct?
+    return R * temperature * numberOfMolesInPhase * getExcessGibbsEnergy() * gmix;
   }
 
   /** {@inheritDoc} */
@@ -403,7 +404,7 @@ public abstract class Phase implements PhaseInterface {
 
   /** {@inheritDoc} */
   @Override
-  public void init(double totalNumberOfMoles, int numberOfComponents, int type, PhaseType phase,
+  public void init(double totalNumberOfMoles, int numberOfComponents, int initType, PhaseType pt,
       double beta) {
     if (totalNumberOfMoles <= 0) {
       throw new RuntimeException(new neqsim.util.exception.InvalidInputException(this, "init",
@@ -412,14 +413,14 @@ public abstract class Phase implements PhaseInterface {
 
     this.beta = beta;
     numberOfMolesInPhase = beta * totalNumberOfMoles;
-    if (this.pt != phase) {
-      setType(phase);
+    if (this.pt != pt) {
+      setType(pt);
       // setPhysicalProperties(physicalPropertyType);
     }
-    this.setInitType(type);
+    this.setInitType(initType);
     this.numberOfComponents = numberOfComponents;
     for (int i = 0; i < numberOfComponents; i++) {
-      componentArray[i].init(temperature, pressure, totalNumberOfMoles, beta, type);
+      componentArray[i].init(temperature, pressure, totalNumberOfMoles, beta, initType);
     }
   }
 
@@ -1193,32 +1194,6 @@ public abstract class Phase implements PhaseInterface {
   @Override
   public double getThermalConductivity(String unit) {
     double refConductivity = getThermalConductivity(); // conductivity in W/m*K
-    double conversionFactor = 1.0;
-    switch (unit) {
-      case "W/mK":
-        conversionFactor = 1.0;
-        break;
-      case "W/cmK":
-        conversionFactor = 0.01;
-        break;
-      default:
-        throw new RuntimeException("unit not supported " + unit);
-    }
-    return refConductivity * conversionFactor;
-  }
-
-  /** {@inheritDoc} */
-  @Override
-  @Deprecated
-  public double getConductivity() {
-    return getPhysicalProperties().getConductivity();
-  }
-
-  /** {@inheritDoc} */
-  @Override
-  @Deprecated
-  public double getConductivity(String unit) {
-    double refConductivity = getConductivity(); // conductivity in W/m*K
     double conversionFactor = 1.0;
     switch (unit) {
       case "W/mK":

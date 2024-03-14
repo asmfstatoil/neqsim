@@ -462,16 +462,6 @@ public interface SystemInterface extends Cloneable, java.io.Serializable {
   public void setForcePhaseTypes(boolean forcePhaseTypes);
 
   /**
-   * Set the flow rate of all components to zero.
-   *
-   * @deprecated use {@link #setEmptyFluid()} instead.
-   */
-  @Deprecated
-  public default void removeMoles() {
-    setEmptyFluid();
-  }
-
-  /**
    * Set the flow rate (moles) of all components to zero.
    */
   public void setEmptyFluid();
@@ -613,18 +603,6 @@ public interface SystemInterface extends Cloneable, java.io.Serializable {
    * @return molar flow of individual components in unit mol/sec
    */
   public double[] getMolarRate();
-
-  /**
-   * Returns true if phase exists and is not null.
-   *
-   * @param i Phase number
-   * @return True if phase exists, false if not.
-   * @deprecated use {@link #isPhase(int i)} instead
-   */
-  @Deprecated
-  public default boolean IsPhase(int i) {
-    return isPhase(i);
-  }
 
   /**
    * Returns true if phase exists and is not null.
@@ -1109,28 +1087,29 @@ public interface SystemInterface extends Cloneable, java.io.Serializable {
   public void addComponent(ComponentInterface inComponent);
 
   /**
-   * add a component to a fluid. If component already exists, the moles will be added to the
-   * existing component.
+   * add a component to a fluid with no moles.
    *
    * @param name Name of the component to add. See NeqSim database for component in the database.
    */
-  public void addComponent(String name);
+  public default void addComponent(String name) {
+    addComponent(name, 0);
+  }
 
   /**
    * add a component to a fluid. If component already exists, the moles will be added to the
    * existing component.
    *
-   * @param moles number of moles (per second) of the component to be added to the fluid
    * @param name Name of the component to add. See NeqSim database for component in the database.
+   * @param moles number of moles (per second) of the component to be added to the fluid
    */
   public void addComponent(String name, double moles);
 
   /**
-   * add a component to a fluid. If component already exists, the moles will be added to the
+   * add a component to a fluid. If component already exists, the amount will be added to the
    * existing component.
    *
    * @param name Name of the component to add. See NeqSim database for component in the database.
-   * @param value The amount
+   * @param value The amount.
    * @param unitName the unit of rate (sported units are kg/sec, mol/sec, Nlitre/min, kg/hr,
    *        Sm^3/hr, Sm^3/day, MSm^3/day ..
    */
@@ -1567,7 +1546,9 @@ public interface SystemInterface extends Cloneable, java.io.Serializable {
    * display.
    * </p>
    */
-  public void display();
+  public default void display() {
+    display(this.getFluidName());
+  }
 
   /**
    * <p>
@@ -1606,16 +1587,6 @@ public interface SystemInterface extends Cloneable, java.io.Serializable {
    * @return SystemInterface
    */
   public SystemInterface addFluid(SystemInterface addSystem, int phase);
-
-  /**
-   * <p>
-   * Getter for property hydrateCheck.
-   * </p>
-   *
-   * @return a boolean
-   */
-  @Deprecated
-  public boolean doHydrateCheck();
 
   /**
    * <p>
@@ -1811,7 +1782,7 @@ public interface SystemInterface extends Cloneable, java.io.Serializable {
 
   /**
    * method to return molar volume of the fluid: eventual volume correction included.
-   * 
+   *
    * @param unit Supported units are m3/mol, litre/mol
    *
    * @return molar volume volume in unit
@@ -1926,30 +1897,6 @@ public interface SystemInterface extends Cloneable, java.io.Serializable {
    */
   public void chemicalReactionInit();
 
-  // public double getdfugdt(int i, int j);
-
-  /**
-   * Change the phase type of a given phase.
-   *
-   * @param phaseToChange the phase number of the phase to set phase type
-   * @param newPhaseType the phasetype number to set
-   * @deprecated Replaced by {@link setPhaseType}
-   */
-  @Deprecated
-  public default void setPhaseType(int phaseToChange, int newPhaseType) {
-    setPhaseType(phaseToChange, PhaseType.byValue(newPhaseType));
-  }
-
-  /**
-   * Change the phase type of a given phase.
-   *
-   * @param phaseToChange the phase number of the phase to set phase type
-   * @param phaseTypeName the phase type name, see PhaseTypes
-   */
-  public default void setPhaseType(int phaseToChange, String phaseTypeName) {
-    setPhaseType(phaseToChange, PhaseType.byDesc(phaseTypeName));
-  }
-
   /**
    * Change the phase type of a given phase.
    *
@@ -1957,16 +1904,6 @@ public interface SystemInterface extends Cloneable, java.io.Serializable {
    * @param pt PhaseType to set
    */
   public void setPhaseType(int phaseToChange, PhaseType pt);
-
-  /**
-   * Set phase type of all phases.
-   *
-   * @param phases Set to "all" to set all phases, else nothing happens.
-   * @param newPhaseType the phasetype number to set
-   * @deprecated Replaced by {@link setAllPhaseType}
-   */
-  @Deprecated
-  public void setPhaseType(String phases, int newPhaseType);
 
   /**
    * Set phase type of all phases.
@@ -2206,25 +2143,6 @@ public interface SystemInterface extends Cloneable, java.io.Serializable {
    * @return viscosity in specified unit
    */
   public double getViscosity(String unit);
-
-  /**
-   * method to return thermal conductivity.
-   *
-   * @return conductivity in unit W/mK
-   * @deprecated use {@link #getThermalConductivity()} instead.
-   */
-  @Deprecated
-  public double getConductivity();
-
-  /**
-   * method to return thermal conductivity in a specified unit.
-   *
-   * @param unit Supported units are W/mK, W/cmK
-   * @return conductivity in specified unit
-   * @deprecated use {@link #getThermalConductivity(String unit)} instead.
-   */
-  @Deprecated
-  public double getConductivity(String unit);
 
   /**
    * method to return conductivity of a fluid.

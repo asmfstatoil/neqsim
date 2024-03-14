@@ -86,13 +86,13 @@ public abstract class ComponentEos extends Component implements ComponentEosInte
    * Constructor for ComponentEos.
    * </p>
    *
-   * @param component_name a {@link java.lang.String} object
-   * @param moles a double
-   * @param molesInPhase a double
-   * @param compnumber a int
+   * @param name Name of component.
+   * @param moles Total number of moles of component.
+   * @param molesInPhase Number of moles in phase.
+   * @param compIndex Index number of component in phase object component array.
    */
-  public ComponentEos(String component_name, double moles, double molesInPhase, int compnumber) {
-    super(component_name, moles, molesInPhase, compnumber);
+  public ComponentEos(String name, double moles, double molesInPhase, int compIndex) {
+    super(name, moles, molesInPhase, compIndex);
   }
 
   /**
@@ -129,14 +129,14 @@ public abstract class ComponentEos extends Component implements ComponentEosInte
 
   /** {@inheritDoc} */
   @Override
-  public void init(double temp, double pres, double totMoles, double beta, int type) {
-    super.init(temp, pres, totMoles, beta, type);
+  public void init(double temp, double pres, double totMoles, double beta, int initType) {
+    super.init(temp, pres, totMoles, beta, initType);
     a = calca();
     b = calcb();
     reducedTemperature = reducedTemperature(temp);
     reducedPressure = reducedPressure(pres);
     aT = a * alpha(temp);
-    if (type >= 2) {
+    if (initType >= 2) {
       aDiffT = diffaT(temp);
       aDiffDiffT = diffdiffaT(temp);
     }
@@ -145,10 +145,10 @@ public abstract class ComponentEos extends Component implements ComponentEosInte
   /** {@inheritDoc} */
   @Override
   public void Finit(PhaseInterface phase, double temp, double pres, double totMoles, double beta,
-      int numberOfComponents, int type) {
+      int numberOfComponents, int initType) {
     Bi = phase.calcBi(componentNumber, phase, temp, pres, numberOfComponents);
     Ai = phase.calcAi(componentNumber, phase, temp, pres, numberOfComponents);
-    if (type >= 2) {
+    if (initType >= 2) {
       AiT = phase.calcAiT(componentNumber, phase, temp, pres, numberOfComponents);
     }
     double totVol = phase.getMolarVolume() * phase.getNumberOfMolesInPhase();
@@ -157,7 +157,7 @@ public abstract class ComponentEos extends Component implements ComponentEosInte
         / (-R * temp * phase.dFdVdV()
             - phase.getNumberOfMolesInPhase() * R * temp / (totVol * totVol));
 
-    if (type >= 3) {
+    if (initType >= 3) {
       for (int j = 0; j < numberOfComponents; j++) {
         Aij[j] = phase.calcAij(componentNumber, j, phase, temp, pres, numberOfComponents);
         Bij[j] = phase.calcBij(componentNumber, j, phase, temp, pres, numberOfComponents);
@@ -226,6 +226,8 @@ public abstract class ComponentEos extends Component implements ComponentEosInte
   }
 
   /**
+   * Get reduced temperature.
+   * 
    * @param temperature temperature of fluid
    * @return double reduced temperature T/TC
    */
@@ -234,6 +236,10 @@ public abstract class ComponentEos extends Component implements ComponentEosInte
   }
 
   /**
+   * <p>
+   * Get reduced pressure.
+   * </p>
+   *
    * @param pressure pressure in unit bara
    * @return double
    */

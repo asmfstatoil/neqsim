@@ -9,6 +9,7 @@ package neqsim.thermo.component;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import neqsim.thermo.phase.PhaseInterface;
+import neqsim.thermo.phase.PhaseType;
 
 /**
  * <p>
@@ -30,18 +31,17 @@ public class ComponentGEUniquac extends ComponentGE {
    * Constructor for ComponentGEUniquac.
    * </p>
    *
-   * @param component_name a {@link java.lang.String} object
-   * @param moles a double
-   * @param molesInPhase a double
-   * @param compnumber a int
+   * @param name Name of component.
+   * @param moles Total number of moles of component.
+   * @param molesInPhase Number of moles in phase.
+   * @param compIndex Index number of component in phase object component array.
    */
-  public ComponentGEUniquac(String component_name, double moles, double molesInPhase,
-      int compnumber) {
-    super(component_name, moles, molesInPhase, compnumber);
+  public ComponentGEUniquac(String name, double moles, double molesInPhase, int compIndex) {
+    super(name, moles, molesInPhase, compIndex);
     if (!this.getClass().equals(ComponentGEUniquac.class)) {
       return;
     }
-    if (component_name.contains("_PC")) {
+    if (name.contains("_PC")) {
       // double number = getMolarMass() / 0.014;
       // int intNumb = (int) Math.round(number) - 2;
       r = 1.0;
@@ -51,14 +51,12 @@ public class ComponentGEUniquac extends ComponentGE {
     try (neqsim.util.database.NeqSimDataBase database = new neqsim.util.database.NeqSimDataBase()) {
       java.sql.ResultSet dataSet = null;
       try {
-        dataSet =
-            database.getResultSet(("SELECT * FROM unifaccomp WHERE Name='" + component_name + "'"));
+        dataSet = database.getResultSet(("SELECT * FROM unifaccomp WHERE Name='" + name + "'"));
         dataSet.next();
         dataSet.getClob("name");
       } catch (Exception ex) {
         dataSet.close();
-        dataSet =
-            database.getResultSet(("SELECT * FROM unifaccomp WHERE Name='" + component_name + "'"));
+        dataSet = database.getResultSet(("SELECT * FROM unifaccomp WHERE Name='" + name + "'"));
         dataSet.next();
       }
       r = Double.parseDouble(dataSet.getString("rUNIQUAQ"));
@@ -78,21 +76,20 @@ public class ComponentGEUniquac extends ComponentGE {
    * @param numberOfComponents a int
    * @param temperature a double
    * @param pressure a double
-   * @param phasetype a int
+   * @param pt the PhaseType of the phase.
    * @return Fugacity coefficient
    */
   public double fugcoef(PhaseInterface phase, int numberOfComponents, double temperature,
-      double pressure, int phasetype) {
-    fugacityCoefficient =
-        (this.getGamma(phase, numberOfComponents, temperature, pressure, phasetype)
-            * this.getAntoineVaporPressure(temperature) / pressure);
+      double pressure, PhaseType pt) {
+    fugacityCoefficient = (this.getGamma(phase, numberOfComponents, temperature, pressure, pt)
+        * this.getAntoineVaporPressure(temperature) / pressure);
     return fugacityCoefficient;
   }
 
   /** {@inheritDoc} */
   @Override
   public double getGamma(PhaseInterface phase, int numberOfComponents, double temperature,
-      double pressure, int phasetype, double[][] HValpha, double[][] HVgij, double[][] intparam,
+      double pressure, PhaseType pt, double[][] HValpha, double[][] HVgij, double[][] intparam,
       String[][] mixRule) {
     return 0.0;
   }
@@ -106,11 +103,11 @@ public class ComponentGEUniquac extends ComponentGE {
    * @param numberOfComponents a int
    * @param temperature a double
    * @param pressure a double
-   * @param phasetype a int
+   * @param pt the PhaseType of the phase.
    * @return a double
    */
   public double getGamma(PhaseInterface phase, int numberOfComponents, double temperature,
-      double pressure, int phasetype) {
+      double pressure, PhaseType pt) {
     /*
      * double V = 0, F = 0, a, gammaC = 0, gammaR = 0, temp1 = 0, temp2 = 0, temp3=0, temp4 = 0,
      * temp5=0, gamma; int j, k;
@@ -170,14 +167,13 @@ public class ComponentGEUniquac extends ComponentGE {
    * @param numberOfComponents a int
    * @param temperature a double
    * @param pressure a double
-   * @param phasetype a int
+   * @param pt the PhaseType of the phase.
    * @return a double
    */
   public double fugcoefDiffPres(PhaseInterface phase, int numberOfComponents, double temperature,
-      double pressure, int phasetype) {
-    dfugdp = (Math.log(fugcoef(phase, numberOfComponents, temperature, pressure + 0.01, phasetype))
-        - Math.log(fugcoef(phase, numberOfComponents, temperature, pressure - 0.01, phasetype)))
-        / 0.02;
+      double pressure, PhaseType pt) {
+    dfugdp = (Math.log(fugcoef(phase, numberOfComponents, temperature, pressure + 0.01, pt))
+        - Math.log(fugcoef(phase, numberOfComponents, temperature, pressure - 0.01, pt))) / 0.02;
     return dfugdp;
   }
 
@@ -190,30 +186,29 @@ public class ComponentGEUniquac extends ComponentGE {
    * @param numberOfComponents a int
    * @param temperature a double
    * @param pressure a double
-   * @param phasetype a int
+   * @param pt the PhaseType of the phase.
    * @return a double
    */
   public double fugcoefDiffTemp(PhaseInterface phase, int numberOfComponents, double temperature,
-      double pressure, int phasetype) {
-    dfugdt = (Math.log(fugcoef(phase, numberOfComponents, temperature + 0.01, pressure, phasetype))
-        - Math.log(fugcoef(phase, numberOfComponents, temperature - 0.01, pressure, phasetype)))
-        / 0.02;
+      double pressure, PhaseType pt) {
+    dfugdt = (Math.log(fugcoef(phase, numberOfComponents, temperature + 0.01, pressure, pt))
+        - Math.log(fugcoef(phase, numberOfComponents, temperature - 0.01, pressure, pt))) / 0.02;
     return dfugdt;
   }
   /*
    * public double fugcoefDiffPres(PhaseInterface phase, int numberOfComponents, double temperature,
-   * double pressure, int phasetype){ // NumericalDerivative deriv = new NumericalDerivative(); //
+   * double pressure, PhaseType pt){ // NumericalDerivative deriv = new NumericalDerivative(); //
    * System.out.println("dfugdP : " + NumericalDerivative.fugcoefDiffPres(this, phase,
-   * numberOfComponents, temperature, pressure, phasetype)); return
+   * numberOfComponents, temperature, pressure, pt)); return
    * NumericalDerivative.fugcoefDiffPres(this, phase, numberOfComponents, temperature, pressure,
-   * phasetype); }
+   * pt); }
    * 
    * public double fugcoefDiffTemp(PhaseInterface phase, int numberOfComponents, double temperature,
-   * double pressure, int phasetype){ NumericalDerivative deriv = new NumericalDerivative(); //
+   * double pressure, PhaseType pt){ NumericalDerivative deriv = new NumericalDerivative(); //
    * System.out.println("dfugdT : " + NumericalDerivative.fugcoefDiffTemp(this, phase,
-   * numberOfComponents, temperature, pressure, phasetype)); return
+   * numberOfComponents, temperature, pressure, pt)); return
    * NumericalDerivative.fugcoefDiffTemp(this, phase, numberOfComponents, temperature, pressure,
-   * phasetype);
+   * pt);
    * 
    * }
    */

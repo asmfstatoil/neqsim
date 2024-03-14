@@ -70,6 +70,7 @@ public class Adjuster extends ProcessEquipmentBaseClass {
    * @param adjustedEquipment a
    *        {@link neqsim.processSimulation.processEquipment.ProcessEquipmentInterface} object
    * @param adjstedVariable a {@link java.lang.String} object
+   * @param unit a string
    */
   public void setAdjustedVariable(ProcessEquipmentInterface adjustedEquipment,
       String adjstedVariable, String unit) {
@@ -364,7 +365,6 @@ public class Adjuster extends ProcessEquipmentBaseClass {
     if (minAdjustedValue > maxAdjustedValue) {
       maxAdjustedValue = minAdjustedValue;
     }
-
   }
 
   public double getMaxAdjustedValue() {
@@ -374,5 +374,4 @@ public class Adjuster extends ProcessEquipmentBaseClass {
   public double getMinAdjustedValue() {
     return minAdjustedValue;
   }
-
 }

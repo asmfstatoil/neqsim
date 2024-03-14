@@ -22,7 +22,7 @@ import neqsim.thermo.mixingRule.EosMixingRulesInterface;
  * @author Even Solbraa
  * @version $Id: $Id
  */
-public class PhaseGE extends Phase implements PhaseGEInterface {
+public abstract class PhaseGE extends Phase implements PhaseGEInterface {
   private static final long serialVersionUID = 1000;
   static Logger logger = LogManager.getLogger(PhaseGE.class);
 
@@ -51,19 +51,20 @@ public class PhaseGE extends Phase implements PhaseGEInterface {
    * @param totalNumberOfMoles a double
    * @param beta a double
    * @param numberOfComponents a int
-   * @param type a int
+   * @param pt the PhaseType of the phase.
    * @param phase a int
    */
   public void init(double temperature, double pressure, double totalNumberOfMoles, double beta,
-      int numberOfComponents, int type, int phase) {
+      int numberOfComponents, PhaseType pt, int phase) {
     if (totalNumberOfMoles <= 0) {
       new neqsim.util.exception.InvalidInputException(this, "init", "totalNumberOfMoles",
           "must be larger than zero.");
     }
     for (int i = 0; i < numberOfComponents; i++) {
-      componentArray[i].init(temperature, pressure, totalNumberOfMoles, beta, type);
+      // todo: Conflating init type and phase type?
+      componentArray[i].init(temperature, pressure, totalNumberOfMoles, beta, pt.getValue());
     }
-    this.getExcessGibbsEnergy(this, numberOfComponents, temperature, pressure, type);
+    this.getExcessGibbsEnergy(this, numberOfComponents, temperature, pressure, pt);
 
     double sumHydrocarbons = 0.0;
     double sumAqueous = 0.0;
@@ -85,11 +86,11 @@ public class PhaseGE extends Phase implements PhaseGEInterface {
 
   /** {@inheritDoc} */
   @Override
-  public void init(double totalNumberOfMoles, int numberOfComponents, int initType, PhaseType phase,
+  public void init(double totalNumberOfMoles, int numberOfComponents, int initType, PhaseType pt,
       double beta) {
-    super.init(totalNumberOfMoles, numberOfComponents, initType, phase, beta);
+    super.init(totalNumberOfMoles, numberOfComponents, initType, pt, beta);
     if (initType != 0) {
-      getExcessGibbsEnergy(this, numberOfComponents, temperature, pressure, phase.getValue());
+      getExcessGibbsEnergy(this, numberOfComponents, temperature, pressure, pt);
     }
 
     double sumHydrocarbons = 0.0;
@@ -134,81 +135,10 @@ public class PhaseGE extends Phase implements PhaseGEInterface {
 
   /** {@inheritDoc} */
   @Override
-  public double molarVolume(double pressure, double temperature, double A, double B, int phase) {
-    return 1;
-  }
-
-  /**
-   * <p>
-   * molarVolumeAnalytic.
-   * </p>
-   *
-   * @param pressure a double
-   * @param temperature a double
-   * @param A a double
-   * @param B a double
-   * @param phase a int
-   * @return a double
-   */
-  public double molarVolumeAnalytic(double pressure, double temperature, double A, double B,
-      int phase) {
-    return 1;
-  }
-
-  /** {@inheritDoc} */
-  @Override
   public void addComponent(String name, double moles, double molesInPhase, int compNumber) {
     super.addComponent(name, molesInPhase);
     // TODO: compNumber not in use
   }
-
-  /**
-   * <p>
-   * setAlpha.
-   * </p>
-   *
-   * @param alpha an array of {@link double} objects
-   */
-  public void setAlpha(double[][] alpha) {}
-
-  /**
-   * <p>
-   * setDij.
-   * </p>
-   *
-   * @param Dij an array of {@link double} objects
-   */
-  public void setDij(double[][] Dij) {}
-
-  /** {@inheritDoc} */
-  @Override
-  public double getExcessGibbsEnergy() {
-    logger.error("this getExcessGibbsEnergy should never be used.......");
-    return 0;
-  }
-
-  /** {@inheritDoc} */
-  @Override
-  public double getExcessGibbsEnergy(PhaseInterface phase, int numberOfComponents,
-      double temperature, double pressure, int phasetype) {
-    logger.error("this getExcessGibbsEnergy should never be used.......");
-    return 0;
-  }
-
-  /** {@inheritDoc} */
-  @Override
-  public double getGibbsEnergy() {
-    return 0;
-  }
-
-  /**
-   * <p>
-   * setDijT.
-   * </p>
-   *
-   * @param DijT an array of {@link double} objects
-   */
-  public void setDijT(double[][] DijT) {}
 
   /** {@inheritDoc} */
   @Override
@@ -239,7 +169,7 @@ public class PhaseGE extends Phase implements PhaseGEInterface {
     refPhase[k].setPressure(pressure);
     refPhase[k].init(refPhase[k].getNumberOfMolesInPhase(), 2, 1, this.getType(), 1.0);
     ((PhaseGEInterface) refPhase[k]).getExcessGibbsEnergy(refPhase[k], 2,
-        refPhase[k].getTemperature(), refPhase[k].getPressure(), refPhase[k].getType().getValue());
+        refPhase[k].getTemperature(), refPhase[k].getPressure(), refPhase[k].getType());
     return ((ComponentGEInterface) refPhase[k].getComponent(0)).getGamma();
   }
 
@@ -258,7 +188,7 @@ public class PhaseGE extends Phase implements PhaseGEInterface {
     dilphase.init(dilphase.getNumberOfMolesInPhase(), dilphase.getNumberOfComponents(), 1,
         dilphase.getType(), 1.0);
     ((PhaseGEInterface) dilphase).getExcessGibbsEnergy(dilphase, 2, dilphase.getTemperature(),
-        dilphase.getPressure(), dilphase.getType().getValue());
+        dilphase.getPressure(), dilphase.getType());
     return ((ComponentGEInterface) dilphase.getComponent(0)).getGamma();
   }
 
