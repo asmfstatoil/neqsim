@@ -2,6 +2,7 @@ package neqsim.thermodynamicOperations;
 
 import java.awt.BorderLayout;
 import java.awt.Container;
+import java.util.Arrays;
 import java.util.List;
 import javax.swing.JFrame;
 import javax.swing.JScrollPane;
@@ -10,6 +11,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import neqsim.api.ioc.CalculationResult;
 import neqsim.thermo.component.ComponentHydrate;
+import neqsim.thermo.component.ComponentInterface;
 import neqsim.thermo.system.SystemInterface;
 import neqsim.thermo.system.SystemProperties;
 import neqsim.thermodynamicOperations.flashOps.CalcIonicComposition;
@@ -1299,7 +1301,7 @@ public class ThermodynamicOperations implements java.io.Serializable, Cloneable 
    */
   public void bubblePointPressureFlash(boolean derivatives) throws Exception {
     ConstantDutyFlashInterface operation = null;
-    if (derivatives == true) {
+    if (derivatives) {
       operation = new bubblePointPressureFlashDer(system);
     } else {
       operation = new bubblePointPressureFlash(system);
@@ -1975,9 +1977,22 @@ public class ThermodynamicOperations implements java.io.Serializable, Cloneable 
     String[] calculationError = new String[Spec1.size()];
 
     Double[] sum = new Double[Spec1.size()];
+    String[] systemComponents = this.system.getComponentNames();
+    if (components != null) {
+      for (String inputCompName : components) {
+        if (!this.system.hasComponent(inputCompName)) {
+          for (int t = 0; t < Spec1.size(); t++) {
+            calculationError[t] = "Input component list does not match fluid component list.";
+          }
+        }
+      }
+    } else {
+      components = Arrays.asList(systemComponents);
+    }
 
     // Verify that sum of fractions equals 1/100, i.e., assume percentages
-    Boolean hasOnlineFractions = onlineFractions != null;
+    boolean hasOnlineFractions = onlineFractions != null;
+
     if (hasOnlineFractions) {
       double range = 5;
       for (int t = 0; t < sum.length; t++) {
@@ -2017,6 +2032,9 @@ public class ThermodynamicOperations implements java.io.Serializable, Cloneable 
         for (int t = 0; t < Spec1.size(); t++) {
           calculationError[t] = "Sum of fractions must be approximately to 1 or 100, currently ("
               + String.valueOf(sum[0]) + ")";
+          if (sum[0] == 0.0) {
+            calculationError[t] = calculationError[t] + ". Have you called init(0)?";
+          }
         }
       }
     }
@@ -2044,24 +2062,19 @@ public class ThermodynamicOperations implements java.io.Serializable, Cloneable 
         }
 
         if (hasOnlineFractions) {
-          /*
-           * // New attempt:
-           *
-           * this.system.setEmptyFluid();
-           *
-           * // Components in system with no corresponding value in onlineFractions will be zero.
-           * for (int componentNumber = 0; componentNumber < onlineFractions .size();
-           * componentNumber++) { this.system.addComponent(componentNumber,
-           * onlineFractions.get(componentNumber).get(t).doubleValue()); }
-           *
-           * if (this.system.getTotalNumberOfMoles() < 1e-5) { this.system.setTotalNumberOfMoles(1);
-           * }
-           */
-
-          // Remaining fractions will be set to 0.0
+          // Assure that fraction is inserted for the correct component (in case of mismatch of
+          // component input and fluid component list)
           double[] fraction = new double[this.system.getNumberOfComponents()];
-          for (int comp = 0; comp < onlineFractions.size(); comp++) {
-            fraction[comp] = onlineFractions.get(comp).get(t).doubleValue();
+          // For all components defined in system
+          for (int compIndex = 0; compIndex < fraction.length; compIndex++) {
+            // Loop all input component names / fractions
+            for (int index = 0; index < components.size(); index++) {
+              if (systemComponents[compIndex] == ComponentInterface
+                  .getComponentNameFromAlias(components.get(index))) {
+                fraction[compIndex] = onlineFractions.get(index).get(t).doubleValue();
+                break;
+              }
+            }
           }
 
           this.system.setMolarComposition(fraction);

@@ -303,6 +303,7 @@ public class PhasePrEosvolcor extends PhasePrEos {
    *
    * @return a double
    */
+  @Override
   public double gVVV() {
     double val1 = numberOfMolesInPhase * getMolarVolume();
     double val2 = val1 + getC() - getB();
@@ -338,6 +339,7 @@ public class PhasePrEosvolcor extends PhasePrEos {
    *
    * @return a double
    */
+  @Override
   public double fVVV() {
     double val1 = numberOfMolesInPhase * molarVolume + getB() * delta1 + getC();
     double val2 = numberOfMolesInPhase * molarVolume + getB() * delta2 + getC();
@@ -633,7 +635,7 @@ public class PhasePrEosvolcor extends PhasePrEos {
   /** {@inheritDoc} */
   @Override
   public void addComponent(String name, double moles, double molesInPhase, int compNumber) {
-    super.addComponent(name, molesInPhase);
+    super.addComponent(name, molesInPhase, compNumber);
     componentArray[compNumber] = new ComponentPRvolcor(name, moles, molesInPhase, compNumber);
   }
 }

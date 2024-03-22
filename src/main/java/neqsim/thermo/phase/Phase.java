@@ -22,7 +22,9 @@ import neqsim.util.exception.InvalidInputException;
  * @author Even Solbraa
  */
 public abstract class Phase implements PhaseInterface {
+  /** Serialization version UID. */
   private static final long serialVersionUID = 1000;
+  /** Logger object for class. */
   static Logger logger = LogManager.getLogger(Phase.class);
 
   public int numberOfComponents = 0;
@@ -99,28 +101,46 @@ public abstract class Phase implements PhaseInterface {
 
   /**
    * <p>
-   * addcomponent. Increase number of components and add moles to phase.
+   * Increase number of components and add moles to phase.
+   *
+   * NB! Does not actually add component to componentarray.
    * </p>
    *
    * @param name Name of component to add.
    * @param moles Number of moles of component to add to phase.
    */
-  public void addComponent(String name, double moles) {
+  public void addComponent(String name, double moles, int compNumber) {
     if (name == null) {
       // Will fail anyhow creating component with no name
       throw new RuntimeException(
           new InvalidInputException(this, "addcomponent", "name", "can not be null"));
     }
 
+    if (name.equals("")) {
+      throw new RuntimeException(
+          new InvalidInputException(this, "addcomponent", "name", "can not be empty."));
+    }
+
     if (this.hasComponent(name)) {
       // shall use addMoles/addMolesChemreac to adding/subtracting moles for component.
-      throw new RuntimeException(
-          "Component already exists in phase. Use addMoles or addMolesChemreac.");
+      throw new RuntimeException(new InvalidInputException(this, "addComponent", "name",
+          "component with same name already exists in phase. Use addMoles or addMolesChemreac."));
     }
 
     if (moles < 0) {
       throw new RuntimeException(
           new InvalidInputException(this, "addComponent", "moles", "can not be negative"));
+    }
+
+    if (compNumber < 0 || compNumber >= ThermodynamicModelSettings.MAX_NUMBER_OF_COMPONENTS) {
+      throw new RuntimeException(new InvalidInputException(this, "addComponent", "compNumber",
+          " must be valid index, i.e., between 0 and "
+              + ThermodynamicModelSettings.MAX_NUMBER_OF_COMPONENTS + "."));
+    }
+
+    if (componentArray[compNumber] != null) {
+      throw new RuntimeException(new InvalidInputException(this, "addComponent", "compNumber",
+          "number is already in use."));
     }
 
     this.numberOfMolesInPhase += moles;
@@ -1315,7 +1335,7 @@ public abstract class Phase implements PhaseInterface {
   /** {@inheritDoc} */
   @Override
   public double getLogInfiniteDiluteFugacity(int k) {
-    PhaseInterface dilphase = (PhaseInterface) this.clone();
+    PhaseInterface dilphase = this.clone();
     dilphase.addMoles(k, -(1.0 - 1e-10) * dilphase.getComponent(k).getNumberOfMolesInPhase());
     dilphase.getComponent(k).setx(1e-10);
     dilphase.init(dilphase.getNumberOfMolesInPhase(), dilphase.getNumberOfComponents(), 1,
@@ -1748,10 +1768,37 @@ public abstract class Phase implements PhaseInterface {
 
   /** {@inheritDoc} */
   @Override
-  public boolean hasComponent(String name) {
+  public String[] getComponentNames() {
+    ArrayList<String> components = new ArrayList<String>();
+
+    for (int j = 0; j < componentArray.length; j++) {
+      if (componentArray[j] != null) {
+        components.add(componentArray[j].getComponentName());
+      }
+    }
+
+    String[] componentList = new String[components.size()];
+    for (int j = 0; j < numberOfComponents; j++) {
+      componentList[j] = components.get(j);
+    }
+    return componentList;
+  }
+
+  /** {@inheritDoc} */
+  @Override
+  public boolean hasComponent(String name, boolean normalized) {
     for (int i = 0; i < numberOfComponents; i++) {
-      if (componentArray[i].getName().equals(name)) {
-        return true;
+      if (componentArray != null) {
+        if (normalized) {
+          if (componentArray[i].getComponentName()
+              .equals(ComponentInterface.getComponentNameFromAlias(name))) {
+            return true;
+          }
+        } else {
+          if (componentArray[i].getName().equals(name)) {
+            return true;
+          }
+        }
       }
     }
     return false;

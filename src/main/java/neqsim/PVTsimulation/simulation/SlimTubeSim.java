@@ -43,7 +43,6 @@ public class SlimTubeSim extends BasePVTsimulation {
     getThermoSystem().setTemperature(288.15);
     thermoOps.TPflash();
 
-
     /*
      * double totalReferenceNodeVolumeAtStadardConditions; if (getThermoSystem().getNumberOfPhases()
      * > 1) { totalReferenceNodeVolumeAtStadardConditions =
@@ -164,13 +163,14 @@ public class SlimTubeSim extends BasePVTsimulation {
           .setPressure(ThermodynamicConstantsInterface.referencePressure);
       slimOps1.TPflash();
 
-      double totalAccumulatedVolumeAtStadardConditions =
-          slimTubeNodeSystem[numberOfSlimTubeNodes].getPhase(0).getVolume();
-
-      if (slimTubeNodeSystem[numberOfSlimTubeNodes].getNumberOfPhases() > 1) {
-        totalAccumulatedVolumeAtStadardConditions =
-            slimTubeNodeSystem[numberOfSlimTubeNodes].getPhase(1).getVolume();
-      }
+      /*
+       * double totalAccumulatedVolumeAtStadardConditions =
+       * slimTubeNodeSystem[numberOfSlimTubeNodes].getPhase(0).getVolume();
+       *
+       * if (slimTubeNodeSystem[numberOfSlimTubeNodes].getNumberOfPhases() > 1) {
+       * totalAccumulatedVolumeAtStadardConditions =
+       * slimTubeNodeSystem[numberOfSlimTubeNodes].getPhase(1).getVolume(); }
+       */
 
       /*
        * System.out.println("accumulated VOlume " + totalAccumulatedVolumeAtStadardConditions +
@@ -185,24 +185,22 @@ public class SlimTubeSim extends BasePVTsimulation {
         .setPressure(ThermodynamicConstantsInterface.referencePressure);
     slimOps1.TPflash();
 
-    double totalAccumulatedVolumeAtStadardConditions =
-        slimTubeNodeSystem[numberOfSlimTubeNodes].getPhase(0).getVolume();
-
-    if (slimTubeNodeSystem[numberOfSlimTubeNodes].getNumberOfPhases() > 1) {
-      totalAccumulatedVolumeAtStadardConditions =
-          slimTubeNodeSystem[numberOfSlimTubeNodes].getPhase(1).getVolume();
-    }
-
-    // System.out.println("accumulated VOlume " +
-    // totalAccumulatedVolumeAtStadardConditions
-    // + " total reference volume " + totalReferenceNodeVolumeAtStadardConditions);
-    // System.out.println("oil recovery ratio"
-    // + totalAccumulatedVolumeAtStadardConditions /
-    // totalReferenceNodeVolumeAtStadardConditions);
-
-    for (int i = 0; i < numberOfSlimTubeNodes; i++) {
-      // slimTubeNodeSystem[i].display();
-    }
+    /*
+     * double totalAccumulatedVolumeAtStadardConditions =
+     * slimTubeNodeSystem[numberOfSlimTubeNodes].getPhase(0).getVolume();
+     *
+     * if (slimTubeNodeSystem[numberOfSlimTubeNodes].getNumberOfPhases() > 1) {
+     * totalAccumulatedVolumeAtStadardConditions =
+     * slimTubeNodeSystem[numberOfSlimTubeNodes].getPhase(1).getVolume(); }
+     *
+     * System.out.println("accumulated VOlume " + totalAccumulatedVolumeAtStadardConditions +
+     * " total reference volume " + totalReferenceNodeVolumeAtStadardConditions);
+     * System.out.println("oil recovery ratio" + totalAccumulatedVolumeAtStadardConditions /
+     * totalReferenceNodeVolumeAtStadardConditions);
+     */
+    /*
+     * for (int i = 0; i < numberOfSlimTubeNodes; i++) { slimTubeNodeSystem[i].display(); }
+     */
   }
 
   /**
