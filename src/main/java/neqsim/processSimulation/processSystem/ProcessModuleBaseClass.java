@@ -11,6 +11,7 @@ import neqsim.processSimulation.SimulationBaseClass;
 import neqsim.processSimulation.controllerDevice.ControllerDeviceInterface;
 import neqsim.processSimulation.mechanicalDesign.MechanicalDesign;
 import neqsim.processSimulation.processEquipment.ProcessEquipmentInterface;
+import neqsim.processSimulation.util.report.Report;
 import neqsim.thermo.system.SystemInterface;
 
 /**
@@ -242,5 +243,26 @@ public abstract class ProcessModuleBaseClass extends SimulationBaseClass
   @Override
   public double getPressure(String unit) {
     return 1.0;
+  }
+
+  /** {@inheritDoc} */
+  @Override
+  public String toJson() {
+    return null;
+  }
+
+  /**
+   * {@inheritDoc}
+   * 
+   * @return a String
+   */
+  public String getReport_json() {
+    return new Report(this).json();
+  }
+
+  /** {@inheritDoc} */
+  @Override
+  public void run_step(UUID id) {
+
   }
 }

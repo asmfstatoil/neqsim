@@ -7,7 +7,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import neqsim.thermodynamicOperations.ThermodynamicOperations;
 
-class SystemPrEoSTest extends neqsim.NeqSimTest {
+public class SystemPrEoSTest extends neqsim.NeqSimTest {
   static neqsim.thermo.system.SystemInterface testSystem = null;
   static neqsim.thermo.ThermodynamicModelTest testModel = null;
 
@@ -37,7 +37,7 @@ class SystemPrEoSTest extends neqsim.NeqSimTest {
    * </p>
    */
   @Test
-  @DisplayName("test testMolarVolume calc whre unit as input")
+  @DisplayName("test molarVolume calculation as well as unit conerters")
   public void testMolarVolume() {
     neqsim.thermo.system.SystemInterface testSystem =
         new neqsim.thermo.system.SystemPrEos(298.0, 10.0);
