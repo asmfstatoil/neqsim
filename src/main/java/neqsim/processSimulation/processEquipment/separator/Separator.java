@@ -11,6 +11,7 @@ import java.util.Objects;
 import java.util.UUID;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import com.google.gson.GsonBuilder;
 import neqsim.processSimulation.mechanicalDesign.separator.SeparatorMechanicalDesign;
 import neqsim.processSimulation.processEquipment.ProcessEquipmentBaseClass;
 import neqsim.processSimulation.processEquipment.mixer.Mixer;
@@ -21,6 +22,7 @@ import neqsim.processSimulation.processEquipment.separator.sectionType.Separator
 import neqsim.processSimulation.processEquipment.separator.sectionType.ValveSection;
 import neqsim.processSimulation.processEquipment.stream.Stream;
 import neqsim.processSimulation.processEquipment.stream.StreamInterface;
+import neqsim.processSimulation.util.monitor.SeparatorResponse;
 import neqsim.thermo.system.SystemInterface;
 import neqsim.thermodynamicOperations.ThermodynamicOperations;
 
@@ -113,17 +115,13 @@ public class Separator extends ProcessEquipmentBaseClass implements SeparatorInt
     numberOfInputStreams++;
   }
 
-  /**
-   * {@inheritDoc}
-   *
-   * @return a {@link neqsim.processSimulation.mechanicalDesign.separator.SeparatorMechanicalDesign}
-   *         object
-   */
+  /** {@inheritDoc} */
   @Override
   public SeparatorMechanicalDesign getMechanicalDesign() {
     return separatorMechanicalDesign;
   }
 
+  /** {@inheritDoc} */
   @Override
   public void initMechanicalDesign() {
     separatorMechanicalDesign = new SeparatorMechanicalDesign(this);
@@ -471,12 +469,7 @@ public class Separator extends ProcessEquipmentBaseClass implements SeparatorInt
     this.gasCarryunderFraction = gasCarryunderFraction;
   }
 
-  /**
-   * <p>
-   * Setter for the field <code>gasCarryunderFraction</code>.
-   * </p>
-   *
-   **/
+  /** {@inheritDoc} */
   @Override
   public void setLiquidLevel(double liquidlev) {
     liquidLevel = liquidlev;
@@ -869,6 +862,23 @@ public class Separator extends ProcessEquipmentBaseClass implements SeparatorInt
         && Objects.equals(thermoSystem2, other.thermoSystem2)
         && Objects.equals(thermoSystemCloned, other.thermoSystemCloned)
         && Objects.equals(waterSystem, other.waterSystem);
+  }
+
+  /**
+   * <p>
+   * getFeedStream.
+   * </p>
+   *
+   * @return a {@link neqsim.processSimulation.processEquipment.stream.StreamInterface} object
+   */
+  public StreamInterface getFeedStream() {
+    return inletStreamMixer.getOutletStream();
+  }
+
+  /** {@inheritDoc} */
+  @Override
+  public String toJson() {
+    return new GsonBuilder().create().toJson(new SeparatorResponse(this));
   }
 
   /*

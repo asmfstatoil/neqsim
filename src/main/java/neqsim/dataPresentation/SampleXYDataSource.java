@@ -24,6 +24,8 @@ package neqsim.dataPresentation;
  * Note that the aim of this class is to create a self-contained data source for demo purposes - it
  * is NOT intended to show how you should go about writing your own data sources.
  * </p>
+ *
+ * @author Even Solbraa
  */
 public class SampleXYDataSource {
   double[][] points;
@@ -36,7 +38,7 @@ public class SampleXYDataSource {
    * Constructor for SampleXYDataSource.
    * </p>
    *
-   * @param p an array of {@link double} objects
+   * @param p an array of type double
    * @param name an array of {@link java.lang.String} objects
    * @param title a {@link java.lang.String} object
    * @param xaxis a {@link java.lang.String} object

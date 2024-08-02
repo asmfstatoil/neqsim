@@ -109,6 +109,7 @@ public abstract class PhaseEos extends Phase implements PhaseEosInterface {
         }
       } catch (Exception ex) {
         logger.warn("Failed to solve for molarVolume within the iteration limit.");
+        logger.error(ex.getMessage());
         throw new RuntimeException(ex);
         // logger.error("too many iterations in volume calc!", ex);
         // logger.info("moles " + numberOfMolesInPhase);
@@ -195,7 +196,7 @@ public abstract class PhaseEos extends Phase implements PhaseEosInterface {
    * @param temperature a double
    * @param A a double
    * @param B a double
-   * @param pt the PhaseType of the phase.
+   * @param pt the PhaseType of the phase
    * @return a double
    * @throws neqsim.util.exception.IsNaNException if any.
    * @throws neqsim.util.exception.TooManyIterationsException if any.
@@ -1054,7 +1055,7 @@ public abstract class PhaseEos extends Phase implements PhaseEosInterface {
    * getdTVndSVnJaobiMatrix.
    * </p>
    *
-   * @return an array of {@link double} objects
+   * @return an array of type double
    */
   public double[][] getdTVndSVnJaobiMatrix() {
     double[][] jacobiMatrix = new double[2 + numberOfComponents][2 + numberOfComponents];
@@ -1077,7 +1078,7 @@ public abstract class PhaseEos extends Phase implements PhaseEosInterface {
    * getGradientVector.
    * </p>
    *
-   * @return an array of {@link double} objects
+   * @return an array of type double
    */
   public double[] getGradientVector() {
     double[] gradientVector = new double[2 + numberOfComponents];
@@ -1091,7 +1092,7 @@ public abstract class PhaseEos extends Phase implements PhaseEosInterface {
    * getUSVHessianMatrix.
    * </p>
    *
-   * @return an array of {@link double} objects
+   * @return an array of type double
    */
   public double[][] getUSVHessianMatrix() {
     double[][] jacobiMatrix = new double[2 + numberOfComponents][2 + numberOfComponents];
@@ -1114,7 +1115,7 @@ public abstract class PhaseEos extends Phase implements PhaseEosInterface {
    * dFdxMatrixSimple.
    * </p>
    *
-   * @return an array of {@link double} objects
+   * @return an array of type double
    */
   public double[] dFdxMatrixSimple() {
     double[] matrix = new double[numberOfComponents + 2];
@@ -1145,7 +1146,7 @@ public abstract class PhaseEos extends Phase implements PhaseEosInterface {
    * dFdxMatrix.
    * </p>
    *
-   * @return an array of {@link double} objects
+   * @return an array of type double
    */
   public double[] dFdxMatrix() {
     double[] matrix = new double[numberOfComponents + 2];
@@ -1164,7 +1165,7 @@ public abstract class PhaseEos extends Phase implements PhaseEosInterface {
    * dFdxdxMatrixSimple.
    * </p>
    *
-   * @return an array of {@link double} objects
+   * @return an array of type double
    */
   public double[][] dFdxdxMatrixSimple() {
     double[][] matrix = new double[numberOfComponents + 2][numberOfComponents + 2];
@@ -1214,7 +1215,7 @@ public abstract class PhaseEos extends Phase implements PhaseEosInterface {
    * dFdxdxMatrix.
    * </p>
    *
-   * @return an array of {@link double} objects
+   * @return an array of type double
    */
   public double[][] dFdxdxMatrix() {
     double[][] matrix = new double[numberOfComponents + 2][numberOfComponents + 2];

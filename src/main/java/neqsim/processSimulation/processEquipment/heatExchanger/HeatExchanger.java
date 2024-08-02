@@ -7,10 +7,12 @@
 package neqsim.processSimulation.processEquipment.heatExchanger;
 
 import java.util.UUID;
+import com.google.gson.GsonBuilder;
 import neqsim.processSimulation.conditionMonitor.ConditionMonitorSpecifications;
 import neqsim.processSimulation.processEquipment.ProcessEquipmentInterface;
 import neqsim.processSimulation.processEquipment.stream.Stream;
 import neqsim.processSimulation.processEquipment.stream.StreamInterface;
+import neqsim.processSimulation.util.monitor.HXResponse;
 import neqsim.thermo.system.SystemInterface;
 import neqsim.thermodynamicOperations.ThermodynamicOperations;
 
@@ -278,6 +280,12 @@ public class HeatExchanger extends Heater implements HeatExchangerInterface {
       // streamToCalculate = 1;
       // streamToSet = 0;
       // }
+
+      // Make sure these streams to run because of the issues with enthalpy
+      // calculations if not run
+      for (StreamInterface stream : inStream) {
+        stream.run();
+      }
 
       int streamToSet = 1;
       SystemInterface systemOut0 = inStream[streamToSet].getThermoSystem().clone();
@@ -619,5 +627,12 @@ public class HeatExchanger extends Heater implements HeatExchangerInterface {
    */
   public void setHotColdDutyBalance(double hotColdDutyBalance) {
     this.hotColdDutyBalance = hotColdDutyBalance;
+  }
+
+  /** {@inheritDoc} */
+  @Override
+  public String toJson() {
+    return new GsonBuilder().serializeSpecialFloatingPointValues().create()
+        .toJson(new HXResponse(this));
   }
 }

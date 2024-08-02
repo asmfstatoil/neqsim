@@ -535,7 +535,7 @@ public interface ComponentInterface extends ThermodynamicConstantsInterface, Clo
    * </p>
    *
    * @param phase a {@link neqsim.thermo.phase.PhaseInterface} object
-   * @return an array of {@link double} objects
+   * @return an array of type double
    */
   public double[] logfugcoefdN(PhaseInterface phase);
 
@@ -630,6 +630,16 @@ public interface ComponentInterface extends ThermodynamicConstantsInterface, Clo
    * @param molarMass a double
    */
   public void setMolarMass(double molarMass);
+
+  /**
+   * <p>
+   * setMolarMass.
+   * </p>
+   *
+   * @param molarMass a double
+   * @param unit a String
+   */
+  public void setMolarMass(double molarMass, String unit);
 
   /**
    * <p>
@@ -770,12 +780,32 @@ public interface ComponentInterface extends ThermodynamicConstantsInterface, Clo
 
   /**
    * <p>
+   * setTC.
+   * </p>
+   *
+   * @param val a double
+   * @param unit a String
+   */
+  public void setTC(double val, String unit);
+
+  /**
+   * <p>
    * setPC.
    * </p>
    *
    * @param val a double
    */
   public void setPC(double val);
+
+  /**
+   * <p>
+   * setPC.
+   * </p>
+   *
+   * @param val a double
+   * @param unit a String
+   */
+  public void setPC(double val, String unit);
 
   /**
    * <p>
@@ -872,16 +902,26 @@ public interface ComponentInterface extends ThermodynamicConstantsInterface, Clo
    * Returns the critical temperature of the component.
    * </p>
    *
-   * @return The critical temperature of the component.
+   * @return The critical temperature of the component
    */
   public double getTC();
+
+  /**
+   * <p>
+   * Returns the critical temperature of the component.
+   * </p>
+   *
+   * @param unit Unit of return temperature
+   * @return The critical temperature of the component
+   */
+  public double getTC(String unit);
 
   /**
    * <p>
    * Getter for property NormalBoilingPoint.
    * </p>
    *
-   * @return The normal boiling point of the component.
+   * @return The normal boiling point of the component
    */
   public double getNormalBoilingPoint();
 
@@ -896,12 +936,22 @@ public interface ComponentInterface extends ThermodynamicConstantsInterface, Clo
 
   /**
    * <p>
-   * getPC.
+   * Returns the critical pressure of the component.
    * </p>
    *
-   * @return a double
+   * @return The critical pressure of the component
    */
   public double getPC();
+
+  /**
+   * <p>
+   * Returns the critical pressure of the component.
+   * </p>
+   *
+   * @param unit Unit of return pressure
+   * @return The critical pressure of the component
+   */
+  public double getPC(String unit);
 
   /**
    * <p>
@@ -958,6 +1008,16 @@ public interface ComponentInterface extends ThermodynamicConstantsInterface, Clo
    * @return a double
    */
   public double getNormalLiquidDensity();
+
+  /**
+   * <p>
+   * getNormalLiquidDensity.
+   * </p>
+   *
+   * @param unit i String with unit of return return a double
+   * @return a double
+   */
+  public double getNormalLiquidDensity(String unit);
 
   /**
    * <p>
@@ -1202,6 +1262,14 @@ public interface ComponentInterface extends ThermodynamicConstantsInterface, Clo
    * @return molar mass in unit kg/mol
    */
   public double getMolarMass();
+
+  /**
+   * Get molar mass of component.
+   *
+   * @param unit a String
+   * @return molar mass in unit kg/mol
+   */
+  public double getMolarMass(String unit);
 
   /**
    * <p>
@@ -1502,7 +1570,7 @@ public interface ComponentInterface extends ThermodynamicConstantsInterface, Clo
    * getSchwartzentruberParams.
    * </p>
    *
-   * @return an array of {@link double} objects
+   * @return an array of type double
    */
   public double[] getSchwartzentruberParams();
 
@@ -1521,7 +1589,7 @@ public interface ComponentInterface extends ThermodynamicConstantsInterface, Clo
    * getTwuCoonParams.
    * </p>
    *
-   * @return an array of {@link double} objects
+   * @return an array of type double
    */
   public double[] getTwuCoonParams();
 
@@ -1645,7 +1713,7 @@ public interface ComponentInterface extends ThermodynamicConstantsInterface, Clo
    * getMatiascopemanParams.
    * </p>
    *
-   * @return an array of {@link double} objects
+   * @return an array of type double
    */
   public double[] getMatiascopemanParams();
 
@@ -1664,7 +1732,7 @@ public interface ComponentInterface extends ThermodynamicConstantsInterface, Clo
    * setMatiascopemanParams.
    * </p>
    *
-   * @param matiascopemanParams an array of {@link double} objects
+   * @param matiascopemanParams an array of type double
    */
   public void setMatiascopemanParams(double[] matiascopemanParams);
 
@@ -1913,7 +1981,7 @@ public interface ComponentInterface extends ThermodynamicConstantsInterface, Clo
    * getHenryCoefParameter.
    * </p>
    *
-   * @return an array of {@link double} objects
+   * @return an array of type double
    */
   public double[] getHenryCoefParameter();
 
@@ -1922,7 +1990,7 @@ public interface ComponentInterface extends ThermodynamicConstantsInterface, Clo
    * setHenryCoefParameter.
    * </p>
    *
-   * @param henryCoefParameter an array of {@link double} objects
+   * @param henryCoefParameter an array of type double
    */
   public void setHenryCoefParameter(double[] henryCoefParameter);
 
@@ -1952,7 +2020,7 @@ public interface ComponentInterface extends ThermodynamicConstantsInterface, Clo
    * getMatiascopemanSolidParams.
    * </p>
    *
-   * @return an array of {@link double} objects
+   * @return an array of type double
    */
   public double[] getMatiascopemanSolidParams();
 

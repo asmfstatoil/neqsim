@@ -19,6 +19,7 @@ public abstract class SimulationBaseClass extends NamedBaseClass implements Simu
   protected UUID calcIdentifier;
   protected boolean calculateSteadyState = true;
   protected double time = 0;
+  private boolean runInSteps = false;
 
   /**
    * <p>
@@ -79,5 +80,17 @@ public abstract class SimulationBaseClass extends NamedBaseClass implements Simu
           "Negative values are not allowed. Not possible to go backwards in time."));
     }
     this.time = this.time + dt;
+  }
+
+  /** {@inheritDoc} */
+  @Override
+  public void setRunInSteps(boolean setRunSteps) {
+    runInSteps = setRunSteps;
+  }
+
+  /** {@inheritDoc} */
+  @Override
+  public boolean isRunInSteps() {
+    return runInSteps;
   }
 }

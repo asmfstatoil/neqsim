@@ -193,8 +193,8 @@ public class CompressorChart implements CompressorChartInterface, java.io.Serial
    * addSurgeCurve.
    * </p>
    *
-   * @param flow an array of {@link double} objects
-   * @param head an array of {@link double} objects
+   * @param flow an array of type double
+   * @param head an array of type double
    */
   public void addSurgeCurve(double[] flow, double[] head) {
     surgeCurve = new SurgeCurve(flow, head);
@@ -416,18 +416,38 @@ public class CompressorChart implements CompressorChartInterface, java.io.Serial
     // other.reducedPolytropicEfficiencyFitter)
   }
 
+  /**
+   * <p>Getter for the field <code>maxSpeedCurve</code>.</p>
+   *
+   * @return a double
+   */
   public double getMaxSpeedCurve() {
     return maxSpeedCurve;
   }
 
+  /**
+   * <p>Setter for the field <code>maxSpeedCurve</code>.</p>
+   *
+   * @param maxSpeedCurve a double
+   */
   public void setMaxSpeedCurve(double maxSpeedCurve) {
     this.maxSpeedCurve = maxSpeedCurve;
   }
 
+  /**
+   * <p>Getter for the field <code>minSpeedCurve</code>.</p>
+   *
+   * @return a double
+   */
   public double getMinSpeedCurve() {
     return minSpeedCurve;
   }
 
+  /**
+   * <p>Setter for the field <code>minSpeedCurve</code>.</p>
+   *
+   * @param minSpeedCurve a double
+   */
   public void setMinSpeedCurve(double minSpeedCurve) {
     this.minSpeedCurve = minSpeedCurve;
   }

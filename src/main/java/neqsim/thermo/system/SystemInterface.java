@@ -45,9 +45,9 @@ public interface SystemInterface extends Cloneable, java.io.Serializable {
    * </p>
    *
    * @param charNames an array of {@link java.lang.String} objects
-   * @param charFlowrate an array of {@link double} objects
-   * @param molarMass an array of {@link double} objects
-   * @param relativedensity an array of {@link double} objects
+   * @param charFlowrate an array of type double
+   * @param molarMass an array of type double
+   * @param relativedensity an array of type double
    */
   public void addCharacterized(String[] charNames, double[] charFlowrate, double[] molarMass,
       double[] relativedensity);
@@ -214,9 +214,9 @@ public interface SystemInterface extends Cloneable, java.io.Serializable {
    * </p>
    *
    * @param charNames an array of {@link java.lang.String} objects
-   * @param charFlowrate an array of {@link double} objects
-   * @param molarMass an array of {@link double} objects
-   * @param relativedensity an array of {@link double} objects
+   * @param charFlowrate an array of type double
+   * @param molarMass an array of type double
+   * @param relativedensity an array of type double
    * @param lastIsPlusFraction True if last fraction is a Plus fraction
    */
   public void addOilFractions(String[] charNames, double[] charFlowrate, double[] molarMass,
@@ -228,9 +228,9 @@ public interface SystemInterface extends Cloneable, java.io.Serializable {
    * </p>
    *
    * @param charNames an array of {@link java.lang.String} objects
-   * @param charFlowrate an array of {@link double} objects
-   * @param molarMass an array of {@link double} objects
-   * @param relativedensity an array of {@link double} objects
+   * @param charFlowrate an array of type double
+   * @param molarMass an array of type double
+   * @param relativedensity an array of type double
    * @param lastIsPlusFraction True if last fraction is a Plus fraction
    * @param lumpComponents True if component should be lumped
    * @param numberOfPseudoComponents number of pseudo components
@@ -384,18 +384,6 @@ public interface SystemInterface extends Cloneable, java.io.Serializable {
    * </p>
    */
   public void calc_x_y_nonorm();
-
-  /**
-   * <p>
-   * calcBeta. For simple gas liquid systems.
-   * </p>
-   *
-   * @return Beta Mole fraction contained in the heaviest phase, i.e., liquid phase.
-   * @throws neqsim.util.exception.IsNaNException if any.
-   * @throws neqsim.util.exception.TooManyIterationsException if any.
-   */
-  public double calcBeta()
-      throws neqsim.util.exception.IsNaNException, neqsim.util.exception.TooManyIterationsException;
 
   /**
    * <p>
@@ -682,7 +670,6 @@ public interface SystemInterface extends Cloneable, java.io.Serializable {
   public default String[] getComponentNames() {
     return getPhase(0).getComponentNames();
   }
-
 
   /**
    * <p>
@@ -1105,7 +1092,7 @@ public interface SystemInterface extends Cloneable, java.io.Serializable {
    * Returns the overall mole composition vector in unit mole fraction.
    * </p>
    *
-   * @return an array of {@link double} objects
+   * @return an array of type double
    */
   public double[] getMolarComposition();
 
@@ -1142,7 +1129,6 @@ public interface SystemInterface extends Cloneable, java.io.Serializable {
    * method to return molar volume of the fluid: eventual volume correction included.
    *
    * @param unit Supported units are m3/mol, litre/mol
-   *
    * @return molar volume volume in unit
    */
   public double getMolarVolume(String unit);
@@ -1152,7 +1138,7 @@ public interface SystemInterface extends Cloneable, java.io.Serializable {
    * getMolecularWeights.
    * </p>
    *
-   * @return an array of {@link double} objects
+   * @return an array of type double
    */
   public double[] getMolecularWeights();
 
@@ -1180,7 +1166,7 @@ public interface SystemInterface extends Cloneable, java.io.Serializable {
    * getNormalBoilingPointTemperatures.
    * </p>
    *
-   * @return an array of {@link double} objects
+   * @return an array of type double
    */
   public double[] getNormalBoilingPointTemperatures();
 
@@ -1238,7 +1224,7 @@ public interface SystemInterface extends Cloneable, java.io.Serializable {
    * getOilFractionLiquidDensityAt25C.
    * </p>
    *
-   * @return an array of {@link double} objects
+   * @return an array of type double
    */
   public double[] getOilFractionLiquidDensityAt25C();
 
@@ -1247,7 +1233,7 @@ public interface SystemInterface extends Cloneable, java.io.Serializable {
    * getOilFractionMolecularMass.
    * </p>
    *
-   * @return an array of {@link double} objects
+   * @return an array of type double
    */
   public double[] getOilFractionMolecularMass();
 
@@ -1256,7 +1242,7 @@ public interface SystemInterface extends Cloneable, java.io.Serializable {
    * getOilFractionNormalBoilingPoints.
    * </p>
    *
-   * @return an array of {@link double} objects
+   * @return an array of type double
    */
   public double[] getOilFractionNormalBoilingPoints();
 
@@ -1394,7 +1380,7 @@ public interface SystemInterface extends Cloneable, java.io.Serializable {
   /**
    * method to return pressure in a specified unit.
    *
-   * @param unit Supported units are bara, barg, Pa and MPa
+   * @param unit Supported units are bara, barg, Pa, MPa, psi, psia, psig
    * @return pressure in specified unit
    */
   public double getPressure(String unit);
@@ -1613,6 +1599,13 @@ public interface SystemInterface extends Cloneable, java.io.Serializable {
    * @return compressibility factor Z
    */
   public double getZ();
+
+  /**
+   * method to return Z volume corrected gas compressibility
+   *
+   * @return double Z volume corrected
+   */
+  public double getZvolcorr();
 
   /**
    * Verify if system has a component.
@@ -2325,7 +2318,7 @@ public interface SystemInterface extends Cloneable, java.io.Serializable {
    * kept constant. The input mole fractions will be normalized.
    * </p>
    *
-   * @param moles an array of {@link double} objects
+   * @param moles an array of type double
    */
   public void setMolarComposition(double[] moles);
 
@@ -2353,7 +2346,7 @@ public interface SystemInterface extends Cloneable, java.io.Serializable {
    * setMolarFlowRates.
    * </p>
    *
-   * @param moles an array of {@link double} objects
+   * @param moles an array of type double
    */
   public void setMolarFlowRates(double[] moles);
 
@@ -2432,14 +2425,14 @@ public interface SystemInterface extends Cloneable, java.io.Serializable {
    */
   public void setPhaseType(int phaseToChange, PhaseType pt);
 
-    /**
+  /**
    * Change the phase type of a given phase.
    *
    * @param phaseToChange the phase number of the phase to set phase type
-   * @param phaseName     String to set
+   * @param phaseName String to set
    */
   public void setPhaseType(int phaseToChange, String phaseName);
-  
+
   /**
    * Set the physical property model type for each phase of the System.
    *
@@ -2584,4 +2577,40 @@ public interface SystemInterface extends Cloneable, java.io.Serializable {
    * @param newfile a boolean
    */
   public void write(String name, String filename, boolean newfile);
+
+  /**
+   * <p>
+   * getKvector - return vector of equilibrium constants.
+   * </p>
+   *
+   * @return an array of type double
+   */
+  public double[] getKvector();
+
+  /**
+   * <p>
+   * getzvector - return vector of total molar composition.
+   * </p>
+   *
+   * @return an array of type double
+   */
+  public double[] getzvector();
+
+  /**
+   * <p>
+   * toJson - return String with json inormation of fluid.
+   * </p>
+   *
+   * @return a {@link java.lang.String} object
+   */
+  public String toJson();
+
+  /**
+   * <p>
+   * toCompJson - return String with json inormation of pure component properties of fluid.
+   * </p>
+   *
+   * @return a {@link java.lang.String} object
+   */
+  public String toCompJson();
 }

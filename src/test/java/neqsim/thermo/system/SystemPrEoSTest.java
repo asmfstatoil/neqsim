@@ -7,7 +7,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import neqsim.thermodynamicOperations.ThermodynamicOperations;
 
-class SystemPrEoSTest extends neqsim.NeqSimTest {
+public class SystemPrEoSTest extends neqsim.NeqSimTest {
   static neqsim.thermo.system.SystemInterface testSystem = null;
   static neqsim.thermo.ThermodynamicModelTest testModel = null;
 
@@ -37,10 +37,10 @@ class SystemPrEoSTest extends neqsim.NeqSimTest {
    * </p>
    */
   @Test
-  @DisplayName("test testMolarVolume calc whre unit as input")
+  @DisplayName("test molarVolume calculation as well as unit conerters")
   public void testMolarVolume() {
     neqsim.thermo.system.SystemInterface testSystem =
-        new neqsim.thermo.system.SystemPrEos(298.0, 10.0);
+        new neqsim.thermo.system.SystemPrEos(298.0, 1.0);
     testSystem.addComponent("nitrogen", 0.01);
     testSystem.addComponent("CO2", 0.01);
     testSystem.addComponent("methane", 0.68);
@@ -172,12 +172,16 @@ class SystemPrEoSTest extends neqsim.NeqSimTest {
     testSystem.addComponent("methane", 0.68);
     testSystem.addComponent("ethane", 0.1);
     testSystem.setMixingRule("classic");
+    testSystem.useVolumeCorrection(true);
     ThermodynamicOperations testOps = new ThermodynamicOperations(testSystem);
     testOps.TPflash();
     testSystem.initProperties();
     testSystem.getKappa();
     testSystem.getPhase("gas").getKappa();
     assertEquals(testSystem.getKappa(), testSystem.getPhase("gas").getKappa(), 1e-5);
+    assertEquals(0.817374332, testSystem.getZ(), 1e-6);
+    assertEquals(0.833031816, testSystem.getZvolcorr(), 1e-6);
+    assertEquals(0.833031816, testSystem.getPhase("gas").getZvolcorr(), 1e-6);
   }
 
   /**

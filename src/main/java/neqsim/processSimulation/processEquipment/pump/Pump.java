@@ -9,8 +9,10 @@ import javax.swing.JDialog;
 import javax.swing.JFrame;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
+import com.google.gson.GsonBuilder;
 import neqsim.processSimulation.processEquipment.TwoPortEquipment;
 import neqsim.processSimulation.processEquipment.stream.StreamInterface;
+import neqsim.processSimulation.util.monitor.PumpResponse;
 import neqsim.thermo.ThermodynamicConstantsInterface;
 import neqsim.thermo.system.SystemInterface;
 import neqsim.thermodynamicOperations.ThermodynamicOperations;
@@ -427,6 +429,19 @@ public class Pump extends TwoPortEquipment implements PumpInterface {
 
   /**
    * <p>
+   * Setter for the field <code>pressure</code>.
+   * </p>
+   *
+   * @param pressure a double
+   * @param unit a {@link java.lang.String} object
+   */
+  public void setOutletPressure(double pressure, String unit) {
+    setOutletPressure(pressure);
+    pressureUnit = unit;
+  }
+
+  /**
+   * <p>
    * Setter for the field <code>speed</code>.
    * </p>
    *
@@ -456,5 +471,12 @@ public class Pump extends TwoPortEquipment implements PumpInterface {
    */
   public PumpChart getPumpChart() {
     return pumpChart;
+  }
+
+  /** {@inheritDoc} */
+  @Override
+  public String toJson() {
+    return new GsonBuilder().serializeSpecialFloatingPointValues().create()
+        .toJson(new PumpResponse(this));
   }
 }

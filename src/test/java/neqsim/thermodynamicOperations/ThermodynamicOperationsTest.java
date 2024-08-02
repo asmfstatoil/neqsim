@@ -114,7 +114,6 @@ public class ThermodynamicOperationsTest extends neqsim.NeqSimTest {
     fluid.useVolumeCorrection(true);
     fluid.setMultiPhaseCheck(true);
 
-
     fluidOps = new ThermodynamicOperations(fluid);
     CalculationResult res2 = fluidOps.propertyFlash(Sp1, Sp2, 1, components, onlineFractions);
     Assertions.assertEquals(Sp1.size(), res2.calculationError.length);
@@ -410,7 +409,7 @@ public class ThermodynamicOperationsTest extends neqsim.NeqSimTest {
       ArrayList<Double> fractions = (ArrayList<Double>) inputData.get("fractions");
 
       if (compNames == null) {
-        System.out.println("Skips test " + test.toString());
+        // System.out.println("Skips test " + test.toString());
         /*
          * for (int k = 0; k < fractions.size(); k++) { fluid.addComponent(k, fractions.get(k)); }
          */

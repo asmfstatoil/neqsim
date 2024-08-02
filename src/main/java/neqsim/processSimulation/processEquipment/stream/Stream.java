@@ -6,11 +6,16 @@
 
 package neqsim.processSimulation.processEquipment.stream;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.UUID;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import com.google.gson.GsonBuilder;
 import neqsim.processSimulation.processEquipment.ProcessEquipmentBaseClass;
+import neqsim.processSimulation.util.monitor.StreamResponse;
 import neqsim.standards.gasQuality.Standard_ISO6976;
+import neqsim.standards.oilQuality.Standard_ASTM_D6377;
 import neqsim.thermo.system.SystemInterface;
 import neqsim.thermodynamicOperations.ThermodynamicOperations;
 
@@ -427,16 +432,10 @@ public class Stream extends ProcessEquipmentBaseClass implements StreamInterface
     getFluid().display(name);
   }
 
-  /**
-   * <p>
-   * getResultTable.
-   * </p>
-   *
-   * @return an array of {@link java.lang.String} objects
-   */
+  /** {@inheritDoc} */
   @Override
   public String[][] getResultTable() {
-    return getFluid().getResultTable();
+    return getFluid().calcResultTable();
   }
 
   /** {@inheritDoc} */
@@ -546,6 +545,29 @@ public class Stream extends ProcessEquipmentBaseClass implements StreamInterface
 
   /** {@inheritDoc} */
   @Override
+  public double getTVP(double referenceTemperature, String unit, String returnUnit) {
+    SystemInterface localSyst = getFluid().clone();
+    localSyst.setTemperature(referenceTemperature, unit);
+    ThermodynamicOperations ops = new ThermodynamicOperations(localSyst);
+    try {
+      ops.bubblePointPressureFlash(false);
+    } catch (Exception ex) {
+    }
+    return localSyst.getPressure(returnUnit);
+  }
+
+  /** {@inheritDoc} */
+  @Override
+  public double getRVP(double referenceTemperature, String unit, String returnUnit) {
+    SystemInterface localSyst = getFluid().clone();
+    Standard_ASTM_D6377 standard = new Standard_ASTM_D6377(localSyst);
+    standard.setReferenceTemperature(referenceTemperature, unit);
+    standard.calculate();
+    return standard.getValue("RVP", returnUnit);
+  }
+
+  /** {@inheritDoc} */
+  @Override
   public String[][] reportResults() {
     return getFluid().getResultTable();
   }
@@ -580,6 +602,35 @@ public class Stream extends ProcessEquipmentBaseClass implements StreamInterface
 
   /** {@inheritDoc} */
   @Override
+  public double getGCV(String unit, double refTVolume, double refTCombustion) {
+    Standard_ISO6976 standard =
+        new Standard_ISO6976(getFluid().clone(), refTVolume, refTCombustion, unit);
+    standard.setReferenceState("real");
+    standard.calculate();
+    return standard.getValue("SuperiorCalorificValue") * 1.0e3;
+  }
+
+  /** {@inheritDoc} */
+  @Override
+  public double getWI(String unit, double refTVolume, double refTCombustion) {
+    Standard_ISO6976 standard =
+        new Standard_ISO6976(getFluid().clone(), refTVolume, refTCombustion, unit);
+    standard.setReferenceState("real");
+    standard.calculate();
+    return standard.getValue("SuperiorWobbeIndex") * 1.0e3;
+  }
+
+  /** {@inheritDoc} */
+  @Override
+  public Standard_ISO6976 getISO6976(String unit, double refTVolume, double refTCombustion) {
+    Standard_ISO6976 standard =
+        new Standard_ISO6976(getFluid().clone(), refTVolume, refTCombustion, unit);
+    standard.setReferenceState("real");
+    return standard;
+  }
+
+  /** {@inheritDoc} */
+  @Override
   public double LCV() {
     Standard_ISO6976 standard = new Standard_ISO6976(getFluid().clone(), 0, 15.55, "volume");
     standard.setReferenceState("real");
@@ -606,5 +657,56 @@ public class Stream extends ProcessEquipmentBaseClass implements StreamInterface
     } else {
       return thermoSystem;
     }
+  }
+
+  /**
+   * <p>
+   * getReport.
+   * </p>
+   *
+   * @return a String object
+   */
+  public ArrayList<String[]> getReport() {
+    ArrayList<String[]> report = new ArrayList<String[]>();
+    HashMap<String, String> gasprops = new HashMap<String, String>();
+    ArrayList<String> phases = new ArrayList<String>();
+
+    phases.add("Total");
+    if (getFluid().hasPhaseType("gas")) {
+      phases.add("Gas");
+      gasprops.put("temperature",
+          Double.toString(getTemperature(neqsim.util.unit.Units.getSymbol("temperature"))));
+    }
+    if (getFluid().hasPhaseType("oil")) {
+      phases.add("oil");
+    }
+    if (getFluid().hasPhaseType("aqueous")) {
+      phases.add("aqueous");
+    }
+
+    report.add(phases.toArray(new String[0]));
+
+    report.add(new String[] {"temperature",
+        Double.toString(getTemperature(neqsim.util.unit.Units.getSymbol("temperature"))),
+        neqsim.util.unit.Units.getSymbol("temperature")});
+    report.add(new String[] {"pressure",
+        Double.toString(getPressure(neqsim.util.unit.Units.getSymbol("pressure"))),
+        neqsim.util.unit.Units.getSymbol("pressure")});
+    report.add(new String[] {"mass flow",
+        Double.toString(getFlowRate(neqsim.util.unit.Units.getSymbol("mass flow"))),
+        neqsim.util.unit.Units.getSymbol("mass flow")});
+    report.add(new String[] {"molar flow",
+        Double.toString(getFlowRate(neqsim.util.unit.Units.getSymbol("molar flow"))),
+        neqsim.util.unit.Units.getSymbol("molar flow")});
+    report.add(new String[] {"volume flow",
+        Double.toString(getFlowRate(neqsim.util.unit.Units.getSymbol("volume flow"))),
+        neqsim.util.unit.Units.getSymbol("volume flow")});
+    return report;
+  }
+
+  /** {@inheritDoc} */
+  @Override
+  public String toJson() {
+    return new GsonBuilder().create().toJson(new StreamResponse(this));
   }
 }

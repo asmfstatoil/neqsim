@@ -36,7 +36,7 @@ public interface PhaseInterface extends ThermodynamicConstantsInterface, Cloneab
    * setMoleFractions.
    * </p>
    *
-   * @param x an array of {@link double} objects
+   * @param x an array of type double
    */
   public void setMoleFractions(double[] x);
 
@@ -93,7 +93,7 @@ public interface PhaseInterface extends ThermodynamicConstantsInterface, Cloneab
   /**
    * Returns the mole composition vector in unit mole fraction.
    *
-   * @return an array of {@link double} objects
+   * @return an array of type double
    */
   public double[] getMolarComposition();
 
@@ -260,7 +260,7 @@ public interface PhaseInterface extends ThermodynamicConstantsInterface, Cloneab
    * initPhysicalProperties.
    * </p>
    *
-   * @param type a {@link String} object
+   * @param type a {@link java.lang.String} object
    */
   public void initPhysicalProperties(String type);
 
@@ -336,7 +336,6 @@ public interface PhaseInterface extends ThermodynamicConstantsInterface, Cloneab
    */
   public ComponentInterface[] getcomponentArray();
 
-
   /**
    * Get normalized names of components in phase.
    *
@@ -408,7 +407,7 @@ public interface PhaseInterface extends ThermodynamicConstantsInterface, Cloneab
    * method to get GERG properties of a phase using the GERG-2008 EoS.
    * </p>
    *
-   * @return an array of {@link double} objects
+   * @return an array of type double
    */
   public double[] getProperties_GERG2008();
 
@@ -453,7 +452,7 @@ public interface PhaseInterface extends ThermodynamicConstantsInterface, Cloneab
    * getFugacity.
    * </p>
    *
-   * @param compName a {@link String} object
+   * @param compName a {@link java.lang.String} object
    * @return a double
    */
   public double getFugacity(String compName);
@@ -609,7 +608,7 @@ public interface PhaseInterface extends ThermodynamicConstantsInterface, Cloneab
    * getWtFrac.
    * </p>
    *
-   * @param componentName a {@link String} object
+   * @param componentName a {@link java.lang.String} object
    * @return a double
    */
   public double getWtFrac(String componentName);
@@ -619,7 +618,7 @@ public interface PhaseInterface extends ThermodynamicConstantsInterface, Cloneab
    * setMixingRuleGEModel.
    * </p>
    *
-   * @param name a {@link String} object
+   * @param name a {@link java.lang.String} object
    */
   public void setMixingRuleGEModel(String name);
 
@@ -846,7 +845,7 @@ public interface PhaseInterface extends ThermodynamicConstantsInterface, Cloneab
    * @param temperature a double
    * @param A a double
    * @param B a double
-   * @param pt the PhaseType of the phase.
+   * @param pt the PhaseType of the phase
    * @return a double
    * @throws neqsim.util.exception.IsNaNException if any.
    * @throws neqsim.util.exception.TooManyIterationsException if any.
@@ -1361,6 +1360,14 @@ public interface PhaseInterface extends ThermodynamicConstantsInterface, Cloneab
   public double getTemperature();
 
   /**
+   * method to return temperature in a specified unit.
+   *
+   * @param unit Supported units are K, C, R
+   * @return temperature in specified unit
+   */
+  public double getTemperature(String unit);
+
+  /**
    * Get pressure of phase.
    *
    * @return pressure in unit bara
@@ -1370,7 +1377,7 @@ public interface PhaseInterface extends ThermodynamicConstantsInterface, Cloneab
   /**
    * Get pressure of phase in a specified unit.
    *
-   * @param unit Supported units are bara, barg, Pa and MPa
+   * @param unit Supported units are bara, barg, Pa, MPa, psi, psia, psig
    * @return pressure in specified unit
    */
   public double getPressure(String unit);
@@ -1381,6 +1388,14 @@ public interface PhaseInterface extends ThermodynamicConstantsInterface, Cloneab
    * @return molar mass in unit kg/mol
    */
   public double getMolarMass();
+
+  /**
+   * method to get molar mass of a fluid phase.
+   *
+   * @param unit Supported units are kg/mol, gr/mol
+   * @return molar mass in specified unit
+   */
+  public double getMolarMass(String unit);
 
   /**
    * <p>
@@ -1828,11 +1843,11 @@ public interface PhaseInterface extends ThermodynamicConstantsInterface, Cloneab
    * </p>
    *
    * @param phase a {@link neqsim.thermo.phase.PhaseInterface} object
-   * @param alpha an array of {@link double} objects
-   * @param Dij an array of {@link double} objects
-   * @param DijT an array of {@link double} objects
-   * @param mixRule an array of {@link String} objects
-   * @param intparam an array of {@link double} objects
+   * @param alpha an array of type double
+   * @param Dij an array of type double
+   * @param DijT an array of type double
+   * @param mixRule an array of {@link java.lang.String} objects
+   * @param intparam an array of type double
    */
   public void setParams(PhaseInterface phase, double[][] alpha, double[][] Dij, double[][] DijT,
       String[][] mixRule, double[][] intparam);
@@ -1856,7 +1871,7 @@ public interface PhaseInterface extends ThermodynamicConstantsInterface, Cloneab
    * Getter for property phaseTypeName.
    * </p>
    *
-   * @return a {@link String} object
+   * @return a {@link java.lang.String} object
    */
   public default String getPhaseTypeName() {
     return getType().getDesc();
@@ -1867,7 +1882,7 @@ public interface PhaseInterface extends ThermodynamicConstantsInterface, Cloneab
    * Setter for property phaseTypeName.
    * </p>
    *
-   * @param phaseTypeName a {@link String} object
+   * @param phaseTypeName a {@link java.lang.String} object
    */
   public default void setPhaseTypeName(String phaseTypeName) {
     setType(PhaseType.byDesc(phaseTypeName));
@@ -1965,4 +1980,27 @@ public interface PhaseInterface extends ThermodynamicConstantsInterface, Cloneab
    * @return speed of sound in m/s
    */
   public double getSoundSpeed();
+
+  /**
+   * method to get the speed of sound of a system. The sound speed is implemented based on a molar
+   * average over the phases
+   *
+   * @param unit Supported units are m/s, km/h
+   * @return speed of sound in m/s
+   */
+  public double getSoundSpeed(String unit);
+
+  /**
+   * method to return name of thermodynamic model
+   *
+   * @return String model name
+   */
+  public String getModelName();
+
+  /**
+   * method to return Z volume corrected gas compressibility
+   *
+   * @return double Z volume corrected
+   */
+  public double getZvolcorr();
 }

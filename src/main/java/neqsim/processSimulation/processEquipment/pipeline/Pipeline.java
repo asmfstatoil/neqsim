@@ -95,17 +95,13 @@ public class Pipeline extends TwoPortEquipment implements PipeLineInterface {
     super(name, inStream);
   }
 
+  /** {@inheritDoc} */
   @Override
   public void initMechanicalDesign() {
     pipelineMechanicalDesign = new PipelineMechanicalDesign(this);
   }
 
-  /**
-   * {@inheritDoc}
-   *
-   * @return a {@link neqsim.processSimulation.mechanicalDesign.pipeline.PipelineMechanicalDesign}
-   *         object
-   */
+  /** {@inheritDoc} */
   @Override
   public PipelineMechanicalDesign getMechanicalDesign() {
     return pipelineMechanicalDesign;
@@ -170,7 +166,7 @@ public class Pipeline extends TwoPortEquipment implements PipeLineInterface {
    * setPipeOuterHeatTransferCoefficients.
    * </p>
    *
-   * @param heatCoefs an array of {@link double} objects
+   * @param heatCoefs an array of type double
    */
   public void setPipeOuterHeatTransferCoefficients(double[] heatCoefs) {
     if (heatCoefs.length != this.numberOfLegs + 1) {
@@ -187,7 +183,7 @@ public class Pipeline extends TwoPortEquipment implements PipeLineInterface {
    * setPipeWallHeatTransferCoefficients.
    * </p>
    *
-   * @param heatCoefs an array of {@link double} objects
+   * @param heatCoefs an array of type double
    */
   public void setPipeWallHeatTransferCoefficients(double[] heatCoefs) {
     if (heatCoefs.length != this.numberOfLegs + 1) {
@@ -344,6 +340,14 @@ public class Pipeline extends TwoPortEquipment implements PipeLineInterface {
         - inStream.getThermoSystem().getEntropy(unit);
   }
 
+  /**
+   * <p>
+   * getOutletPressure.
+   * </p>
+   *
+   * @param unit a {@link java.lang.String} object
+   * @return a double
+   */
   public double getOutletPressure(String unit) {
     return outStream.getPressure(unit);
   }

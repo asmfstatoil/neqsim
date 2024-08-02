@@ -36,7 +36,7 @@ public class PhaseHydrate extends Phase {
    * Constructor for PhaseHydrate.
    * </p>
    *
-   * @param fluidModel a {@link String} object
+   * @param fluidModel a {@link java.lang.String} object
    */
   public PhaseHydrate(String fluidModel) {
     if (fluidModel.isEmpty()) {
@@ -125,5 +125,11 @@ public class PhaseHydrate extends Phase {
         ((ComponentHydrate) componentArray[i]).setSolidRefFluidPhase(refPhase);
       }
     }
+  }
+
+  /** {@inheritDoc} */
+  @Override
+  public double getSoundSpeed() {
+    return Double.NaN;
   }
 }

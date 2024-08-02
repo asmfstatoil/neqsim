@@ -42,10 +42,10 @@ public class PhaseGEUnifacUMRPRU extends PhaseGEUnifac {
    * </p>
    *
    * @param phase a {@link neqsim.thermo.phase.PhaseInterface} object
-   * @param alpha an array of {@link double} objects
-   * @param Dij an array of {@link double} objects
-   * @param mixRule an array of {@link String} objects
-   * @param intparam an array of {@link double} objects
+   * @param alpha an array of type double
+   * @param Dij an array of type double
+   * @param mixRule an array of {@link java.lang.String} objects
+   * @param intparam an array of type double
    */
   public PhaseGEUnifacUMRPRU(PhaseInterface phase, double[][] alpha, double[][] Dij,
       String[][] mixRule, double[][] intparam) {
@@ -68,7 +68,7 @@ public class PhaseGEUnifacUMRPRU extends PhaseGEUnifac {
    * @param numberOfComponents a int
    * @param temperature a double
    * @param pressure a double
-   * @param pt the PhaseType of the phase.
+   * @param pt the PhaseType of the phase
    */
   public void calcCommontemp(PhaseInterface phase, int numberOfComponents, double temperature,
       double pressure, PhaseType pt) {
@@ -82,10 +82,20 @@ public class PhaseGEUnifacUMRPRU extends PhaseGEUnifac {
     }
   }
 
+  /**
+   * <p>getVCommontemp.</p>
+   *
+   * @return a double
+   */
   public double getVCommontemp() {
     return VCommontemp;
   }
 
+  /**
+   * <p>getFCommontemp.</p>
+   *
+   * @return a double
+   */
   public double getFCommontemp() {
     return FCommontemp;
   }
@@ -163,7 +173,7 @@ public class PhaseGEUnifacUMRPRU extends PhaseGEUnifac {
    * getQmix.
    * </p>
    *
-   * @param name a {@link String} object
+   * @param name a {@link java.lang.String} object
    * @return a double
    */
   public double getQmix(String name) {
@@ -181,8 +191,8 @@ public class PhaseGEUnifacUMRPRU extends PhaseGEUnifac {
    * getQmixdN.
    * </p>
    *
-   * @param name a {@link String} object
-   * @return an array of {@link double} objects
+   * @param name a {@link java.lang.String} object
+   * @return an array of type double
    */
   public double[] getQmixdN(String name) {
     // int test = ((ComponentGEUnifac) componentArray[0]).getUnifacGroups().length;

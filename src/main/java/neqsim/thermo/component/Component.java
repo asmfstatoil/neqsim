@@ -14,7 +14,16 @@ import neqsim.thermo.atomElement.Element;
 import neqsim.thermo.component.attractiveEosTerm.AttractiveTermInterface;
 import neqsim.thermo.phase.PhaseInterface;
 import neqsim.util.database.NeqSimDataBase;
+import neqsim.util.unit.PressureUnit;
+import neqsim.util.unit.TemperatureUnit;
 
+/**
+ * <p>
+ * Abstract Component class.
+ * </p>
+ *
+ * @author Even Solbraa
+ */
 public abstract class Component implements ComponentInterface {
   private static final long serialVersionUID = 1000;
   static Logger logger = LogManager.getLogger(Component.class);
@@ -85,7 +94,6 @@ public abstract class Component implements ComponentInterface {
   protected double criticalTemperature;
   protected double molarMass;
   protected double acentricFactor;
-
   protected double normalLiquidDensity = 0;
   protected double reducedPressure;
   protected double reducedTemperature;
@@ -498,13 +506,18 @@ public abstract class Component implements ComponentInterface {
   @Override
   public void addMolesChemReac(double dn, double totdn) {
     if (numberOfMoles + totdn < 0 || numberOfMolesInPhase + dn < 0) {
-      String msg = "will lead to negative number of moles of component in phase for component "
-          + getComponentName() + "  who has " + numberOfMolesInPhase
-          + " in phase  and chage request was " + dn;
-      neqsim.util.exception.InvalidInputException ex =
-          new neqsim.util.exception.InvalidInputException(this, "addMolesChemReac", "dn", msg);
-      throw new RuntimeException(ex);
-      // logger.error(ex.getMessage());
+      if (Math.abs(dn) < 1e-12) {
+        dn = 0;
+        totdn = 0;
+      } else {
+        String msg = "will lead to negative number of moles of component in phase for component "
+            + getComponentName() + "  who has " + numberOfMolesInPhase
+            + " in phase  and chage request was " + dn;
+        neqsim.util.exception.InvalidInputException ex =
+            new neqsim.util.exception.InvalidInputException(this, "addMolesChemReac", "dn", msg);
+        throw new RuntimeException(ex);
+        // logger.error(ex.getMessage());
+      }
     }
     numberOfMoles += totdn;
     numberOfMolesInPhase += dn;
@@ -658,14 +671,36 @@ public abstract class Component implements ComponentInterface {
 
   /** {@inheritDoc} */
   @Override
+  public final double getTC(String unit) {
+    neqsim.util.unit.TemperatureUnit tempConversion =
+        new neqsim.util.unit.TemperatureUnit(criticalTemperature, "K");
+    return tempConversion.getValue(unit);
+  }
+
+  /** {@inheritDoc} */
+  @Override
   public final void setTC(double val) {
     criticalTemperature = val;
   }
 
   /** {@inheritDoc} */
   @Override
+  public final void setTC(double val, String unit) {
+    TemperatureUnit inValue = new TemperatureUnit(val, unit);
+    criticalTemperature = inValue.getValue(val, unit, "K");
+  }
+
+  /** {@inheritDoc} */
+  @Override
   public final void setPC(double val) {
     criticalPressure = val;
+  }
+
+  /** {@inheritDoc} */
+  @Override
+  public final void setPC(double val, String unit) {
+    PressureUnit inValue = new PressureUnit(val, unit);
+    criticalPressure = inValue.getValue(val, unit, "bara");
   }
 
   /** {@inheritDoc} */
@@ -684,6 +719,14 @@ public abstract class Component implements ComponentInterface {
   @Override
   public final double getPC() {
     return criticalPressure;
+  }
+
+  /** {@inheritDoc} */
+  @Override
+  public final double getPC(String unit) {
+    neqsim.util.unit.PressureUnit presConversion =
+        new neqsim.util.unit.PressureUnit(criticalPressure, "bara");
+    return presConversion.getValue(unit);
   }
 
   /** {@inheritDoc} */
@@ -749,6 +792,73 @@ public abstract class Component implements ComponentInterface {
   @Override
   public double getNormalLiquidDensity() {
     return normalLiquidDensity;
+  }
+
+  /** {@inheritDoc} */
+  @Override
+  public double getNormalLiquidDensity(String unit) {
+    double refDensity = normalLiquidDensity * 1e3; // density in kg/m3
+    double conversionFactor = 1.0;
+    switch (unit) {
+      case "kg/m3":
+        conversionFactor = 1.0;
+        break;
+      case "lb/ft3":
+        conversionFactor = 0.0624279606;
+        break;
+      case "kg/Sm3":
+        return getMolarMass() * ThermodynamicConstantsInterface.atm
+            / ThermodynamicConstantsInterface.R
+            / ThermodynamicConstantsInterface.standardStateTemperature;
+      case "mol/m3":
+        conversionFactor = 1.0 / getMolarMass();
+        break;
+      default:
+        throw new RuntimeException("unit not supported " + unit);
+    }
+    return refDensity * conversionFactor;
+  }
+
+  /** {@inheritDoc} */
+  @Override
+  public double getMolarMass(String unit) {
+    double refMolarMass = getMolarMass();
+    double conversionFactor = 1.0;
+    switch (unit) {
+      case "kg/mol":
+        conversionFactor = 1.0;
+        break;
+      case "gr/mol":
+        conversionFactor = 1000.0;
+        break;
+      case "lbm/lbmol":
+        conversionFactor = 1000.0;
+        break;
+      default:
+        throw new RuntimeException("unit not supported " + unit);
+    }
+    return refMolarMass * conversionFactor;
+  }
+
+  /** {@inheritDoc} */
+  @Override
+  public void setMolarMass(double value, String unit) {
+    double refMolarMass = value;
+    double conversionFactor = 1.0;
+    switch (unit) {
+      case "kg/mol":
+        conversionFactor = 1.0;
+        break;
+      case "gr/mol":
+        conversionFactor = 1000.0;
+        break;
+      case "lbm/lbmol":
+        conversionFactor = 1000.0;
+        break;
+      default:
+        throw new RuntimeException("unit not supported " + unit);
+    }
+    molarMass = refMolarMass * 1.0 / conversionFactor;
   }
 
   /** {@inheritDoc} */
@@ -1463,7 +1573,7 @@ public abstract class Component implements ComponentInterface {
    * Getter for the field <code>matiascopemanParamsPR</code>.
    * </p>
    *
-   * @return an array of {@link double} objects
+   * @return an array of type double
    */
   public final double[] getMatiascopemanParamsPR() {
     return matiascopemanParamsPR;
@@ -2181,13 +2291,7 @@ public abstract class Component implements ComponentInterface {
     return volumeCorrectionT;
   }
 
-  /**
-   * <p>
-   * getVolumeCorrection.
-   * </p>
-   *
-   * @return a double
-   */
+  /** {@inheritDoc} */
   @Override
   public double getVolumeCorrection() {
     return 0.0;

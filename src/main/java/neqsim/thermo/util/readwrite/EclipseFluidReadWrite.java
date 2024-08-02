@@ -149,13 +149,13 @@ public class EclipseFluidReadWrite {
       ArrayList<Double> ACF = new ArrayList<Double>();
       ArrayList<Double> MW = new ArrayList<Double>();
       ArrayList<Double> SSHIFT = new ArrayList<Double>();
+      ArrayList<Double> SSHIFTS = new ArrayList<Double>();
       ArrayList<Double> TBOIL = new ArrayList<Double>();
       ArrayList<Double> VCRIT = new ArrayList<Double>();
       ArrayList<Double> PARACHOR = new ArrayList<Double>();
       ArrayList<Double> ZI = new ArrayList<Double>();
       ArrayList<Double> BIC = new ArrayList<Double>();
       String EOS;
-
       while ((st = br.readLine()) != null) {
         // System.out.println("EOS " +EOS );
         if (st.trim().equals("EOS")) {
@@ -164,10 +164,16 @@ public class EclipseFluidReadWrite {
             fluid = new neqsim.thermo.system.SystemSrkEos(288.15,
                 ThermodynamicConstantsInterface.referencePressure);
           } else if (EOS.contains("PR")) {
+            String corr = br.readLine().replace("/", "");
+            if (corr.equals("PRCORR")) {
+              fluid = new neqsim.thermo.system.SystemPrEos1978(288.15,
+                  ThermodynamicConstantsInterface.referencePressure);
+            } else {
+              fluid = new neqsim.thermo.system.SystemPrEos(288.15,
+                  ThermodynamicConstantsInterface.referencePressure);
+            }
+          } else {
             fluid = new neqsim.thermo.system.SystemPrEos(288.15,
-                ThermodynamicConstantsInterface.referencePressure);
-          } else if (EOS.contains("PR78")) {
-            fluid = new neqsim.thermo.system.SystemPrEos1978(288.15,
                 ThermodynamicConstantsInterface.referencePressure);
           }
         }
@@ -277,6 +283,20 @@ public class EclipseFluidReadWrite {
             list.clear();
           }
         }
+        if (st.equals("SSHIFTS")) {
+          String line;
+          while ((line = br.readLine()) != null) {
+            st = line.replace("/", "");
+            if (st.startsWith("--") || st.isEmpty()) {
+              break;
+            }
+            try {
+              SSHIFTS.add(Double.parseDouble(st));
+            } catch (NumberFormatException e) {
+              System.out.println("Error parsing double value: " + e.getMessage());
+            }
+          }
+        }
       }
       for (int counter = 0; counter < names.size(); counter++) {
         String name = names.get(counter);
@@ -312,11 +332,13 @@ public class EclipseFluidReadWrite {
           fluid.addComponent(name, ZI.get(counter));
         } else if (TC.get(counter) >= 00.0) {
           name = names.get(counter);
-          fluid.addTBPfraction(name, ZI.get(counter), MW.get(counter) / 1000.0, 0.9);
+          double stddensity = 0.5046 * MW.get(counter) / 1000.0 + 0.668468;
+          fluid.addTBPfraction(name, ZI.get(counter), MW.get(counter) / 1000.0, stddensity);
           name = name + "_PC";
         } else {
           name = names.get(counter);
-          fluid.addTBPfraction(name, ZI.get(counter), MW.get(counter) / 1000.0, 0.9);
+          double stddensity = 0.5046 * MW.get(counter) / 1000.0 + 0.668468;
+          fluid.addTBPfraction(name, ZI.get(counter), MW.get(counter) / 1000.0, stddensity);
           name = name + "_PC";
           // fluid.changeComponentName(name+"_PC", names.get(counter));
         }
@@ -329,7 +351,12 @@ public class EclipseFluidReadWrite {
           fluid.getPhase(i).getComponent(name).setNormalBoilingPoint(TBOIL.get(counter));
           fluid.getPhase(i).getComponent(name).setCriticalVolume(VCRIT.get(counter));
           fluid.getPhase(i).getComponent(name).setParachorParameter(PARACHOR.get(counter));
-          fluid.getPhase(i).getComponent(name).setVolumeCorrectionConst(SSHIFT.get(counter));
+          if (SSHIFTS.size() > 0) {
+            fluid.getPhase(i).getComponent(name).setVolumeCorrectionConst(SSHIFTS.get(counter));
+          } else {
+            fluid.getPhase(i).getComponent(name).setVolumeCorrectionConst(SSHIFT.get(counter));
+          }
+          fluid.getPhase(i).getComponent(name).setRacketZ(0.29056 - 0.08775 * ACF.get(counter));
         }
         if (fluid.getPhase(0).getComponent(name).isIsTBPfraction()) {
           fluid.changeComponentName(name, names.get(counter).replaceAll("_PC", "") + pseudoName);
