@@ -1,4 +1,4 @@
-package neqsim.chemicalReactions.chemicalReaction;
+package neqsim.chemicalReactions.chemicalreaction;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Disabled;

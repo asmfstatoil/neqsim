@@ -13,7 +13,7 @@ import org.apache.logging.log4j.Logger;
 import Jama.Matrix;
 import neqsim.chemicalReactions.chemicalEquilibriaum.ChemicalEquilibrium;
 import neqsim.chemicalReactions.chemicalEquilibriaum.LinearProgrammingChemicalEquilibrium;
-import neqsim.chemicalReactions.chemicalReaction.ChemicalReactionList;
+import neqsim.chemicalReactions.chemicalreaction.ChemicalReactionList;
 import neqsim.chemicalReactions.kinetics.Kinetics;
 import neqsim.thermo.component.ComponentInterface;
 import neqsim.thermo.phase.PhaseInterface;

@@ -1,4 +1,4 @@
-package neqsim.chemicalReactions.chemicalReaction;
+package neqsim.chemicalReactions.chemicalreaction;
 
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
