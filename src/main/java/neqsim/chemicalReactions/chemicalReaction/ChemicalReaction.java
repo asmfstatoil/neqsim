@@ -4,7 +4,7 @@
  * Created on 4. februar 2001, 15:32
  */
 
-package neqsim.chemicalReactions.chemicalReaction;
+package neqsim.chemicalReactions.chemicalreaction;
 
 import Jama.Matrix;
 import neqsim.thermo.component.ComponentInterface;

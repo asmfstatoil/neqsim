@@ -4,7 +4,7 @@
  * Created on 20. september 2004, 22:40
  */
 
-package neqsim.chemicalReactions.chemicalReaction;
+package neqsim.chemicalReactions.chemicalreaction;
 
 import java.util.ArrayList;
 import org.apache.logging.log4j.LogManager;
