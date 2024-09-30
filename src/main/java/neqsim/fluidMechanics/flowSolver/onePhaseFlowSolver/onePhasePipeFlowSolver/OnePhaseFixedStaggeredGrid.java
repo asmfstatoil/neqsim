@@ -7,7 +7,7 @@
 package neqsim.fluidMechanics.flowSolver.onePhaseFlowSolver.onePhasePipeFlowSolver;
 
 import Jama.Matrix;
-import neqsim.mathlib.generalMath.TDMAsolve;
+import neqsim.mathlib.generalmath.TDMAsolve;
 
 /**
  * <p>

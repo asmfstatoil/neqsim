@@ -2,7 +2,7 @@ package neqsim.fluidMechanics.flowSolver.twoPhaseFlowSolver.twoPhasePipeFlowSolv
 
 import Jama.Matrix;
 import neqsim.fluidMechanics.flowSystem.FlowSystemInterface;
-import neqsim.mathlib.generalMath.TDMAsolve;
+import neqsim.mathlib.generalmath.TDMAsolve;
 
 /**
  * <p>
