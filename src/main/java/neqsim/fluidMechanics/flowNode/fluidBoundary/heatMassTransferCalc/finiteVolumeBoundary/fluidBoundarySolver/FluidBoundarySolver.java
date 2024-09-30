@@ -7,8 +7,8 @@
 package neqsim.fluidMechanics.flowNode.fluidBoundary.heatMassTransferCalc.finiteVolumeBoundary.fluidBoundarySolver;
 
 import Jama.Matrix;
-import neqsim.MathLib.generalMath.TDMAsolve;
 import neqsim.fluidMechanics.flowNode.fluidBoundary.heatMassTransferCalc.finiteVolumeBoundary.fluidBoundarySystem.FluidBoundarySystemInterface;
+import neqsim.mathlib.generalMath.TDMAsolve;
 
 /**
  * <p>

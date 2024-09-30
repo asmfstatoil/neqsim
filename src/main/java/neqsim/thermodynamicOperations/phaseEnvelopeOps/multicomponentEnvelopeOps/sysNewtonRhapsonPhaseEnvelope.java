@@ -3,7 +3,7 @@ package neqsim.thermodynamicOperations.phaseEnvelopeOps.multicomponentEnvelopeOp
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import Jama.Matrix;
-import neqsim.MathLib.nonLinearSolver.newtonRhapson;
+import neqsim.mathlib.nonLinearSolver.newtonRhapson;
 import neqsim.thermo.system.SystemInterface;
 
 /**

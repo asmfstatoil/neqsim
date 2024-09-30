@@ -1,7 +1,7 @@
 package neqsim.thermodynamicOperations.flashOps;
 
 import Jama.Matrix;
-import neqsim.MathLib.nonLinearSolver.newtonRhapson;
+import neqsim.mathlib.nonLinearSolver.newtonRhapson;
 import neqsim.thermo.system.SystemInterface;
 
 /**
