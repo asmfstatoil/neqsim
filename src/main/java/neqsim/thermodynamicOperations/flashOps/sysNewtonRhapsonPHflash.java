@@ -3,7 +3,7 @@ package neqsim.thermodynamicOperations.flashOps;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import Jama.Matrix;
-import neqsim.mathlib.nonLinearSolver.newtonRhapson;
+import neqsim.mathlib.nonlinearsolver.newtonRhapson;
 import neqsim.thermo.ThermodynamicConstantsInterface;
 import neqsim.thermo.system.SystemInterface;
 

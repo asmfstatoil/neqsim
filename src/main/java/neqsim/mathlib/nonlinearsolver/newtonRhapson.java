@@ -4,7 +4,7 @@
  * Created on 15. juli 2000, 17:43
  */
 
-package neqsim.mathlib.nonLinearSolver;
+package neqsim.mathlib.nonlinearsolver;
 
 /**
  * <p>

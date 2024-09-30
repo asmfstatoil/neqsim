@@ -6,7 +6,7 @@ import org.apache.commons.math3.linear.LUDecomposition;
 import org.apache.commons.math3.linear.RealMatrix;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import neqsim.mathlib.nonLinearSolver.newtonRhapson;
+import neqsim.mathlib.nonlinearsolver.newtonRhapson;
 import neqsim.thermo.system.SystemInterface;
 
 /**

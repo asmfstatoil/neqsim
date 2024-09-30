@@ -1,4 +1,4 @@
-package neqsim.mathlib.nonLinearSolver;
+package neqsim.mathlib.nonlinearsolver;
 
 import Jama.Matrix;
 import neqsim.thermo.phase.PhaseType;

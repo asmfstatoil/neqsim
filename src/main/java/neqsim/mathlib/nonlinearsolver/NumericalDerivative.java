@@ -4,7 +4,7 @@
  * Created on 28. juli 2000, 15:39
  */
 
-package neqsim.mathlib.nonLinearSolver;
+package neqsim.mathlib.nonlinearsolver;
 
 import neqsim.thermo.component.ComponentInterface;
 import neqsim.thermo.phase.PhaseInterface;
