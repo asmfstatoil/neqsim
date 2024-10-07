@@ -1,4 +1,4 @@
-package neqsim.fluidMechanics.util.example;
+package neqsim.fluidmechanics.util.example;
 
 import neqsim.processsimulation.processequipment.pipeline.Pipeline;
 import neqsim.processsimulation.processequipment.pipeline.TwoPhasePipeLine;

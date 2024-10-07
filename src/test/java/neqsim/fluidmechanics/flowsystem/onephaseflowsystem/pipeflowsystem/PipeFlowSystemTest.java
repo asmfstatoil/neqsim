@@ -1,10 +1,9 @@
-package neqsim.fluidMechanics.flowSystem.onePhaseFlowSystem.pipeFlowSystem;
+package neqsim.fluidmechanics.flowsystem.onephaseflowsystem.pipeflowsystem;
 
 import java.util.Arrays;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import neqsim.fluidmechanics.flowsystem.FlowSystemInterface;
-import neqsim.fluidmechanics.flowsystem.onephaseflowsystem.pipeflowsystem.PipeFlowSystem;
 import neqsim.thermo.system.SystemInterface;
 
 public class PipeFlowSystemTest extends neqsim.NeqSimTest {

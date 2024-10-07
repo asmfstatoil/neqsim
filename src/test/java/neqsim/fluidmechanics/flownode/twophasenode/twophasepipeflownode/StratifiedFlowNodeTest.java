@@ -1,8 +1,7 @@
-package neqsim.fluidMechanics.flowNode.twoPhaseNode.twoPhasePipeFlowNode;
+package neqsim.fluidmechanics.flownode.twophasenode.twophasepipeflownode;
 
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
-import neqsim.fluidmechanics.flownode.twophasenode.twophasepipeflownode.StratifiedFlowNode;
 import neqsim.fluidmechanics.geometrydefinitions.pipe.PipeData;
 import neqsim.thermo.phase.PhaseType;
 import neqsim.thermo.system.SystemInterface;
