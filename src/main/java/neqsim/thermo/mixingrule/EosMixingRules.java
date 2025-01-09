@@ -2210,7 +2210,7 @@ public class EosMixingRules implements Cloneable, ThermodynamicConstantsInterfac
    * @return a {@link neqsim.thermo.mixingrule.EosMixingRulesInterface} object
    */
   public EosMixingRulesInterface getMixingRule(int mr, PhaseInterface phase) {
-    this.wij = new double[3][phase.getNumberOfComponents()][phase.getNumberOfComponents()];
+    wij = new double[3][phase.getNumberOfComponents()][phase.getNumberOfComponents()];
     intparam = new double[phase.getNumberOfComponents()][phase.getNumberOfComponents()];
 
     if (mr == 1) {
@@ -2635,17 +2635,8 @@ public class EosMixingRules implements Cloneable, ThermodynamicConstantsInterfac
    *
    * @return Value of property mixingRuleName.
    */
-  public java.lang.String getMixingRuleName() {
+  public java.lang.String getEosMixingRuleName() {
     return mixingRuleName;
-  }
-
-  /**
-   * Setter for property mixingRuleName.
-   *
-   * @param mixingRuleName New value of property mixingRuleName.
-   */
-  public void setMixingRuleName(java.lang.String mixingRuleName) {
-    this.mixingRuleName = mixingRuleName;
   }
 
   /**

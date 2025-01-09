@@ -437,12 +437,6 @@ public abstract class PhaseEos extends Phase implements PhaseEosInterface {
 
   /** {@inheritDoc} */
   @Override
-  public String getMixingRuleName() {
-    return mixRule.getName();
-  }
-
-  /** {@inheritDoc} */
-  @Override
   public double calcA(PhaseInterface phase, double temperature, double pressure, int numbcomp) {
     loc_A = mixRule.calcA(phase, temperature, pressure, numbcomp);
     return loc_A;

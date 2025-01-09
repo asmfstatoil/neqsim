@@ -11,7 +11,7 @@ import neqsim.thermo.phase.PhaseEos;
  */
 public class EosMixingRulesTest {
   @Test
-  void testSetMixingRuleName() {
+  void testSetMixingRule() {
     neqsim.thermo.system.SystemPrEos testSystem = new neqsim.thermo.system.SystemPrEos(298.0, 10.0);
     testSystem.addComponent("nitrogen", 0.01);
     testSystem.addComponent("CO2", 0.01);

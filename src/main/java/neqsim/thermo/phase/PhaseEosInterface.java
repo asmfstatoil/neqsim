@@ -33,12 +33,14 @@ public interface PhaseEosInterface extends PhaseInterface {
 
   /**
    * <p>
-   * getMixingRuleName.
+   * getEosMixingRuleName.
    * </p>
    *
    * @return a {@link java.lang.String} object
    */
-  public String getMixingRuleName();
+  public default String getEosMixingRuleName() {
+    return getEosMixingRule().getName();
+  }
 
   /**
    * <p>

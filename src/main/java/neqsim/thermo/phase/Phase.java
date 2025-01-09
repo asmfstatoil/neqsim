@@ -16,6 +16,7 @@ import neqsim.physicalproperties.system.PhysicalPropertyModel;
 import neqsim.thermo.ThermodynamicConstantsInterface;
 import neqsim.thermo.ThermodynamicModelSettings;
 import neqsim.thermo.component.ComponentInterface;
+import neqsim.thermo.mixingrule.EosMixingRuleType;
 import neqsim.thermo.mixingrule.MixingRuleTypeInterface;
 import neqsim.thermo.system.SystemInterface;
 import neqsim.util.exception.InvalidInputException;
@@ -2026,6 +2027,17 @@ public abstract class Phase implements PhaseInterface {
       b = 1.0 - neqsim.thermo.ThermodynamicModelSettings.phaseFractionMinimumLimit;
     }
     this.beta = b;
+  }
+
+  /** {@inheritDoc} */
+  @Override
+  public void setMixingRuleGEModel(String name) {}
+
+  /** {@inheritDoc} */
+  @Override
+  @Deprecated
+  public void setMixingRule(EosMixingRuleType emrt) {
+    mixingRuleType = emrt;
   }
 
   /** {@inheritDoc} */

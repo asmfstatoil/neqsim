@@ -1624,7 +1624,7 @@ public abstract class SystemThermo implements SystemInterface {
       table[getPhases()[0].getNumberOfComponents() + 23][0] = "Mixing Rule";
       try {
         table[getPhases()[0].getNumberOfComponents() + 23][i + 2] =
-            ((PhaseEosInterface) getPhase(i)).getMixingRuleName();
+            ((PhaseEosInterface) getPhase(i)).getEosMixingRuleName();
       } catch (Exception ex) {
         table[getPhases()[0].getNumberOfComponents() + 23][i + 2] = "?";
         // logger.error(ex.getMessage(),e);
