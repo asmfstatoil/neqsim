@@ -15,6 +15,7 @@ package neqsim.thermo.phase;
  * @version $Id: $Id
  */
 public class PhasePureComponentSolid extends PhaseSolid {
+  /** Serialization version UID. */
   private static final long serialVersionUID = 1000;
 
   /**
@@ -22,10 +23,7 @@ public class PhasePureComponentSolid extends PhaseSolid {
    * Constructor for PhasePureComponentSolid.
    * </p>
    */
-  public PhasePureComponentSolid() {
-    super();
-    setType(PhaseType.SOLID);
-  }
+  public PhasePureComponentSolid() {}
 
   /** {@inheritDoc} */
   @Override

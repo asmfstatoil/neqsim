@@ -2,7 +2,7 @@ package neqsim.thermo.phase;
 
 import neqsim.thermo.ThermodynamicConstantsInterface;
 import neqsim.thermo.component.ComponentGERG2004;
-import neqsim.thermo.util.JNI.GERG2004EOS;
+import neqsim.thermo.util.jni.GERG2004EOS;
 
 /**
  * <p>
@@ -13,6 +13,7 @@ import neqsim.thermo.util.JNI.GERG2004EOS;
  * @version $Id: $Id
  */
 public class PhaseGERG2004Eos extends PhaseEos {
+  /** Serialization version UID. */
   private static final long serialVersionUID = 1000;
 
   private GERG2004EOS gergEOS = new GERG2004EOS();
@@ -40,7 +41,6 @@ public class PhaseGERG2004Eos extends PhaseEos {
    * </p>
    */
   public PhaseGERG2004Eos() {
-    super();
     thermoPropertyModelName = "GERG-EoS 2008";
   }
 
@@ -60,7 +60,7 @@ public class PhaseGERG2004Eos extends PhaseEos {
   /** {@inheritDoc} */
   @Override
   public void addComponent(String name, double moles, double molesInPhase, int compNumber) {
-    super.addComponent(name, molesInPhase);
+    super.addComponent(name, molesInPhase, compNumber);
     componentArray[compNumber] = new ComponentGERG2004(name, moles, molesInPhase, compNumber);
   }
 

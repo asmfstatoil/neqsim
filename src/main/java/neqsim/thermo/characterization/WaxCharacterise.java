@@ -13,7 +13,9 @@ import neqsim.thermo.system.SystemInterface;
  * @version $Id: $Id
  */
 public class WaxCharacterise implements java.io.Serializable, Cloneable {
+  /** Serialization version UID. */
   private static final long serialVersionUID = 1000;
+  /** Logger object for class. */
   static Logger logger = LogManager.getLogger(WaxCharacterise.class);
 
   SystemInterface thermoSystem = null;
@@ -45,12 +47,14 @@ public class WaxCharacterise implements java.io.Serializable, Cloneable {
   }
 
   public abstract class WaxBaseModel implements WaxModelInterface {
+    /** Serialization version UID. */
     private static final long serialVersionUID = 1000;
 
     double[] parameterWax = new double[3];
     double[] parameterWaxHeatOfFusion = new double[1];
     double[] parameterWaxTriplePointTemperature = new double[1];
 
+    /** {@inheritDoc} */
     @Override
     public WaxBaseModel clone() {
       WaxBaseModel clonedSystem = null;
@@ -62,29 +66,35 @@ public class WaxCharacterise implements java.io.Serializable, Cloneable {
       return clonedSystem;
     }
 
+    /** {@inheritDoc} */
     @Override
     public void addTBPWax() {}
 
+    /** {@inheritDoc} */
     @Override
     public void setWaxParameters(double[] parameters) {
       parameterWax = parameters;
     }
 
+    /** {@inheritDoc} */
     @Override
     public void setWaxParameter(int i, double parameters) {
       parameterWax[i] = parameters;
     }
 
+    /** {@inheritDoc} */
     @Override
     public void setParameterWaxHeatOfFusion(int i, double parameters) {
       parameterWaxHeatOfFusion[i] = parameters;
     }
 
+    /** {@inheritDoc} */
     @Override
     public void setParameterWaxTriplePointTemperature(int i, double parameters) {
       parameterWaxTriplePointTemperature[i] = parameters;
     }
 
+    /** {@inheritDoc} */
     @Override
     public double[] getWaxParameters() {
       return parameterWax;
@@ -124,6 +134,7 @@ public class WaxCharacterise implements java.io.Serializable, Cloneable {
   }
 
   public class PedersenWaxModel extends WaxBaseModel {
+    /** Serialization version UID. */
     private static final long serialVersionUID = 1000;
 
     public PedersenWaxModel() {
@@ -160,6 +171,7 @@ public class WaxCharacterise implements java.io.Serializable, Cloneable {
           3.46);
     }
 
+    /** {@inheritDoc} */
     @Override
     public void addTBPWax() {
       int numberOfCOmponents = thermoSystem.getPhase(0).getNumberOfComponents();
@@ -235,6 +247,7 @@ public class WaxCharacterise implements java.io.Serializable, Cloneable {
       }
     }
 
+    /** {@inheritDoc} */
     @Override
     public void removeWax() {
       for (int i = 0; i < thermoSystem.getPhase(0).getNumberOfComponents(); i++) {
@@ -260,7 +273,6 @@ public class WaxCharacterise implements java.io.Serializable, Cloneable {
   public WaxModelInterface getModel(String name) {
     this.name = name;
     if (name.equals("PedersenWax")) {
-      return new PedersenWaxModel();
     }
     return new PedersenWaxModel();
   }

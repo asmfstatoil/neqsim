@@ -14,7 +14,9 @@ import neqsim.thermo.component.ComponentPCSAFT;
  * @version $Id: $Id
  */
 public class PhasePCSAFT extends PhaseSrkEos {
+  /** Serialization version UID. */
   private static final long serialVersionUID = 1000;
+  /** Logger object for class. */
   static Logger logger = LogManager.getLogger(PhasePCSAFT.class);
 
   double nSAFT = 1.0;
@@ -83,9 +85,7 @@ public class PhasePCSAFT extends PhaseSrkEos {
    * Constructor for PhasePCSAFT.
    * </p>
    */
-  public PhasePCSAFT() {
-    super();
-  }
+  public PhasePCSAFT() {}
 
   /** {@inheritDoc} */
   @Override
@@ -103,11 +103,17 @@ public class PhasePCSAFT extends PhaseSrkEos {
   /** {@inheritDoc} */
   @Override
   public void addComponent(String name, double moles, double molesInPhase, int compNumber) {
-    super.addComponent(name, molesInPhase);
+    super.addComponent(name, molesInPhase, compNumber);
     componentArray[compNumber] = new ComponentPCSAFT(name, moles, molesInPhase, compNumber);
   }
 
-  /** {@inheritDoc} */
+  /**
+   * {@inheritDoc}
+   *
+   * <p>
+   * Calls component.Finit(initType)
+   * </p>
+   */
   @Override
   public void init(double totalNumberOfMoles, int numberOfComponents, int initType, PhaseType pt,
       double beta) {
@@ -497,7 +503,7 @@ public class PhasePCSAFT extends PhaseSrkEos {
    *
    * @param i a int
    * @param m a double
-   * @param ab an array of {@link double} objects
+   * @param ab an array of type double
    * @return a double
    */
   public double getaSAFT(int i, double m, double[][] ab) {
@@ -511,7 +517,7 @@ public class PhasePCSAFT extends PhaseSrkEos {
    *
    * @param i a int
    * @param m a double
-   * @param ab an array of {@link double} objects
+   * @param ab an array of type double
    * @return a double
    */
   public double getaSAFTdm(int i, double m, double[][] ab) {
@@ -1114,16 +1120,16 @@ public class PhasePCSAFT extends PhaseSrkEos {
    * @param temperature a double
    * @param A a double
    * @param B a double
-   * @param phase a int
+   * @param phaseNum a int
    * @return a double
    * @throws neqsim.util.exception.IsNaNException if any.
    * @throws neqsim.util.exception.TooManyIterationsException if any.
    */
-  public double molarVolume22(double pressure, double temperature, double A, double B, int phase)
+  public double molarVolume22(double pressure, double temperature, double A, double B, int phaseNum)
       throws neqsim.util.exception.IsNaNException,
       neqsim.util.exception.TooManyIterationsException {
     double volume =
-        phase == 0 ? getB() / (2.0 / (2.0 + temperature / getPseudoCriticalTemperature()))
+        phaseNum == 0 ? getB() / (2.0 / (2.0 + temperature / getPseudoCriticalTemperature()))
             : (numberOfMolesInPhase * temperature * R) / pressure;
     setMolarVolume(volume / numberOfMolesInPhase);
     double oldMolarVolume = 0;

@@ -23,7 +23,9 @@ import org.h2.jdbc.JdbcSQLSyntaxErrorException;
  */
 public class NeqSimDataBase
     implements neqsim.util.util.FileSystemSettings, java.io.Serializable, AutoCloseable {
+  /** Serialization version UID. */
   private static final long serialVersionUID = 1000;
+  /** Logger object for class. */
   static Logger logger = LogManager.getLogger(NeqSimDataBase.class);
 
   /** Constant <code>dataBasePath=""</code>. */
@@ -226,8 +228,9 @@ public class NeqSimDataBase
     }
   }
 
+  /** {@inheritDoc} */
   @Override
-  public void close() throws Exception {
+  public void close() throws SQLException {
     if (databaseConnection != null) {
       databaseConnection.close();
     }
@@ -394,17 +397,15 @@ public class NeqSimDataBase
   }
 
   /**
-   * <p>
-   * hasComponent.
-   * </p>
+   * Verify if database has a component.
    *
-   * @param compName a {@link java.lang.String} object
-   * @return a boolean
+   * @param name Name of component to look for.
+   * @return True if component is found.
    */
-  public static boolean hasComponent(String compName) {
+  public static boolean hasComponent(String name) {
     try (neqsim.util.database.NeqSimDataBase database = new neqsim.util.database.NeqSimDataBase();
         java.sql.ResultSet dataSet =
-            database.getResultSet("select count(*) from comp WHERE NAME='" + compName + "'")) {
+            database.getResultSet("select count(*) from comp WHERE NAME='" + name + "'")) {
       dataSet.next();
       int size = dataSet.getInt(1);
       if (size == 0) {
@@ -418,7 +419,29 @@ public class NeqSimDataBase
   }
 
   /**
-   * Drops and re-creates table from contents in csv file.
+   * Verify if database has a component.
+   *
+   * @param name Name of component to look for.
+   * @return True if component is found.
+   */
+  public static boolean hasTempComponent(String name) {
+    try (neqsim.util.database.NeqSimDataBase database = new neqsim.util.database.NeqSimDataBase();
+        java.sql.ResultSet dataSet =
+            database.getResultSet("select count(*) from comptemp WHERE NAME='" + name + "'")) {
+      dataSet.next();
+      int size = dataSet.getInt(1);
+      if (size == 0) {
+        return false;
+      } else {
+        return true;
+      }
+    } catch (Exception ex) {
+      throw new RuntimeException(ex);
+    }
+  }
+
+  /**
+   * Drops and re-creates table from contents in default csv file.
    *
    * @param tableName Name of table to replace
    */
@@ -430,7 +453,7 @@ public class NeqSimDataBase
    * Drops and re-creates table from contents in csv file.
    *
    * @param tableName Name of table to replace
-   * @param path Path to csv file to
+   * @param path Path to csv file to get table data from
    */
   public static void updateTable(String tableName, String path) {
     URL url = NeqSimDataBase.class.getClassLoader().getResource(path);
@@ -440,7 +463,8 @@ public class NeqSimDataBase
     }
     try (neqsim.util.database.NeqSimDataBase database = new neqsim.util.database.NeqSimDataBase()) {
       database.execute("DROP TABLE IF EXISTS " + tableName);
-      String sqlString = "CREATE TABLE " + tableName + " AS SELECT * FROM CSVREAD('" + url + "')";
+      String sqlString =
+          "CREATE TABLE " + tableName + " AS SELECT * FROM CSVREAD('file:" + url + "')";
       database.execute(sqlString);
     } catch (Exception ex) {
       logger.error("Failed updating table " + tableName, ex);
@@ -454,8 +478,7 @@ public class NeqSimDataBase
    * @param path Path to csv file to
    */
   public static void replaceTable(String tableName, String path) {
-    neqsim.util.database.NeqSimDataBase database = new neqsim.util.database.NeqSimDataBase();
-    try {
+    try (neqsim.util.database.NeqSimDataBase database = new neqsim.util.database.NeqSimDataBase()) {
       database.execute("DROP TABLE IF EXISTS " + tableName);
       String sqlString = "CREATE TABLE " + tableName + " AS SELECT * FROM CSVREAD('" + path + "')";
       database.execute(sqlString);
@@ -467,6 +490,11 @@ public class NeqSimDataBase
     }
   }
 
+  /**
+   * <p>
+   * initH2DatabaseFromCSVfiles.
+   * </p>
+   */
   public static void initH2DatabaseFromCSVfiles() {
     h2IsInitalizing = true;
     neqsim.util.database.NeqSimDataBase.connectionString =
@@ -502,6 +530,8 @@ public class NeqSimDataBase
       updateTable("UNIFACInterParamC_UMRMC");
       updateTable("MBWR32param");
       updateTable("COMPSALT");
+      updateTable("PIPEDATA");
+
       // TODO: missing tables: ionicData, reactiondatakenteisenberg,
       // purecomponentvapourpressures,
       // binarysystemviscosity, binaryliquiddiffusioncoefficientdata,

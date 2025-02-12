@@ -6,7 +6,8 @@
 
 package neqsim.thermo.phase;
 
-import neqsim.thermo.mixingRule.EosMixingRulesInterface;
+import neqsim.thermo.mixingrule.EosMixingRulesInterface;
+import neqsim.util.ExcludeFromJacocoGeneratedReport;
 
 /**
  * <p>
@@ -23,19 +24,19 @@ public interface PhaseEosInterface extends PhaseInterface {
 
   /**
    * <p>
-   * getMixingRule.
+   * getEosMixingRule.
    * </p>
    *
-   * @return a {@link neqsim.thermo.mixingRule.EosMixingRulesInterface} object
+   * @return a {@link neqsim.thermo.mixingrule.EosMixingRulesInterface} object
    */
-  public EosMixingRulesInterface getMixingRule();
+  public EosMixingRulesInterface getEosMixingRule();
 
   /**
    * <p>
    * getMixingRuleName.
    * </p>
    *
-   * @return a {@link String} object
+   * @return a {@link java.lang.String} object
    */
   public String getMixingRuleName();
 
@@ -80,8 +81,9 @@ public interface PhaseEosInterface extends PhaseInterface {
    * displayInteractionCoefficients.
    * </p>
    *
-   * @param intType a {@link String} object
+   * @param intType a {@link java.lang.String} object
    */
+  @ExcludeFromJacocoGeneratedReport
   public void displayInteractionCoefficients(String intType);
   // public double getA();
   // public double getB();

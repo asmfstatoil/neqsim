@@ -9,17 +9,8 @@ package neqsim.util.exception;
  * @version $Id: $Id
  */
 public class InvalidOutputException extends neqsim.util.exception.ThermoException {
+  /** Serialization version UID. */
   private static final long serialVersionUID = 1000;
-
-  /**
-   * Constructs an <code>InvalidOutputException</code> with the specified detail message.
-   *
-   * @param msg the detail message.
-   */
-  @Deprecated
-  public InvalidOutputException(String msg) {
-    super(msg);
-  }
 
   /**
    * Constructs an <code>InvalidOutputException</code> with a default message.
@@ -40,7 +31,8 @@ public class InvalidOutputException extends neqsim.util.exception.ThermoExceptio
    * @param outputName Name of invalid output
    * @param msg error message detailing output problem
    */
-  public InvalidOutputException(String className, String methodName, String outputName, String msg) {
+  public InvalidOutputException(String className, String methodName, String outputName,
+      String msg) {
     super(className, methodName, "output " + outputName + " " + msg);
   }
 

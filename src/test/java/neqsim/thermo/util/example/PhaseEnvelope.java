@@ -2,11 +2,12 @@ package neqsim.thermo.util.example;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import neqsim.PVTsimulation.simulation.SaturationPressure;
-import neqsim.PVTsimulation.simulation.SimulationInterface;
+import neqsim.pvtsimulation.simulation.SaturationPressure;
+import neqsim.pvtsimulation.simulation.SimulationInterface;
 import neqsim.thermo.system.SystemInterface;
 import neqsim.thermo.system.SystemUMRPRUMCEos;
-import neqsim.thermodynamicOperations.ThermodynamicOperations;
+import neqsim.thermodynamicoperations.ThermodynamicOperations;
+import neqsim.util.ExcludeFromJacocoGeneratedReport;
 
 /**
  * <p>
@@ -18,6 +19,7 @@ import neqsim.thermodynamicOperations.ThermodynamicOperations;
  * @version $Id: $Id
  */
 public class PhaseEnvelope {
+  /** Logger object for class. */
   static Logger logger = LogManager.getLogger(PhaseEnvelope.class);
 
   /**
@@ -28,6 +30,7 @@ public class PhaseEnvelope {
    * @param args an array of {@link java.lang.String} objects
    */
   @SuppressWarnings("unused")
+  @ExcludeFromJacocoGeneratedReport
   public static void main(String args[]) {
     // SystemInterface testSystem = new SystemUMRPRUEos(225.65, 1.00);
     // SystemInterface testSystem = new SystemPrEos1978(223.15,50.00);
@@ -93,8 +96,6 @@ public class PhaseEnvelope {
 
     testSystem.setMixingRule("HV", "UNIFAC_UMRPRU");
     // testSystem.setMultiPhaseCheck(true);
-    // 1- orginal no interaction 2- classic w interaction
-    // 3- Huron-Vidal 4- Wong-Sandler
     // testSystem.setMixingRule(2); //"UNIFAC_UMRPRU");
     // testSystem.setHydrateCheck(true);
     // testSystem.setBmixType(0);

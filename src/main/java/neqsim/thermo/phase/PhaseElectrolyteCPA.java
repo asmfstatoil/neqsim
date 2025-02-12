@@ -8,8 +8,9 @@ import org.ejml.dense.row.NormOps_DDRM;
 import org.ejml.simple.SimpleMatrix;
 import neqsim.thermo.component.ComponentCPAInterface;
 import neqsim.thermo.component.ComponentElectrolyteCPA;
-import neqsim.thermo.mixingRule.CPAMixing;
-import neqsim.thermo.mixingRule.CPAMixingInterface;
+import neqsim.thermo.mixingrule.CPAMixingRuleHandler;
+import neqsim.thermo.mixingrule.CPAMixingRulesInterface;
+import neqsim.thermo.mixingrule.MixingRuleTypeInterface;
 
 /**
  * <p>
@@ -21,11 +22,13 @@ import neqsim.thermo.mixingRule.CPAMixingInterface;
  */
 public class PhaseElectrolyteCPA extends PhaseModifiedFurstElectrolyteEos
     implements PhaseCPAInterface {
+  /** Serialization version UID. */
   private static final long serialVersionUID = 1000;
+  /** Logger object for class. */
   static Logger logger = LogManager.getLogger(PhaseElectrolyteCPA.class);
 
-  public CPAMixing cpaSelect = new CPAMixing();
-  public CPAMixingInterface cpamix;
+  public CPAMixingRuleHandler cpaSelect = new CPAMixingRuleHandler();
+  public CPAMixingRulesInterface cpamix;
   double gcpavv = 0.0;
   double gcpavvv = 0.0;
   double gcpa = 0.0;
@@ -76,9 +79,7 @@ public class PhaseElectrolyteCPA extends PhaseModifiedFurstElectrolyteEos
    * Constructor for PhaseElectrolyteCPA.
    * </p>
    */
-  public PhaseElectrolyteCPA() {
-    super();
-  }
+  public PhaseElectrolyteCPA() {}
 
   /** {@inheritDoc} */
   @Override
@@ -97,8 +98,10 @@ public class PhaseElectrolyteCPA extends PhaseModifiedFurstElectrolyteEos
 
   /** {@inheritDoc} */
   @Override
-  public void setMixingRule(int type) {
-    super.setMixingRule(type);
+  public void setMixingRule(MixingRuleTypeInterface mr) {
+    // NB! Sets EOS mixing rule in parent class PhaseEos
+    super.setMixingRule(mr);
+    // NB! Ignores input mr, uses CPA
     cpamix = cpaSelect.getMixingRule(1, this);
   }
 
@@ -179,6 +182,7 @@ public class PhaseElectrolyteCPA extends PhaseModifiedFurstElectrolyteEos
     }
 
     if (cpamix == null) {
+      // NB! Hardcoded mixing rule type
       cpamix = cpaSelect.getMixingRule(1, this);
     }
 
@@ -827,7 +831,7 @@ public class PhaseElectrolyteCPA extends PhaseModifiedFurstElectrolyteEos
    * calcRootVolFinder.
    * </p>
    *
-   * @param pt the PhaseType of the phase.
+   * @param pt the PhaseType of the phase
    * @return a double
    */
   public double calcRootVolFinder(PhaseType pt) {
@@ -886,8 +890,8 @@ public class PhaseElectrolyteCPA extends PhaseModifiedFurstElectrolyteEos
     if (solvedBonVlow < 1e-3) {
       solvedBonVlow = solvedBonVHigh;
     }
-    // dataPresentation.fileHandeling.createTextFile.TextFile file = new
-    // dataPresentation.fileHandeling.createTextFile.TextFile();
+    // dataPresentation.filehandling.TextFile file = new
+    // dataPresentation.filehandling.TextFile();
     // file.setValues(matrix);
     // file.setOutputFileName("D:/temp/temp2.txt");
     // file.createFile();
@@ -1169,7 +1173,7 @@ public class PhaseElectrolyteCPA extends PhaseModifiedFurstElectrolyteEos
    * @param temperature a double
    * @param A a double
    * @param B a double
-   * @param pt the PhaseType of the phase.
+   * @param pt the PhaseType of the phase
    * @return a double
    * @throws neqsim.util.exception.IsNaNException if any.
    * @throws neqsim.util.exception.TooManyIterationsException if any.
@@ -1322,7 +1326,7 @@ public class PhaseElectrolyteCPA extends PhaseModifiedFurstElectrolyteEos
 
   /** {@inheritDoc} */
   @Override
-  public CPAMixingInterface getCpamix() {
+  public CPAMixingRulesInterface getCpaMixingRule() {
     return cpamix;
   }
 
@@ -1357,9 +1361,9 @@ public class PhaseElectrolyteCPA extends PhaseModifiedFurstElectrolyteEos
    * croeneckerProduct.
    * </p>
    *
-   * @param a an array of {@link double} objects
-   * @param b an array of {@link double} objects
-   * @return an array of {@link double} objects
+   * @param a an array of type double
+   * @param b an array of type double
+   * @return an array of type double
    */
   public double[][] croeneckerProduct(double[][] a, double[][] b) {
     int aLength = a.length;

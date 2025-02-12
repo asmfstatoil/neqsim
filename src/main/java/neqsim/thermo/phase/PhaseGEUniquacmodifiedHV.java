@@ -15,6 +15,7 @@ package neqsim.thermo.phase;
  * @version $Id: $Id
  */
 public class PhaseGEUniquacmodifiedHV extends PhaseGEUniquac {
+  /** Serialization version UID. */
   private static final long serialVersionUID = 1000;
 
   /**
@@ -22,14 +23,13 @@ public class PhaseGEUniquacmodifiedHV extends PhaseGEUniquac {
    * Constructor for PhaseGEUniquacmodifiedHV.
    * </p>
    */
-  public PhaseGEUniquacmodifiedHV() {
-    super();
-  }
+  public PhaseGEUniquacmodifiedHV() {}
 
   /** {@inheritDoc} */
   @Override
   public void addComponent(String name, double moles, double molesInPhase, int compNumber) {
-    super.addComponent(name, molesInPhase);
+    super.addComponent(name, molesInPhase, compNumber);
+    // todo: does not work? does not add component.
     // componentArray[compNumber] = new ComponentGEUniquacmodifiedHV(name, moles, molesInPhase,
     // compNumber);
     // creates PhaseGEUniquac type component

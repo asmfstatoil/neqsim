@@ -8,6 +8,7 @@ package neqsim.thermo.phase;
 
 import neqsim.thermo.component.ComponentGEInterface;
 import neqsim.thermo.component.ComponentGENRTLmodifiedHV;
+import neqsim.thermo.mixingrule.MixingRuleTypeInterface;
 
 /**
  * <p>
@@ -18,6 +19,7 @@ import neqsim.thermo.component.ComponentGENRTLmodifiedHV;
  * @version $Id: $Id
  */
 public class PhaseGENRTLmodifiedHV extends PhaseGENRTL {
+  /** Serialization version UID. */
   private static final long serialVersionUID = 1000;
 
   double[][] DijT;
@@ -29,8 +31,7 @@ public class PhaseGENRTLmodifiedHV extends PhaseGENRTL {
    * </p>
    */
   public PhaseGENRTLmodifiedHV() {
-    super();
-    mixRuleEos = mixSelect.getMixingRule(1);
+    mixRule = mixSelect.getMixingRule(1);
   }
 
   /**
@@ -39,10 +40,10 @@ public class PhaseGENRTLmodifiedHV extends PhaseGENRTL {
    * </p>
    *
    * @param phase a {@link neqsim.thermo.phase.PhaseInterface} object
-   * @param alpha an array of {@link double} objects
-   * @param Dij an array of {@link double} objects
-   * @param mixRule an array of {@link String} objects
-   * @param intparam an array of {@link double} objects
+   * @param alpha an array of type double
+   * @param Dij an array of type double
+   * @param mixRule an array of {@link java.lang.String} objects
+   * @param intparam an array of type double
    */
   public PhaseGENRTLmodifiedHV(PhaseInterface phase, double[][] alpha, double[][] Dij,
       String[][] mixRule, double[][] intparam) {
@@ -50,10 +51,9 @@ public class PhaseGENRTLmodifiedHV extends PhaseGENRTL {
     componentArray = new ComponentGENRTLmodifiedHV[alpha[0].length];
     type = 0;
     for (int i = 0; i < alpha[0].length; i++) {
-      componentArray[i] = new ComponentGENRTLmodifiedHV(phase.getComponents()[i].getName(),
-          phase.getComponents()[i].getNumberOfmoles(),
-          phase.getComponents()[i].getNumberOfMolesInPhase(),
-          phase.getComponents()[i].getComponentNumber());
+      componentArray[i] = new ComponentGENRTLmodifiedHV(phase.getComponent(i).getName(),
+          phase.getComponent(i).getNumberOfmoles(), phase.getComponent(i).getNumberOfMolesInPhase(),
+          phase.getComponent(i).getComponentNumber());
     }
   }
 
@@ -63,11 +63,11 @@ public class PhaseGENRTLmodifiedHV extends PhaseGENRTL {
    * </p>
    *
    * @param phase a {@link neqsim.thermo.phase.PhaseInterface} object
-   * @param alpha an array of {@link double} objects
-   * @param Dij an array of {@link double} objects
-   * @param DijT an array of {@link double} objects
-   * @param mixRule an array of {@link String} objects
-   * @param intparam an array of {@link double} objects
+   * @param alpha an array of type double
+   * @param Dij an array of type double
+   * @param DijT an array of type double
+   * @param mixRule an array of {@link java.lang.String} objects
+   * @param intparam an array of type double
    */
   public PhaseGENRTLmodifiedHV(PhaseInterface phase, double[][] alpha, double[][] Dij,
       double[][] DijT, String[][] mixRule, double[][] intparam) {
@@ -76,29 +76,28 @@ public class PhaseGENRTLmodifiedHV extends PhaseGENRTL {
     type = 1;
     this.DijT = DijT;
     for (int i = 0; i < alpha[0].length; i++) {
-      componentArray[i] = new ComponentGENRTLmodifiedHV(phase.getComponents()[i].getName(),
-          phase.getComponents()[i].getNumberOfmoles(),
-          phase.getComponents()[i].getNumberOfMolesInPhase(),
-          phase.getComponents()[i].getComponentNumber());
+      componentArray[i] = new ComponentGENRTLmodifiedHV(phase.getComponent(i).getName(),
+          phase.getComponent(i).getNumberOfmoles(), phase.getComponent(i).getNumberOfMolesInPhase(),
+          phase.getComponent(i).getComponentNumber());
     }
   }
 
   /** {@inheritDoc} */
   @Override
   public void addComponent(String name, double moles, double molesInPhase, int compNumber) {
-    super.addComponent(name, molesInPhase);
+    super.addComponent(name, molesInPhase, compNumber);
     componentArray[compNumber] =
         new ComponentGENRTLmodifiedHV(name, moles, molesInPhase, compNumber);
   }
 
   /** {@inheritDoc} */
   @Override
-  public void setMixingRule(int type) {
-    super.setMixingRule(type);
+  public void setMixingRule(MixingRuleTypeInterface mr) {
+    super.setMixingRule(mr);
     this.DijT = mixSelect.getHVDijT();
     this.intparam = mixSelect.getSRKbinaryInteractionParameters();
     this.alpha = mixSelect.getHValpha();
-    this.mixRule = mixSelect.getClassicOrHV();
+    this.mixRuleString = mixSelect.getClassicOrHV();
     this.Dij = mixSelect.getHVDij();
   }
 
@@ -106,7 +105,7 @@ public class PhaseGENRTLmodifiedHV extends PhaseGENRTL {
   @Override
   public void setParams(PhaseInterface phase, double[][] alpha, double[][] Dij, double[][] DijT,
       String[][] mixRule, double[][] intparam) {
-    this.mixRule = mixRule;
+    this.mixRuleString = mixRule;
     this.alpha = alpha;
     this.Dij = Dij;
     type = 1;
@@ -129,13 +128,13 @@ public class PhaseGENRTLmodifiedHV extends PhaseGENRTL {
     GE = 0.0;
     for (int i = 0; i < numberOfComponents; i++) {
       if (type == 0) {
-        GE += phase.getComponents()[i].getx()
-            * Math.log(((ComponentGEInterface) componentArray[i]).getGamma(phase,
-                numberOfComponents, temperature, pressure, pt, alpha, Dij, intparam, mixRule));
+        GE += phase.getComponent(i).getx() * Math
+            .log(((ComponentGEInterface) componentArray[i]).getGamma(phase, numberOfComponents,
+                temperature, pressure, pt, alpha, Dij, intparam, mixRuleString));
       } else if (type == 1) {
-        GE += phase.getComponents()[i].getx() * Math
+        GE += phase.getComponent(i).getx() * Math
             .log(((ComponentGENRTLmodifiedHV) componentArray[i]).getGamma(phase, numberOfComponents,
-                temperature, pressure, pt, alpha, Dij, DijT, intparam, mixRule));
+                temperature, pressure, pt, alpha, Dij, DijT, intparam, mixRuleString));
       }
     }
     return R * phase.getTemperature() * phase.getNumberOfMolesInPhase() * GE;
@@ -147,7 +146,8 @@ public class PhaseGENRTLmodifiedHV extends PhaseGENRTL {
     double val = 0.0;
     for (int i = 0; i < numberOfComponents; i++) {
       val +=
-          getComponent(i).getNumberOfMolesInPhase() * (getComponent(i).getLogFugacityCoefficient()); // +Math.log(getComponent(i).getx()*getComponent(i).getAntoineVaporPressure(temperature)));
+          getComponent(i).getNumberOfMolesInPhase() * (getComponent(i).getLogFugacityCoefficient());
+      // +Math.log(getComponent(i).getx()*getComponent(i).getAntoineVaporPressure(temperature)));
     }
     return R * temperature * numberOfMolesInPhase * (val + Math.log(pressure));
   }

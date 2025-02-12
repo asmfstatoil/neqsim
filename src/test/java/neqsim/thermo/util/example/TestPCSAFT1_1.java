@@ -4,7 +4,8 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import neqsim.thermo.system.SystemInterface;
 import neqsim.thermo.system.SystemSrkEos;
-import neqsim.thermodynamicOperations.ThermodynamicOperations;
+import neqsim.thermodynamicoperations.ThermodynamicOperations;
+import neqsim.util.ExcludeFromJacocoGeneratedReport;
 
 /**
  * <p>
@@ -16,6 +17,7 @@ import neqsim.thermodynamicOperations.ThermodynamicOperations;
  * @since 2.2.3
  */
 public class TestPCSAFT1_1 {
+  /** Logger object for class. */
   static Logger logger = LogManager.getLogger(TestPCSAFT1_1.class);
 
   /**
@@ -25,6 +27,7 @@ public class TestPCSAFT1_1 {
    *
    * @param args an array of {@link java.lang.String} objects
    */
+  @ExcludeFromJacocoGeneratedReport
   public static void main(String args[]) {
     double pressure = 5.0;
     String[] componentName = {"methane", "ethane", "propane", "i-butane", "n-butane", "benzene"};

@@ -5,12 +5,11 @@ import org.apache.logging.log4j.Logger;
 import org.ejml.data.DMatrixRMaj;
 import org.ejml.dense.row.CommonOps_DDRM;
 import org.ejml.dense.row.NormOps_DDRM;
-// import org.ejml.simple.SimpleMatrix;
-// import org.ejml.data.DenseMatrix64F;
 import neqsim.thermo.component.ComponentCPAInterface;
 import neqsim.thermo.component.ComponentSrkCPA;
-import neqsim.thermo.mixingRule.CPAMixing;
-import neqsim.thermo.mixingRule.CPAMixingInterface;
+import neqsim.thermo.mixingrule.CPAMixingRuleHandler;
+import neqsim.thermo.mixingrule.CPAMixingRulesInterface;
+import neqsim.thermo.mixingrule.MixingRuleTypeInterface;
 
 /**
  * <p>
@@ -21,105 +20,64 @@ import neqsim.thermo.mixingRule.CPAMixingInterface;
  * @version Modified to use procedural oriented ejml matrices by Marlene Lund
  */
 public class PhaseSrkCPA_proceduralMatrices extends PhaseSrkEos implements PhaseCPAInterface {
+  /** Serialization version UID. */
   private static final long serialVersionUID = 1000;
+  /** Logger object for class. */
+  static Logger logger = LogManager.getLogger(PhaseSrkCPA_proceduralMatrices.class);
 
-  public CPAMixing cpaSelect = new CPAMixing();
-  public CPAMixingInterface cpamix;
+  public CPAMixingRuleHandler cpaSelect = new CPAMixingRuleHandler();
+  public CPAMixingRulesInterface cpamix;
   double gcpavv = 0.0;
-
   double gcpavvv = 0.0;
-
   double gcpa = 0.0;
-
   double hcpatot = 1.0;
-
   double FCPA = 0.0;
-
   double dFCPAdTdV;
-
   double dFCPAdTdT = 0.0;
-
   double dFCPAdT = 0;
-
   double dFCPAdV = 0;
-
   double dFCPAdVdV = 0.0;
-
   double dFCPAdVdVdV = 0.0;
-
   private double gcpav = 0.0;
   int cpaon = 1;
-
   int oldTotalNumberOfAccociationSites = 0;
-
   private int totalNumberOfAccociationSites = 0;
   int[][][] selfAccociationScheme = null;
   int[][][][] crossAccociationScheme = null;
   int[] moleculeNumber = null;
-
   int[] assSiteNumber = null;
-
   private double[][] gvector = null;
-
   private double[][] delta = null;
-
   private double[][] deltaNog = null;
-
   private double[][] deltadT = null;
-
   private double[][] deltadTdT = null;
-
   private double[][][] Klkni = null;
   private DMatrixRMaj KlkTVMatrix = null;
-
   private DMatrixRMaj KlkTTMatrix = null;
-
   private DMatrixRMaj KlkTMatrix = null;
-
   private DMatrixRMaj udotTimesmMatrix = null;
-
   private DMatrixRMaj mVector = null;
-
   private DMatrixRMaj udotMatrix = null;
-
   private DMatrixRMaj uMatrix = null;
-
   private DMatrixRMaj QMatksiksiksi = null;
-
   private DMatrixRMaj KlkVVVMatrix = null;
-
   private DMatrixRMaj KlkVVMatrix = null;
-
   private DMatrixRMaj udotTimesmiMatrix = null;
-
   private DMatrixRMaj ksiMatrix = null;
-
   private DMatrixRMaj KlkMatrix = null;
-
   private DMatrixRMaj hessianMatrix = null;
-
   private DMatrixRMaj hessianInvers = null;
-
   private DMatrixRMaj KlkVMatrix = null;
-
   DMatrixRMaj corr2Matrix = null;
-
   DMatrixRMaj corr3Matrix = null;
-
   DMatrixRMaj corr4Matrix = null;
-
-  // DenseMatrix64F(getTotalNumberOfAccociationSites(),
-  // 1);
-  static Logger logger = LogManager.getLogger(PhaseSrkCPA_proceduralMatrices.class);
 
   /**
    * <p>
    * Constructor for PhaseSrkCPA_proceduralMatrices.
    * </p>
    */
-  public PhaseSrkCPA_proceduralMatrices() {
-    super();
-  }
+  public PhaseSrkCPA_proceduralMatrices() {}
 
   /** {@inheritDoc} */
   @Override
@@ -135,13 +93,6 @@ public class PhaseSrkCPA_proceduralMatrices extends PhaseSrkEos implements Phase
     // clonedPhase.cpamix = cpaSelect.getMixingRule(1, this);
 
     return clonedPhase;
-  }
-
-  /** {@inheritDoc} */
-  @Override
-  public void setMixingRule(int type) {
-    super.setMixingRule(type);
-    cpamix = cpaSelect.getMixingRule(1, this);
   }
 
   /** {@inheritDoc} */
@@ -220,6 +171,7 @@ public class PhaseSrkCPA_proceduralMatrices extends PhaseSrkEos implements Phase
       }
     }
     if (cpamix == null) {
+      // NB! Hardcoded mixing rule type
       cpamix = cpaSelect.getMixingRule(1, this);
     }
 
@@ -243,21 +195,6 @@ public class PhaseSrkCPA_proceduralMatrices extends PhaseSrkEos implements Phase
       initCPAMatrix(initType);
       // hcpatotdT = calc_hCPAdT();
       // super.init(totalNumberOfMoles, numberOfComponents, type, phase, beta);
-    }
-  }
-
-  /**
-   * <p>
-   * calcDelta.
-   * </p>
-   */
-  public void calcDelta() {
-    for (int i = 0; i < getTotalNumberOfAccociationSites(); i++) {
-      for (int j = i; j < getTotalNumberOfAccociationSites(); j++) {
-        deltaNog[i][j] = cpamix.calcDeltaNog(assSiteNumber[i], assSiteNumber[j], moleculeNumber[i],
-            moleculeNumber[j], this, getTemperature(), getPressure(), numberOfComponents);
-        deltaNog[j][i] = deltaNog[i][j];
-      }
     }
   }
 
@@ -591,6 +528,30 @@ public class PhaseSrkCPA_proceduralMatrices extends PhaseSrkEos implements Phase
         temp2 += getComponent(compp).getNumberOfAssociationSites();
       }
       // assSites += getComponent(p).getNumberOfAssociationSites();
+    }
+  }
+
+  /** {@inheritDoc} */
+  @Override
+  public void setMixingRule(MixingRuleTypeInterface mr) {
+    // NB! Sets EOS mixing rule in parent class
+    super.setMixingRule(mr);
+    // NB! Ignores input mr, uses CPA
+    cpamix = cpaSelect.getMixingRule(1, this);
+  }
+
+  /**
+   * <p>
+   * calcDelta.
+   * </p>
+   */
+  public void calcDelta() {
+    for (int i = 0; i < getTotalNumberOfAccociationSites(); i++) {
+      for (int j = i; j < getTotalNumberOfAccociationSites(); j++) {
+        deltaNog[i][j] = cpamix.calcDeltaNog(assSiteNumber[i], assSiteNumber[j], moleculeNumber[i],
+            moleculeNumber[j], this, getTemperature(), getPressure(), numberOfComponents);
+        deltaNog[j][i] = deltaNog[i][j];
+      }
     }
   }
 
@@ -1031,7 +992,7 @@ public class PhaseSrkCPA_proceduralMatrices extends PhaseSrkEos implements Phase
    * calcRootVolFinder.
    * </p>
    *
-   * @param pt the PhaseType of the phase.
+   * @param pt the PhaseType of the phase
    * @return a double
    */
   public double calcRootVolFinder(PhaseType pt) {
@@ -1092,8 +1053,8 @@ public class PhaseSrkCPA_proceduralMatrices extends PhaseSrkEos implements Phase
     if (solvedBonVlow < 1e-3) {
       solvedBonVlow = solvedBonVHigh;
     }
-    // dataPresentation.fileHandeling.createTextFile.TextFile file = new
-    // dataPresentation.fileHandeling.createTextFile.TextFile();
+    // dataPresentation.filehandling.TextFile file = new
+    // dataPresentation.filehandling.TextFile();
     // file.setValues(matrix);
     // file.setOutputFileName("D:/temp/temp2.txt");
     // file.createFile();
@@ -1247,7 +1208,7 @@ public class PhaseSrkCPA_proceduralMatrices extends PhaseSrkEos implements Phase
    * @param temperature a double
    * @param A a double
    * @param B a double
-   * @param pt the PhaseType of the phase.
+   * @param pt the PhaseType of the phase
    * @return a double
    * @throws neqsim.util.exception.IsNaNException if any.
    * @throws neqsim.util.exception.TooManyIterationsException if any.
@@ -1447,7 +1408,7 @@ public class PhaseSrkCPA_proceduralMatrices extends PhaseSrkEos implements Phase
 
   /** {@inheritDoc} */
   @Override
-  public CPAMixingInterface getCpamix() {
+  public CPAMixingRulesInterface getCpaMixingRule() {
     return cpamix;
   }
 
@@ -1482,9 +1443,9 @@ public class PhaseSrkCPA_proceduralMatrices extends PhaseSrkEos implements Phase
    * croeneckerProduct.
    * </p>
    *
-   * @param a an array of {@link double} objects
-   * @param b an array of {@link double} objects
-   * @return an array of {@link double} objects
+   * @param a an array of type double
+   * @param b an array of type double
+   * @return an array of type double
    */
   public double[][] croeneckerProduct(double[][] a, double[][] b) {
     int aLength = a.length;

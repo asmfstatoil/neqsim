@@ -25,7 +25,7 @@ public interface PlusFractionModelInterface extends java.io.Serializable {
    *
    * @param model a {@link neqsim.thermo.characterization.TBPModelInterface} object
    */
-  public void characterizePlusFraction(TBPModelInterface model);
+  public boolean characterizePlusFraction(TBPModelInterface model);
 
   /**
    * <p>
@@ -71,6 +71,15 @@ public interface PlusFractionModelInterface extends java.io.Serializable {
    * @return a int
    */
   public int getLastPlusFractionNumber();
+
+  /**
+   * <p>
+   * setLastPlusFractionNumber.
+   * </p>
+   *
+   * @param fract a int
+   */
+  public void setLastPlusFractionNumber(int fract);
 
   /**
    * <p>
@@ -122,7 +131,7 @@ public interface PlusFractionModelInterface extends java.io.Serializable {
    * getZ.
    * </p>
    *
-   * @return an array of {@link double} objects
+   * @return an array of type double
    */
   public double[] getZ();
 
@@ -131,7 +140,7 @@ public interface PlusFractionModelInterface extends java.io.Serializable {
    * getM.
    * </p>
    *
-   * @return an array of {@link double} objects
+   * @return an array of type double
    */
   public double[] getM();
 
@@ -140,7 +149,7 @@ public interface PlusFractionModelInterface extends java.io.Serializable {
    * getDens.
    * </p>
    *
-   * @return an array of {@link double} objects
+   * @return an array of type double
    */
   public double[] getDens();
 
@@ -149,7 +158,7 @@ public interface PlusFractionModelInterface extends java.io.Serializable {
    * getCoefs.
    * </p>
    *
-   * @return an array of {@link double} objects
+   * @return an array of type double
    */
   public double[] getCoefs();
 

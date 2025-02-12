@@ -12,6 +12,7 @@ import neqsim.util.exception.InvalidInputException;
  * @version $Id: $Id
  */
 public class PressureUnit extends neqsim.util.unit.BaseUnit {
+  /** Serialization version UID. */
   private static final long serialVersionUID = 1000;
 
   /**
@@ -24,33 +25,6 @@ public class PressureUnit extends neqsim.util.unit.BaseUnit {
    */
   public PressureUnit(double value, String unit) {
     super(value, unit);
-  }
-
-  /** {@inheritDoc} */
-  @Override
-  public double getValue(double val, String fromunit, String tounit) {
-    invalue = val;
-    return getConversionFactor(fromunit) / getConversionFactor(tounit) * invalue;
-  }
-
-  /** {@inheritDoc} */
-  @Override
-  public double getValue(String tounit) {
-    if (tounit.equals("barg")) {
-      return (getConversionFactor(inunit) / getConversionFactor("bara")) * invalue
-          - ThermodynamicConstantsInterface.referencePressure;
-    } else if (inunit.equals("barg")) {
-      return (getConversionFactor(inunit) / getConversionFactor("bara")) * invalue
-          + ThermodynamicConstantsInterface.referencePressure;
-    } else if (tounit.equals("atm")) {
-      return (getConversionFactor(inunit) / getConversionFactor("bara")) * invalue
-          / ThermodynamicConstantsInterface.referencePressure;
-    } else if (inunit.equals("atm")) {
-      return (getConversionFactor(inunit) / getConversionFactor("bara")) * invalue
-          * ThermodynamicConstantsInterface.referencePressure;
-    } else {
-      return getConversionFactor(inunit) / getConversionFactor(tounit) * invalue;
-    }
   }
 
   /**
@@ -74,7 +48,13 @@ public class PressureUnit extends neqsim.util.unit.BaseUnit {
         conversionFactor = 1.0;
         break;
       case "psi":
-        conversionFactor = 0.06894757;
+        conversionFactor = 0.0689475729317831;
+        break;
+      case "psia":
+        conversionFactor = 0.0689475729317831;
+        break;
+      case "psig":
+        conversionFactor = 0.0689475729317831;
         break;
       case "Pa":
         conversionFactor = 1.0e-5;
@@ -94,5 +74,35 @@ public class PressureUnit extends neqsim.util.unit.BaseUnit {
     }
 
     return conversionFactor;
+  }
+
+  /** {@inheritDoc} */
+  @Override
+  public double getValue(double val, String fromunit, String tounit) {
+    invalue = val;
+    return getConversionFactor(fromunit) / getConversionFactor(tounit) * invalue;
+  }
+
+  /** {@inheritDoc} */
+  @Override
+  public double getValue(String tounit) {
+    if (tounit.equals("barg")) {
+      return (getConversionFactor(inunit) / getConversionFactor("bara")) * invalue
+          - ThermodynamicConstantsInterface.referencePressure;
+    } else if (tounit.equals("psig")) {
+      return (getConversionFactor(inunit) / getConversionFactor("bara")) * invalue * 14.503773773
+          - 14.7;
+    } else if (inunit.equals("barg")) {
+      return (getConversionFactor(inunit) / getConversionFactor("bara")) * invalue
+          + ThermodynamicConstantsInterface.referencePressure;
+    } else if (tounit.equals("atm")) {
+      return (getConversionFactor(inunit) / getConversionFactor("bara")) * invalue
+          / ThermodynamicConstantsInterface.referencePressure;
+    } else if (inunit.equals("atm")) {
+      return (getConversionFactor(inunit) / getConversionFactor("bara")) * invalue
+          * ThermodynamicConstantsInterface.referencePressure;
+    } else {
+      return getConversionFactor(inunit) / getConversionFactor(tounit) * invalue;
+    }
   }
 }

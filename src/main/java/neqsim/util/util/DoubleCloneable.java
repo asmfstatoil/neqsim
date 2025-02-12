@@ -6,6 +6,9 @@
 
 package neqsim.util.util;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 /**
  * <p>
  * DoubleCloneable class.
@@ -15,6 +18,8 @@ package neqsim.util.util;
  * @version $Id: $Id
  */
 public class DoubleCloneable implements Cloneable {
+  /** Logger object for class. */
+  static Logger logger = LogManager.getLogger(DoubleCloneable.class);
   double doubleValue;
 
   /**
@@ -42,20 +47,9 @@ public class DoubleCloneable implements Cloneable {
     try {
       clonedSystem = (DoubleCloneable) super.clone();
     } catch (Exception ex) {
-      ex.printStackTrace();
+      logger.error(ex.getMessage());;
     }
     return clonedSystem;
-  }
-
-  /**
-   * <p>
-   * set.
-   * </p>
-   *
-   * @param val a double
-   */
-  public void set(double val) {
-    doubleValue = val;
   }
 
   /**
@@ -67,5 +61,16 @@ public class DoubleCloneable implements Cloneable {
    */
   public double doubleValue() {
     return doubleValue;
+  }
+
+  /**
+   * <p>
+   * set.
+   * </p>
+   *
+   * @param val a double
+   */
+  public void set(double val) {
+    doubleValue = val;
   }
 }

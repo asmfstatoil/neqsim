@@ -4,7 +4,8 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import neqsim.thermo.system.SystemFurstElectrolyteEos;
 import neqsim.thermo.system.SystemInterface;
-import neqsim.thermodynamicOperations.ThermodynamicOperations;
+import neqsim.thermodynamicoperations.ThermodynamicOperations;
+import neqsim.util.ExcludeFromJacocoGeneratedReport;
 
 /**
  * <p>
@@ -16,6 +17,7 @@ import neqsim.thermodynamicOperations.ThermodynamicOperations;
  * @version $Id: $Id
  */
 public class ReactiveKentEisenberg {
+  /** Logger object for class. */
   static Logger logger = LogManager.getLogger(ReactiveKentEisenberg.class);
 
   /**
@@ -25,6 +27,7 @@ public class ReactiveKentEisenberg {
    *
    * @param args an array of {@link java.lang.String} objects
    */
+  @ExcludeFromJacocoGeneratedReport
   public static void main(String args[]) {
     // SystemInterface testSystem = new SystemKentEisenberg(326.0, 1.1);
     SystemInterface testSystem = new SystemFurstElectrolyteEos(326.0, 0.1);
@@ -38,7 +41,7 @@ public class ReactiveKentEisenberg {
     testSystem.chemicalReactionInit();
     testSystem.createDatabase(true);
     testSystem.setMixingRule(4);
-    // testSystem.setPhysicalPropertyModel(3);
+    // testSystem.setPhysicalPropertyModel(PhysicalPropertyModel.AMINE);
 
     ThermodynamicOperations ops = new ThermodynamicOperations(testSystem);
 

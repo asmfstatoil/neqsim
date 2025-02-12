@@ -8,6 +8,7 @@ package neqsim.thermo.component;
 
 import neqsim.thermo.phase.PhaseInterface;
 import neqsim.thermo.phase.PhaseType;
+import neqsim.util.database.NeqSimDataBase;
 
 /**
  * <p>
@@ -18,6 +19,7 @@ import neqsim.thermo.phase.PhaseType;
  * @version $Id: $Id
  */
 public class ComponentSolid extends ComponentSrk {
+  /** Serialization version UID. */
   private static final long serialVersionUID = 1000;
 
   double dpdt = 1.0;
@@ -28,8 +30,10 @@ public class ComponentSolid extends ComponentSrk {
   double soldens = 0.0;
   boolean CCequation = true;
   boolean AntoineSolidequation = true;
-  PhaseInterface refPhase = null;
   double pureCompFug = 0.0;
+
+  /** Reference phase containing only this single component, i.e., mixing rules are not relevant. */
+  PhaseInterface refPhase = null;
 
   /**
    * <p>
@@ -109,7 +113,7 @@ public class ComponentSolid extends ComponentSrk {
 
     refPhase.setTemperature(temp);
     refPhase.setPressure(PvapSolid);
-    refPhase.init(refPhase.getNumberOfMolesInPhase(), 1, 1, PhaseType.byValue(1), 1.0);
+    refPhase.init(refPhase.getNumberOfMolesInPhase(), 1, 1, PhaseType.GAS, 1.0);
     refPhase.getComponent(0).fugcoef(refPhase);
 
     // System.out.println("ref co2 fugcoef " +
@@ -139,7 +143,11 @@ public class ComponentSolid extends ComponentSrk {
   public double fugcoef2(PhaseInterface phase1) {
     refPhase.setTemperature(phase1.getTemperature());
     refPhase.setPressure(phase1.getPressure());
-    refPhase.init(refPhase.getNumberOfMolesInPhase(), 1, 1, PhaseType.byValue(0), 1.0);
+    try {
+      refPhase.init(refPhase.getNumberOfMolesInPhase(), 1, 1, PhaseType.LIQUID, 1.0);
+    } catch (Exception ex) {
+      logger.error(ex.getMessage());
+    }
     refPhase.getComponent(0).fugcoef(refPhase);
 
     double liquidPhaseFugacity =
@@ -230,22 +238,29 @@ public class ComponentSolid extends ComponentSrk {
    */
   public void setSolidRefFluidPhase(PhaseInterface phase) {
     try {
-      if ((!isTBPfraction && !isPlusFraction)
-          || neqsim.util.database.NeqSimDataBase.createTemporaryTables()) {
-        refPhase = phase.getClass().getDeclaredConstructor().newInstance();
-        refPhase.setTemperature(273.0);
-        refPhase.setPressure(1.0);
-        try {
+      // if ((!isTBPfraction && !isPlusFraction)
+      // || neqsim.util.database.NeqSimDataBase.createTemporaryTables()) {
+      refPhase = phase.getClass().getDeclaredConstructor().newInstance();
+      refPhase.setTemperature(273.0);
+      refPhase.setPressure(1.0);
+      try {
+        if (NeqSimDataBase.hasComponent(componentName)
+            || NeqSimDataBase.hasTempComponent(componentName)) {
           refPhase.addComponent(componentName, 10.0, 10.0, 0);
-        } catch (Exception ex) {
-          logger.error("error occured in setSolidRefFluidPhase ", ex);
+        } else {
           refPhase.addComponent("methane", 10.0, 10.0, 0);
           refPhase.getComponent("methane").setComponentName(componentName);
         }
-        refPhase.getComponent(componentName)
-            .setAttractiveTerm(phase.getComponent(componentName).getAttractiveTermNumber());
-        refPhase.init(refPhase.getNumberOfMolesInPhase(), 1, 0, PhaseType.byValue(1), 1.0);
+      } catch (Exception ex) {
+        logger.error("error occured in setSolidRefFluidPhase ", ex);
+        refPhase.addComponent("methane", 10.0, 10.0, 0);
+        refPhase.getComponent("methane").setComponentName(componentName);
       }
+      refPhase.getComponent(componentName)
+          .setAttractiveTerm(phase.getComponent(componentName).getAttractiveTermNumber());
+      refPhase.init(refPhase.getNumberOfMolesInPhase(), 1, 0, PhaseType.GAS, 1.0);
+      refPhase.setMixingRule(null);
+      // }
     } catch (Exception ex) {
       logger.error("error occured", ex);
     }

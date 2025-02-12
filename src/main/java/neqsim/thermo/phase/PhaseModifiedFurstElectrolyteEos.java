@@ -19,7 +19,9 @@ import neqsim.thermo.component.ComponentModifiedFurstElectrolyteEos;
  * @version $Id: $Id
  */
 public class PhaseModifiedFurstElectrolyteEos extends PhaseSrkEos {
+  /** Serialization version UID. */
   private static final long serialVersionUID = 1000;
+  /** Logger object for class. */
   static Logger logger = LogManager.getLogger(PhaseModifiedFurstElectrolyteEos.class);
 
   double gammaold = 0;
@@ -50,7 +52,7 @@ public class PhaseModifiedFurstElectrolyteEos extends PhaseSrkEos {
   double diElectricConstantdT = 0;
   double diElectricConstantdTdT = 0.0;
   double diElectricConstantdTdV = 0;
-  neqsim.thermo.mixingRule.ElectrolyteMixingRulesInterface electrolyteMixingRule;
+  neqsim.thermo.mixingrule.ElectrolyteMixingRulesInterface electrolyteMixingRule;
   double sr2On = 1.0;
   double lrOn = 1.0;
   double bornOn = 1.0;
@@ -63,7 +65,6 @@ public class PhaseModifiedFurstElectrolyteEos extends PhaseSrkEos {
    * </p>
    */
   public PhaseModifiedFurstElectrolyteEos() {
-    super();
     electrolyteMixingRule = mixSelect.getElectrolyteMixingRule(this);
   }
 
@@ -72,9 +73,9 @@ public class PhaseModifiedFurstElectrolyteEos extends PhaseSrkEos {
    * Getter for the field <code>electrolyteMixingRule</code>.
    * </p>
    *
-   * @return a {@link neqsim.thermo.mixingRule.ElectrolyteMixingRulesInterface} object
+   * @return a {@link neqsim.thermo.mixingrule.ElectrolyteMixingRulesInterface} object
    */
-  public neqsim.thermo.mixingRule.ElectrolyteMixingRulesInterface getElectrolyteMixingRule() {
+  public neqsim.thermo.mixingrule.ElectrolyteMixingRulesInterface getElectrolyteMixingRule() {
     return electrolyteMixingRule;
   }
 
@@ -192,7 +193,7 @@ public class PhaseModifiedFurstElectrolyteEos extends PhaseSrkEos {
   /** {@inheritDoc} */
   @Override
   public void addComponent(String name, double moles, double molesInPhase, int compNumber) {
-    super.addComponent(name, molesInPhase);
+    super.addComponent(name, molesInPhase, compNumber);
     componentArray[compNumber] =
         new ComponentModifiedFurstElectrolyteEos(name, moles, molesInPhase, compNumber);
   }
@@ -1719,7 +1720,7 @@ public class PhaseModifiedFurstElectrolyteEos extends PhaseSrkEos {
    * setFurstIonicCoefficient.
    * </p>
    *
-   * @param params an array of {@link double} objects
+   * @param params an array of type double
    */
   public void setFurstIonicCoefficient(double[] params) {}
 

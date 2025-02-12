@@ -10,8 +10,11 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import neqsim.thermo.ThermodynamicModelSettings;
 import neqsim.thermo.component.ComponentEosInterface;
-import neqsim.thermo.mixingRule.EosMixingRules;
-import neqsim.thermo.mixingRule.EosMixingRulesInterface;
+import neqsim.thermo.mixingrule.EosMixingRuleHandler;
+import neqsim.thermo.mixingrule.EosMixingRuleType;
+import neqsim.thermo.mixingrule.EosMixingRulesInterface;
+import neqsim.thermo.mixingrule.MixingRuleTypeInterface;
+import neqsim.util.ExcludeFromJacocoGeneratedReport;
 
 /**
  * Abstract class PhaseEos.
@@ -19,7 +22,9 @@ import neqsim.thermo.mixingRule.EosMixingRulesInterface;
  * @author Even Solbraa
  */
 public abstract class PhaseEos extends Phase implements PhaseEosInterface {
+  /** Serialization version UID. */
   private static final long serialVersionUID = 1000;
+  /** Logger object for class. */
   static Logger logger = LogManager.getLogger(PhaseEos.class);
 
   private double loc_A;
@@ -30,7 +35,8 @@ public abstract class PhaseEos extends Phase implements PhaseEosInterface {
   private double g = 0;
   public double delta1 = 0;
   public double delta2 = 0;
-  protected EosMixingRules mixSelect = null;
+
+  protected EosMixingRuleHandler mixSelect = new EosMixingRuleHandler();
   protected EosMixingRulesInterface mixRule = null;
   double uEOS = 0;
   double wEOS = 0;
@@ -57,8 +63,6 @@ public abstract class PhaseEos extends Phase implements PhaseEosInterface {
    * </p>
    */
   public PhaseEos() {
-    super();
-    mixSelect = new EosMixingRules();
     componentArray = new ComponentEosInterface[ThermodynamicModelSettings.MAX_NUMBER_OF_COMPONENTS];
     mixRule = mixSelect.getMixingRule(1);
     // solver = new newtonRhapson();
@@ -66,27 +70,26 @@ public abstract class PhaseEos extends Phase implements PhaseEosInterface {
 
   /** {@inheritDoc} */
   @Override
-  public EosMixingRulesInterface getMixingRule() {
-    return mixRule;
-  }
-
-  /** {@inheritDoc} */
-  @Override
+  @ExcludeFromJacocoGeneratedReport
   public void displayInteractionCoefficients(String intType) {
     mixSelect.displayInteractionCoefficients(intType, this);
   }
 
-  /** {@inheritDoc} */
+  /**
+   * {@inheritDoc}
+   *
+   * <p>
+   * Calls component.init(initType)
+   * </p>
+   */
   @Override
   public void init(double totalNumberOfMoles, int numberOfComponents, int initType, PhaseType pt,
       double beta) {
-
-    // Replace with pt != PhaseType.GAS?
-    if (pt.getValue() > 1) {
+    if (pt != PhaseType.GAS) {
       pt = PhaseType.LIQUID;
     }
-    if (!mixingRuleDefined) {
-      setMixingRule(1);
+    if (!isMixingRuleDefined()) {
+      setMixingRule(EosMixingRuleType.NO);
     }
 
     super.init(totalNumberOfMoles, numberOfComponents, initType, pt, beta);
@@ -102,21 +105,15 @@ public abstract class PhaseEos extends Phase implements PhaseEosInterface {
     }
 
     if (initType != 0) {
-      try {
-        if (calcMolarVolume) {
+      if (calcMolarVolume) {
+        try {
           molarVolume = molarVolume(pressure, temperature,
               getA() / numberOfMolesInPhase / numberOfMolesInPhase, getB() / numberOfMolesInPhase,
               pt);
+        } catch (Exception ex) {
+          // reraise IsNaNException and TooManyIterationsException as RuntimeException
+          throw new RuntimeException(ex);
         }
-      } catch (Exception ex) {
-        logger.warn("Failed to solve for molarVolume within the iteration limit.");
-        throw new RuntimeException(ex);
-        // logger.error("too many iterations in volume calc!", ex);
-        // logger.info("moles " + numberOfMolesInPhase);
-        // logger.info("molarVolume " + getMolarVolume());
-        // logger.info("setting molar volume to ideal gas molar volume.............");
-        // setMolarVolume((R * temperature) / pressure);
-        // System.exit(0);
       }
 
       Z = pressure * getMolarVolume() / (R * temperature);
@@ -136,8 +133,9 @@ public abstract class PhaseEos extends Phase implements PhaseEosInterface {
       double sumHydrocarbons = 0.0;
       double sumAqueous = 0.0;
       for (int i = 0; i < numberOfComponents; i++) {
-        if (getComponent(i).isHydrocarbon() || getComponent(i).isInert()
-            || getComponent(i).isIsTBPfraction()) {
+        if ((getComponent(i).isHydrocarbon() || getComponent(i).isInert()
+            || getComponent(i).isIsTBPfraction()) && !getComponent(i).getName().equals("water")
+            && !getComponent(i).getName().equals("water_PC")) {
           sumHydrocarbons += getComponent(i).getx();
         } else {
           sumAqueous += getComponent(i).getx();
@@ -166,25 +164,56 @@ public abstract class PhaseEos extends Phase implements PhaseEosInterface {
 
   /** {@inheritDoc} */
   @Override
-  public void setMixingRule(int type) {
-    mixingRuleDefined = true;
-    super.setMixingRule(type);
-    mixRule = mixSelect.getMixingRule(type, this);
+  public EosMixingRulesInterface getMixingRule() {
+    return mixRule;
+  }
+
+  /** {@inheritDoc} */
+  @Override
+  public EosMixingRulesInterface getEosMixingRule() {
+    return mixRule;
+  }
+
+  /** {@inheritDoc} */
+  @Override
+  public void setMixingRule(MixingRuleTypeInterface mr) {
+    if (!(mr == null) && !EosMixingRuleType.class.isInstance(mr)) {
+      throw new RuntimeException(
+          new neqsim.util.exception.InvalidInputException(this, "setMixingRule", "mr"));
+    }
+    mixingRuleType = mr;
+    if (mr == null) {
+      mixRule = null;
+    } else {
+      mixRule = mixSelect.getMixingRule(mr.getValue(), this);
+    }
   }
 
   /** {@inheritDoc} */
   @Override
   public void setMixingRuleGEModel(String name) {
-    mixRule.setMixingRuleGEModel(name);
+    if (mixRule == null) {
+      // do nothing or initialize?
+      logger.debug("mixRule is null");
+    } else {
+      mixRule.setMixingRuleGEModel(name);
+    }
     mixSelect.setMixingRuleGEModel(name);
   }
 
   /** {@inheritDoc} */
   @Override
-  public void resetMixingRule(int type) {
-    mixingRuleDefined = true;
-    super.setMixingRule(type);
-    mixRule = mixSelect.resetMixingRule(type, this);
+  public void resetMixingRule(MixingRuleTypeInterface mr) {
+    if (!(mr == null) && !EosMixingRuleType.class.isInstance(mr)) {
+      throw new RuntimeException(
+          new neqsim.util.exception.InvalidInputException(this, "resetMixingRule", "mr"));
+    }
+    mixingRuleType = mr;
+    if (mr == null) {
+      mixRule = null;
+    } else {
+      mixRule = mixSelect.resetMixingRule(mr.getValue(), this);
+    }
   }
 
   /**
@@ -196,7 +225,7 @@ public abstract class PhaseEos extends Phase implements PhaseEosInterface {
    * @param temperature a double
    * @param A a double
    * @param B a double
-   * @param pt the PhaseType of the phase.
+   * @param pt the PhaseType of the phase
    * @return a double
    * @throws neqsim.util.exception.IsNaNException if any.
    * @throws neqsim.util.exception.TooManyIterationsException if any.
@@ -352,8 +381,7 @@ public abstract class PhaseEos extends Phase implements PhaseEosInterface {
         BonVold = 100;
       }
       if (BonV < 0) {
-        // BonV = Math.abs(BonV);
-        BonV = 1.0e-10;
+        BonV = BonVold / 2;
         BonVold = 10;
       }
 
@@ -410,7 +438,7 @@ public abstract class PhaseEos extends Phase implements PhaseEosInterface {
   /** {@inheritDoc} */
   @Override
   public String getMixingRuleName() {
-    return mixRule.getMixingRuleName();
+    return mixRule.getName();
   }
 
   /** {@inheritDoc} */
@@ -491,6 +519,9 @@ public abstract class PhaseEos extends Phase implements PhaseEosInterface {
   @Override
   public double calcBi(int compNumb, PhaseInterface phase, double temperature, double pressure,
       int numbcomp) {
+    if (mixRule == null) {
+      return 0;
+    }
     return mixRule.calcBi(compNumb, phase, temperature, pressure, numbcomp);
   }
 
@@ -1055,7 +1086,7 @@ public abstract class PhaseEos extends Phase implements PhaseEosInterface {
    * getdTVndSVnJaobiMatrix.
    * </p>
    *
-   * @return an array of {@link double} objects
+   * @return an array of type double
    */
   public double[][] getdTVndSVnJaobiMatrix() {
     double[][] jacobiMatrix = new double[2 + numberOfComponents][2 + numberOfComponents];
@@ -1078,7 +1109,7 @@ public abstract class PhaseEos extends Phase implements PhaseEosInterface {
    * getGradientVector.
    * </p>
    *
-   * @return an array of {@link double} objects
+   * @return an array of type double
    */
   public double[] getGradientVector() {
     double[] gradientVector = new double[2 + numberOfComponents];
@@ -1092,7 +1123,7 @@ public abstract class PhaseEos extends Phase implements PhaseEosInterface {
    * getUSVHessianMatrix.
    * </p>
    *
-   * @return an array of {@link double} objects
+   * @return an array of type double
    */
   public double[][] getUSVHessianMatrix() {
     double[][] jacobiMatrix = new double[2 + numberOfComponents][2 + numberOfComponents];
@@ -1115,7 +1146,7 @@ public abstract class PhaseEos extends Phase implements PhaseEosInterface {
    * dFdxMatrixSimple.
    * </p>
    *
-   * @return an array of {@link double} objects
+   * @return an array of type double
    */
   public double[] dFdxMatrixSimple() {
     double[] matrix = new double[numberOfComponents + 2];
@@ -1146,7 +1177,7 @@ public abstract class PhaseEos extends Phase implements PhaseEosInterface {
    * dFdxMatrix.
    * </p>
    *
-   * @return an array of {@link double} objects
+   * @return an array of type double
    */
   public double[] dFdxMatrix() {
     double[] matrix = new double[numberOfComponents + 2];
@@ -1165,7 +1196,7 @@ public abstract class PhaseEos extends Phase implements PhaseEosInterface {
    * dFdxdxMatrixSimple.
    * </p>
    *
-   * @return an array of {@link double} objects
+   * @return an array of type double
    */
   public double[][] dFdxdxMatrixSimple() {
     double[][] matrix = new double[numberOfComponents + 2][numberOfComponents + 2];
@@ -1215,7 +1246,7 @@ public abstract class PhaseEos extends Phase implements PhaseEosInterface {
    * dFdxdxMatrix.
    * </p>
    *
-   * @return an array of {@link double} objects
+   * @return an array of type double
    */
   public double[][] dFdxdxMatrix() {
     double[][] matrix = new double[numberOfComponents + 2][numberOfComponents + 2];

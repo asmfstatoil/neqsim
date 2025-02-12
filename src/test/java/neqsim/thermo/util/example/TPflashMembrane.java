@@ -6,7 +6,8 @@ import neqsim.thermo.ThermodynamicConstantsInterface;
 import neqsim.thermo.phase.PhaseType;
 import neqsim.thermo.system.SystemInterface;
 import neqsim.thermo.system.SystemSrkEos;
-import neqsim.thermodynamicOperations.ThermodynamicOperations;
+import neqsim.thermodynamicoperations.ThermodynamicOperations;
+import neqsim.util.ExcludeFromJacocoGeneratedReport;
 
 /**
  * <p>
@@ -18,6 +19,7 @@ import neqsim.thermodynamicOperations.ThermodynamicOperations;
  * @since 2.2.3
  */
 public class TPflashMembrane {
+  /** Logger object for class. */
   static Logger logger = LogManager.getLogger(TPflashMembrane.class);
 
   /**
@@ -27,6 +29,7 @@ public class TPflashMembrane {
    *
    * @param args an array of {@link java.lang.String} objects
    */
+  @ExcludeFromJacocoGeneratedReport
   public static void main(String args[]) {
     // SystemInterface testSystem2 =
     // util.serialization.SerializationManager.open("c:/test.fluid");
@@ -41,14 +44,12 @@ public class TPflashMembrane {
     testSystem.addComponent("propane", 100.0, 1);
 
     testSystem.createDatabase(true);
-    // 1- orginal no interaction 2- classic w interaction
-    // 3- Huron-Vidal 4- Wong-Sandler
     testSystem.setMixingRule(2);
 
     testSystem.init_x_y();
     testSystem.getPhase(0).setPressure(30.0);
     testSystem.getPhase(1).setPressure(2.0);
-    testSystem.setAllPhaseType(PhaseType.byValue(1));
+    testSystem.setAllPhaseType(PhaseType.GAS);
     testSystem.allowPhaseShift(false);
 
     try {

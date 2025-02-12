@@ -11,6 +11,7 @@ import neqsim.thermo.component.ComponentWax;
  * @version $Id: $Id
  */
 public class PhaseWax extends PhaseSolid {
+  /** Serialization version UID. */
   private static final long serialVersionUID = 1000;
 
   /**
@@ -19,7 +20,6 @@ public class PhaseWax extends PhaseSolid {
    * </p>
    */
   public PhaseWax() {
-    super();
     setType(PhaseType.WAX);
   }
 
@@ -47,7 +47,7 @@ public class PhaseWax extends PhaseSolid {
   /** {@inheritDoc} */
   @Override
   public void addComponent(String name, double moles, double molesInPhase, int compNumber) {
-    super.addComponent(name, molesInPhase);
+    super.addComponent(name, molesInPhase, compNumber);
     componentArray[compNumber] = new ComponentWax(name, moles, molesInPhase, compNumber);
     // componentArray[compNumber] = new ComponentWaxWilson(componentName, moles,
     // molesInPhase, compNumber);

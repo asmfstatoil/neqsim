@@ -14,7 +14,9 @@ import neqsim.thermo.system.SystemInterface;
  * @version $Id: $Id
  */
 public class PlusCharacterize implements java.io.Serializable, CharacteriseInterface {
+  /** Serialization version UID. */
   private static final long serialVersionUID = 1000;
+  /** Logger object for class. */
   static Logger logger = LogManager.getLogger(PlusCharacterize.class);
 
   double[] TBPfractions = null;
@@ -432,7 +434,7 @@ public class PlusCharacterize implements java.io.Serializable, CharacteriseInter
     ArrayList<String> list = new ArrayList<String>();
     for (int i = 0; i < system.getPhase(0).getNumberOfComponents(); i++) {
       double boilpoint = system.getPhase(0).getComponent(i).getNormalBoilingPoint();
-      if (boilpoint >= 69.0) {
+      if (boilpoint >= 273.15 + 69.0) {
         list.add(system.getPhase(0).getComponent(i).getName());
       }
     }

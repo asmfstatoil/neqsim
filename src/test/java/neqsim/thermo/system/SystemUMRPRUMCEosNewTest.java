@@ -8,10 +8,12 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import neqsim.PVTsimulation.simulation.SaturationPressure;
-import neqsim.thermodynamicOperations.ThermodynamicOperations;
+import neqsim.pvtsimulation.simulation.SaturationPressure;
+import neqsim.thermodynamicoperations.ThermodynamicOperations;
+import neqsim.util.database.NeqSimDataBase;
 
 class SystemUMRPRUMCEosNewTest extends neqsim.NeqSimTest {
+  /** Logger object for class. */
   static Logger logger = LogManager.getLogger(SystemUMRPRUMCEosNewTest.class);
 
   static neqsim.thermo.system.SystemInterface testSystem = null;
@@ -75,6 +77,7 @@ class SystemUMRPRUMCEosNewTest extends neqsim.NeqSimTest {
    * testCompressibility.
    * </p>
    */
+  @Disabled("No assertions")
   @Test
   @DisplayName("test compressibility of gas phase")
   public void testCompressibility() {
@@ -88,7 +91,7 @@ class SystemUMRPRUMCEosNewTest extends neqsim.NeqSimTest {
     testSystem.addComponent("ethane", 0.3);
     // testSystem.addComponent("n-heptane", 0.2);
     // testSystem.setMixingRule("HV", "UNIFAC_UMRPRU");
-    testSystem.setMixingRule(0);
+    testSystem.setMixingRule(1);
     testSystem.init(0);
     // testSystem.init(1);
     testSystem.init(3);
@@ -253,6 +256,7 @@ class SystemUMRPRUMCEosNewTest extends neqsim.NeqSimTest {
     testSystem.addComponent("nC12", 0.000000001);
 
     testSystem.setMixingRule("HV", "UNIFAC_UMRPRU");
+    testSystem.setMultiPhaseCheck(true);
     testSystem.init(0);
     ThermodynamicOperations testOps = new ThermodynamicOperations(testSystem);
     try {
@@ -266,9 +270,37 @@ class SystemUMRPRUMCEosNewTest extends neqsim.NeqSimTest {
     assertEquals((testOps.get("cricondenbar")[0] - 273.15), -11.09948347, 0.02);
     assertEquals(testOps.get("cricondenbar")[1], 104.75329137038476, 0.02);
 
-    testSystem.setTemperature(-11.09948347, "C");
+    testSystem.setTemperature(-11.0994834, "C");
+    testSystem.setPressure(10);
     SaturationPressure satPresSim = new SaturationPressure(testSystem);
     satPresSim.run();
-    assertEquals(satPresSim.getThermoSystem().getPressure(), 104.7532, 0.001);
+    assertEquals(104.7532901763, satPresSim.getThermoSystem().getPressure(), 0.001);
+  }
+
+  /**
+   * <p>
+   * testPseudoComptest.
+   * </p>
+   *
+   * @throws Exception
+   */
+  @Test
+  @DisplayName("test UMR with pseudo comp")
+  public void testPseudoComptest() {
+    NeqSimDataBase.setCreateTemporaryTables(true);
+    SystemInterface testSystem = new SystemUMRPRUMCEos(273.15 + 15, 10.0);
+    ThermodynamicOperations testOps = new ThermodynamicOperations(testSystem);
+    testSystem.addComponent("methane", 80);
+    testSystem.addTBPfraction("C7", .0010, 85.5 / 1000.0, 0.66533);
+    testSystem.createDatabase(true);
+    testSystem.setMixingRule("HV", "UNIFAC_UMRPRU");
+    NeqSimDataBase.setCreateTemporaryTables(false);
+    try {
+      testOps.TPflash();
+    } catch (Exception ex) {
+      logger.error(ex.getMessage(), ex);
+    }
+    testSystem.initPhysicalProperties("density");
+    assertEquals(6.84959007, testSystem.getDensity("kg/m3"), 0.00001);
   }
 }

@@ -9,6 +9,8 @@ package neqsim.thermo.phase;
 import neqsim.thermo.component.ComponentHydrate;
 import neqsim.thermo.component.ComponentHydrateGF;
 import neqsim.thermo.component.ComponentHydratePVTsim;
+import neqsim.thermo.mixingrule.MixingRuleTypeInterface;
+import neqsim.thermo.mixingrule.MixingRulesInterface;
 
 /**
  * <p>
@@ -19,6 +21,7 @@ import neqsim.thermo.component.ComponentHydratePVTsim;
  * @version $Id: $Id
  */
 public class PhaseHydrate extends Phase {
+  /** Serialization version UID. */
   private static final long serialVersionUID = 1000;
   String hydrateModel = "PVTsimHydrateModel";
 
@@ -36,7 +39,7 @@ public class PhaseHydrate extends Phase {
    * Constructor for PhaseHydrate.
    * </p>
    *
-   * @param fluidModel a {@link String} object
+   * @param fluidModel a {@link java.lang.String} object
    */
   public PhaseHydrate(String fluidModel) {
     if (fluidModel.isEmpty()) {
@@ -83,7 +86,7 @@ public class PhaseHydrate extends Phase {
   /** {@inheritDoc} */
   @Override
   public void addComponent(String name, double moles, double molesInPhase, int compNumber) {
-    super.addComponent(name, molesInPhase);
+    super.addComponent(name, molesInPhase, compNumber);
     // componentArray[compNumber] = new ComponentHydrateStatoil(name, moles, molesInPhase,
     // compNumber);
     if (hydrateModel.equals("CPAHydrateModel")) {
@@ -108,9 +111,33 @@ public class PhaseHydrate extends Phase {
     setType(PhaseType.HYDRATE);
   }
 
-  /** {@inheritDoc} */
   @Override
-  public void resetMixingRule(int type) {}
+  public MixingRulesInterface getMixingRule() {
+    return null;
+  }
+
+  @Override
+  public void setMixingRuleGEModel(String name) {}
+
+  /**
+   * {@inheritDoc}
+   *
+   * <p>
+   * Not relevant for PhaseHydrate
+   * </p>
+   */
+  @Override
+  public void resetMixingRule(MixingRuleTypeInterface mr) {}
+
+  /**
+   * {@inheritDoc}
+   *
+   * <p>
+   * Not relevant for PhaseHydrate
+   * </p>
+   */
+  @Override
+  public void setMixingRule(MixingRuleTypeInterface mr) {}
 
   /**
    * <p>
@@ -125,5 +152,11 @@ public class PhaseHydrate extends Phase {
         ((ComponentHydrate) componentArray[i]).setSolidRefFluidPhase(refPhase);
       }
     }
+  }
+
+  /** {@inheritDoc} */
+  @Override
+  public double getSoundSpeed() {
+    return Double.NaN;
   }
 }

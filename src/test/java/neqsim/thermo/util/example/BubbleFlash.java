@@ -4,7 +4,8 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import neqsim.thermo.system.SystemInterface;
 import neqsim.thermo.system.SystemSrkCPAstatoil;
-import neqsim.thermodynamicOperations.ThermodynamicOperations;
+import neqsim.thermodynamicoperations.ThermodynamicOperations;
+import neqsim.util.ExcludeFromJacocoGeneratedReport;
 
 /**
  * <p>
@@ -16,6 +17,7 @@ import neqsim.thermodynamicOperations.ThermodynamicOperations;
  * @version $Id: $Id
  */
 public class BubbleFlash {
+  /** Logger object for class. */
   static Logger logger = LogManager.getLogger(BubbleFlash.class);
 
   /**
@@ -25,6 +27,7 @@ public class BubbleFlash {
    *
    * @param args an array of {@link java.lang.String} objects
    */
+  @ExcludeFromJacocoGeneratedReport
   public static void main(String args[]) {
     SystemInterface testSystem = new SystemSrkCPAstatoil(273.15 + 25.0, 1.0);
     // SystemInterface testSystem = new SystemSrkEos(288, 26.9);
@@ -36,8 +39,6 @@ public class BubbleFlash {
 
     // testSystem.addComponent("MEG", 30);
     testSystem.createDatabase(true);
-    // 1- orginal no interaction 2- classic w interaction
-    // 3- Huron-Vidal 4- Wong-Sandler
     testSystem.setMixingRule(10);
     // testSystem.setMixingRule("HV", "UNIFAC_PSRK");
     try {

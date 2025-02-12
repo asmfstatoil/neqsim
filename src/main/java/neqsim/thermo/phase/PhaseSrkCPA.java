@@ -6,11 +6,11 @@ import org.ejml.data.DMatrixRMaj;
 import org.ejml.dense.row.CommonOps_DDRM;
 import org.ejml.dense.row.NormOps_DDRM;
 import org.ejml.simple.SimpleMatrix;
-// import org.ejml.data.DenseMatrix64F;
 import neqsim.thermo.component.ComponentCPAInterface;
 import neqsim.thermo.component.ComponentSrkCPA;
-import neqsim.thermo.mixingRule.CPAMixing;
-import neqsim.thermo.mixingRule.CPAMixingInterface;
+import neqsim.thermo.mixingrule.CPAMixingRuleHandler;
+import neqsim.thermo.mixingrule.CPAMixingRulesInterface;
+import neqsim.thermo.mixingrule.MixingRuleTypeInterface;
 
 /**
  * <p>
@@ -21,22 +21,13 @@ import neqsim.thermo.mixingRule.CPAMixingInterface;
  * @version $Id: $Id
  */
 public class PhaseSrkCPA extends PhaseSrkEos implements PhaseCPAInterface {
-  /**
-   * <p>
-   * Getter for the field <code>dFdNtemp</code>.
-   * </p>
-   *
-   * @return the dFdNtemp
-   */
-  public double[] getdFdNtemp() {
-    return dFdNtemp;
-  }
-
+  /** Serialization version UID. */
   private static final long serialVersionUID = 1000;
+  /** Logger object for class. */
   static Logger logger = LogManager.getLogger(PhaseSrkCPA.class);
 
-  public CPAMixing cpaSelect = new CPAMixing();
-  public CPAMixingInterface cpamix;
+  public CPAMixingRuleHandler cpaSelect = new CPAMixingRuleHandler();
+  public CPAMixingRulesInterface cpamix;
   double gcpavv = 0.0;
   double gcpavvv = 0.0;
   double gcpa = 0.0;
@@ -92,7 +83,6 @@ public class PhaseSrkCPA extends PhaseSrkEos implements PhaseCPAInterface {
    * </p>
    */
   public PhaseSrkCPA() {
-    super();
     thermoPropertyModelName = "SRK-CPA-EoS";
   }
 
@@ -224,6 +214,7 @@ public class PhaseSrkCPA extends PhaseSrkEos implements PhaseCPAInterface {
     }
 
     if (cpamix == null) {
+      // NB! Hardcoded mixing rule type
       cpamix = cpaSelect.getMixingRule(1, this);
     }
     if (initType > 0) {
@@ -500,8 +491,10 @@ public class PhaseSrkCPA extends PhaseSrkEos implements PhaseCPAInterface {
 
   /** {@inheritDoc} */
   @Override
-  public void setMixingRule(int type) {
-    super.setMixingRule(type);
+  public void setMixingRule(MixingRuleTypeInterface mr) {
+    // NB! Sets EOS mixing rule in parent class
+    super.setMixingRule(mr);
+    // NB! Ignores input mr, uses CPA
     cpamix = cpaSelect.getMixingRule(1, this);
   }
 
@@ -677,155 +670,12 @@ public class PhaseSrkCPA extends PhaseSrkEos implements PhaseCPAInterface {
      */
   }
 
-  /** {@inheritDoc} */
-  @Override
-  public double molarVolume(double pressure, double temperature, double A, double B, PhaseType pt)
-      throws neqsim.util.exception.IsNaNException,
-      neqsim.util.exception.TooManyIterationsException {
-    double BonV =
-        pt == PhaseType.LIQUID ? 2.0 / (2.0 + temperature / getPseudoCriticalTemperature())
-            : pressure * getB() / (numberOfMolesInPhase * temperature * R);
-
-    if (BonV < 0) {
-      BonV = 1.0e-8;
-    }
-
-    if (BonV >= 1.0) {
-      BonV = 0.9999;
-    }
-    double BonVold;
-    double BonV2;
-    double h = 0;
-    double dh = 0;
-    double dhh = 0;
-    double d1 = 0;
-    double d2 = 0;
-    double Btemp = getB();
-    if (Btemp < 0) {
-      logger.info("b negative in volume calc");
-    }
-
-    setMolarVolume(1.0 / BonV * Btemp / numberOfMolesInPhase);
-    int iterations = 0;
-    int maxIterations = 300;
-    do {
-      iterations++;
-      gcpa = calc_g();
-      if (gcpa < 0) {
-        setMolarVolume(1.0 / Btemp / numberOfMolesInPhase);
-        gcpa = calc_g();
-      }
-
-      // lngcpa =
-      // Math.log(gcpa);
-      gcpav = calc_lngV();
-      gcpavv = calc_lngVV();
-      gcpavvv = calc_lngVVV();
-
-      if (totalNumberOfAccociationSites > 0) {
-        solveX();
-      }
-
-      initCPAMatrix(1);
-
-      BonV2 = BonV * BonV;
-      BonVold = BonV;
-      h = BonV - Btemp / numberOfMolesInPhase * dFdV()
-          - pressure * Btemp / (numberOfMolesInPhase * R * temperature);
-      dh = 1.0 + Btemp / (BonV2) * (Btemp / numberOfMolesInPhase * dFdVdV());
-      dhh = -2.0 * Btemp / (BonV2 * BonV) * (Btemp / numberOfMolesInPhase * dFdVdV())
-          - (Btemp * Btemp) / (BonV2 * BonV2) * (Btemp / numberOfMolesInPhase * dFdVdVdV());
-
-      d1 = -h / dh;
-      d2 = -dh / dhh;
-      // System.out.println("h " + h + " iter " + iterations + " " + d1 + " d2 " + d2
-      // + " d1 / d2 " + (d1 / d2));
-      if (Math.abs(d1 / d2) <= 1.0) {
-        BonV += d1 * (1.0 + 0.5 * d1 / d2);
-      } else if (d1 / d2 < -1) {
-        BonV += 0.5 * d1;
-      } else if (d1 > d2) {
-        return molarVolumeChangePhase(pressure, temperature, A, B, pt);
-        // BonV += d2;
-        // double hnew = h + d2 * dh;
-        // if (Math.abs(hnew) > Math.abs(h)) {
-        // BonV = pt == 1 ? 2.0 / (2.0 + temperature /
-        // getPseudoCriticalTemperature()) : pressure * getB() / (numberOfMolesInPhase *
-        // temperature * R);
-        // }
-      } else {
-        BonV += 0.5 * d1;
-      }
-      if (Math.abs((BonV - BonVold) / BonV) > 0.1) {
-        BonV = BonVold + 0.1 * (BonV - BonVold);
-      }
-      if (BonV < 0) {
-        if (iterations < 10) {
-          // System.out.println(iterations + " BonV " + BonV);
-          BonV = (BonVold + BonV) / 2.0;
-        } else {
-          return molarVolumeChangePhase(pressure, temperature, A, B, pt);
-        }
-      }
-
-      if (BonV >= 1.0) {
-        if (iterations < 10) {
-          BonV = (BonVold + BonV) / 2.0;
-        } else {
-          return molarVolumeChangePhase(pressure, temperature, A, B, pt);
-        }
-      }
-      /*
-       * if (BonV > 0.9999) { if (iterations < 10) { BonV = (BonVold + BonV) / 2.0; } else { // BonV
-       * = calcRootVolFinder(pt); // BonV = molarVolumeChangePhase(pressure, temperature, A, B, pt);
-       * // BonV = 0.9999; // BonV = pt == 1 ? 2.0 / (2.0 + temperature /
-       * getPseudoCriticalTemperature()) : pressure * getB() / (numberOfMolesInPhase * temperature *
-       * R); } } else if (BonV < 0) { if (iterations < 10) { BonV = Math.abs(BonVold + BonV) / 2.0;
-       * } else { // BonV = calcRootVolFinder(pt); // return molarVolumeChangePhase(pressure,
-       * temperature, A, B, pt); // BonV = pt == 1 ? 2.0 / (2.0 + temperature /
-       * getPseudoCriticalTemperature()) : pressure * getB() / (numberOfMolesInPhase * temperature *
-       * R); } }
-       */
-      setMolarVolume(1.0 / BonV * Btemp / numberOfMolesInPhase);
-      Z = pressure * getMolarVolume() / (R * temperature);
-    } while ((Math.abs((BonV - BonVold) / BonV) > 1.0e-10 || Math.abs(h) > 1e-12)
-        && iterations < maxIterations);
-
-    // System.out.println("h failed " + h + " Z" + Z + " iterations " + iterations +
-    // " BonV " + BonV);
-    // if (Math.abs(h) > 1e-12) {
-    // System.out.println("h failed " + h + " Z" + Z + " iterations " + iterations +
-    // " BonV " + BonV);
-    // return molarVolumeChangePhase(pressure, temperature, A, B, pt);
-    // return molarVolumeChangePhase(pressure, temperature, A, B, pt);
-    // }
-    // System.out.println("Z" + Z + " iterations " + iterations + " BonV " + BonV);
-    // System.out.println("pressure " + Z*R*temperature/getMolarVolume());
-    // System.out.println("volume " + getTotalVolume() + " molar volume " +
-    // getMolarVolume());
-    // if(iterations>=100) throw new util.exception.TooManyIterationsException();
-    // System.out.println("error in volume " +
-    // (-pressure+R*temperature/getMolarVolume()-R*temperature*dFdV())); // + "
-    // firstterm " + (R*temperature/molarVolume) + " second " +
-    // R*temperature*dFdV());
-    // System.out.println("BonV: " + BonV + " "+" itert: " + iterations +" " +h + "
-    // " +dh + " B " + Btemp + " gv" + gV() + " fv " + fv() + " fvv" + fVV());
-    if (Double.isNaN(getMolarVolume())) {
-      throw new neqsim.util.exception.IsNaNException(this, "molarVolume", "Molar volume");
-      // System.out.println("BonV: " + BonV + " "+" itert: " + iterations +" " +h + "
-      // " +dh + " B " + Btemp + " D " + Dtemp + " gv" + gV() + " fv " + fv() + " fvv"
-      // + fVV());
-    }
-    dFdNtemp = calcdFdNtemp();
-    return getMolarVolume();
-  }
-
   /**
-   * calcdFdNtemp.
+   * Calculate and return dFdNtemp. NB! Does not set field <code>dFdNtemp</code>.
    *
    * @return double[]
    */
-  double[] calcdFdNtemp() {
+  private double[] calcdFdNtemp() {
     double tot1 = 0.0;
     double tot2 = 0.0;
     double tot3 = 0.0;
@@ -1112,6 +962,17 @@ public class PhaseSrkCPA extends PhaseSrkEos implements PhaseCPAInterface {
     }
   }
 
+  /**
+   * <p>
+   * Getter for the field <code>dFdNtemp</code>. Set value by calling function molarVolume.
+   * </p>
+   *
+   * @return the dFdNtemp
+   */
+  public double[] getdFdNtemp() {
+    return dFdNtemp;
+  }
+
   /** {@inheritDoc} */
   @Override
   public double getHcpatot() {
@@ -1138,7 +999,7 @@ public class PhaseSrkCPA extends PhaseSrkEos implements PhaseCPAInterface {
    * calcRootVolFinder.
    * </p>
    *
-   * @param pt the PhaseType of the phase.
+   * @param pt the PhaseType of the phase
    * @return a double
    */
   public double calcRootVolFinder(PhaseType pt) {
@@ -1199,8 +1060,8 @@ public class PhaseSrkCPA extends PhaseSrkEos implements PhaseCPAInterface {
     if (solvedBonVlow < 1e-3) {
       solvedBonVlow = solvedBonVHigh;
     }
-    // dataPresentation.fileHandeling.createTextFile.TextFile file = new
-    // dataPresentation.fileHandeling.createTextFile.TextFile();
+    // dataPresentation.filehandling.TextFile file = new
+    // dataPresentation.filehandling.TextFile();
     // file.setValues(matrix);
     // file.setOutputFileName("D:/temp/temp2.txt");
     // file.createFile();
@@ -1209,6 +1070,149 @@ public class PhaseSrkCPA extends PhaseSrkEos implements PhaseCPAInterface {
     } else {
       return solvedBonVHigh;
     }
+  }
+
+  /** {@inheritDoc} */
+  @Override
+  public double molarVolume(double pressure, double temperature, double A, double B, PhaseType pt)
+      throws neqsim.util.exception.IsNaNException,
+      neqsim.util.exception.TooManyIterationsException {
+    double BonV =
+        pt == PhaseType.LIQUID ? 2.0 / (2.0 + temperature / getPseudoCriticalTemperature())
+            : pressure * getB() / (numberOfMolesInPhase * temperature * R);
+
+    if (BonV < 0) {
+      BonV = 1.0e-8;
+    }
+
+    if (BonV >= 1.0) {
+      BonV = 0.9999;
+    }
+    double BonVold;
+    double BonV2;
+    double h = 0;
+    double dh = 0;
+    double dhh = 0;
+    double d1 = 0;
+    double d2 = 0;
+    double Btemp = getB();
+    if (Btemp < 0) {
+      logger.info("b negative in volume calc");
+    }
+
+    setMolarVolume(1.0 / BonV * Btemp / numberOfMolesInPhase);
+    int iterations = 0;
+    int maxIterations = 300;
+    do {
+      iterations++;
+      gcpa = calc_g();
+      if (gcpa < 0) {
+        setMolarVolume(1.0 / Btemp / numberOfMolesInPhase);
+        gcpa = calc_g();
+      }
+
+      // lngcpa =
+      // Math.log(gcpa);
+      gcpav = calc_lngV();
+      gcpavv = calc_lngVV();
+      gcpavvv = calc_lngVVV();
+
+      if (totalNumberOfAccociationSites > 0) {
+        solveX();
+      }
+
+      initCPAMatrix(1);
+
+      BonV2 = BonV * BonV;
+      BonVold = BonV;
+      h = BonV - Btemp / numberOfMolesInPhase * dFdV()
+          - pressure * Btemp / (numberOfMolesInPhase * R * temperature);
+      dh = 1.0 + Btemp / (BonV2) * (Btemp / numberOfMolesInPhase * dFdVdV());
+      dhh = -2.0 * Btemp / (BonV2 * BonV) * (Btemp / numberOfMolesInPhase * dFdVdV())
+          - (Btemp * Btemp) / (BonV2 * BonV2) * (Btemp / numberOfMolesInPhase * dFdVdVdV());
+
+      d1 = -h / dh;
+      d2 = -dh / dhh;
+      // System.out.println("h " + h + " iter " + iterations + " " + d1 + " d2 " + d2
+      // + " d1 / d2 " + (d1 / d2));
+      if (Math.abs(d1 / d2) <= 1.0) {
+        BonV += d1 * (1.0 + 0.5 * d1 / d2);
+      } else if (d1 / d2 < -1) {
+        BonV += 0.5 * d1;
+      } else if (d1 > d2) {
+        return molarVolumeChangePhase(pressure, temperature, A, B, pt);
+        // BonV += d2;
+        // double hnew = h + d2 * dh;
+        // if (Math.abs(hnew) > Math.abs(h)) {
+        // BonV = pt == 1 ? 2.0 / (2.0 + temperature /
+        // getPseudoCriticalTemperature()) : pressure * getB() / (numberOfMolesInPhase *
+        // temperature * R);
+        // }
+      } else {
+        BonV += 0.5 * d1;
+      }
+      if (Math.abs((BonV - BonVold) / BonV) > 0.1) {
+        BonV = BonVold + 0.1 * (BonV - BonVold);
+      }
+      if (BonV < 0) {
+        if (iterations < 10) {
+          // System.out.println(iterations + " BonV " + BonV);
+          BonV = (BonVold + BonV) / 2.0;
+        } else {
+          return molarVolumeChangePhase(pressure, temperature, A, B, pt);
+        }
+      }
+
+      if (BonV >= 1.0) {
+        if (iterations < 10) {
+          BonV = (BonVold + BonV) / 2.0;
+        } else {
+          return molarVolumeChangePhase(pressure, temperature, A, B, pt);
+        }
+      }
+      /*
+       * if (BonV > 0.9999) { if (iterations < 10) { BonV = (BonVold + BonV) / 2.0; } else { // BonV
+       * = calcRootVolFinder(pt); // BonV = molarVolumeChangePhase(pressure, temperature, A, B, pt);
+       * // BonV = 0.9999; // BonV = pt == 1 ? 2.0 / (2.0 + temperature /
+       * getPseudoCriticalTemperature()) : pressure * getB() / (numberOfMolesInPhase * temperature *
+       * R); } } else if (BonV < 0) { if (iterations < 10) { BonV = Math.abs(BonVold + BonV) / 2.0;
+       * } else { // BonV = calcRootVolFinder(pt); // return molarVolumeChangePhase(pressure,
+       * temperature, A, B, pt); // BonV = pt == 1 ? 2.0 / (2.0 + temperature /
+       * getPseudoCriticalTemperature()) : pressure * getB() / (numberOfMolesInPhase * temperature *
+       * R); } }
+       */
+      setMolarVolume(1.0 / BonV * Btemp / numberOfMolesInPhase);
+      Z = pressure * getMolarVolume() / (R * temperature);
+    } while ((Math.abs((BonV - BonVold) / BonV) > 1.0e-10 || Math.abs(h) > 1e-12)
+        && iterations < maxIterations);
+
+    // System.out.println("h failed " + h + " Z" + Z + " iterations " + iterations +
+    // " BonV " + BonV);
+    // if (Math.abs(h) > 1e-12) {
+    // System.out.println("h failed " + h + " Z" + Z + " iterations " + iterations +
+    // " BonV " + BonV);
+    // return molarVolumeChangePhase(pressure, temperature, A, B, pt);
+    // return molarVolumeChangePhase(pressure, temperature, A, B, pt);
+    // }
+    // System.out.println("Z" + Z + " iterations " + iterations + " BonV " + BonV);
+    // System.out.println("pressure " + Z*R*temperature/getMolarVolume());
+    // System.out.println("volume " + getTotalVolume() + " molar volume " +
+    // getMolarVolume());
+    // if(iterations>=100) throw new util.exception.TooManyIterationsException();
+    // System.out.println("error in volume " +
+    // (-pressure+R*temperature/getMolarVolume()-R*temperature*dFdV())); // + "
+    // firstterm " + (R*temperature/molarVolume) + " second " +
+    // R*temperature*dFdV());
+    // System.out.println("BonV: " + BonV + " "+" itert: " + iterations +" " +h + "
+    // " +dh + " B " + Btemp + " gv" + gV() + " fv " + fv() + " fvv" + fVV());
+    if (Double.isNaN(getMolarVolume())) {
+      throw new neqsim.util.exception.IsNaNException(this, "molarVolume", "Molar volume");
+      // System.out.println("BonV: " + BonV + " "+" itert: " + iterations +" " +h + "
+      // " +dh + " B " + Btemp + " D " + Dtemp + " gv" + gV() + " fv " + fv() + " fvv"
+      // + fVV());
+    }
+    dFdNtemp = calcdFdNtemp();
+    return getMolarVolume();
   }
 
   /**
@@ -1220,7 +1224,7 @@ public class PhaseSrkCPA extends PhaseSrkEos implements PhaseCPAInterface {
    * @param temperature a double
    * @param A a double
    * @param B a double
-   * @param pt the PhaseType of the phase.
+   * @param pt the PhaseType of the phase
    * @return a double
    * @throws neqsim.util.exception.IsNaNException if any.
    * @throws neqsim.util.exception.TooManyIterationsException if any.
@@ -1244,7 +1248,7 @@ public class PhaseSrkCPA extends PhaseSrkEos implements PhaseCPAInterface {
     double h = 0;
     double dh = 0;
     double dhh = 0;
-    // double gvvv = 0, fvvv = 0;
+    // double fvvv = 0, gvvv = 0;
     double d1 = 0;
     double d2 = 0;
     Btemp = getB();
@@ -1355,6 +1359,53 @@ public class PhaseSrkCPA extends PhaseSrkEos implements PhaseCPAInterface {
 
   /** {@inheritDoc} */
   @Override
+  public double molarVolume2(double pressure, double temperature, double A, double B, PhaseType pt)
+      throws neqsim.util.exception.IsNaNException,
+      neqsim.util.exception.TooManyIterationsException {
+    Z = pt == PhaseType.LIQUID ? 1.0 : 1.0e-5;
+    setMolarVolume(Z * R * temperature / pressure);
+    // super.molarVolume(pressure,temperature, A, B, phase);
+    int iterations = 0;
+    double err = 0.0;
+    double dErrdV = 0.0;
+    double deltaV = 0;
+
+    do {
+      A = calcA(this, temperature, pressure, numberOfComponents);
+      B = calcB(this, temperature, pressure, numberOfComponents);
+
+      double dFdV = dFdV();
+      double dFdVdV = dFdVdV();
+      // double dFdVdVdV = dFdVdVdV();
+      // double factor1 = 1.0e0, factor2 = 1.0e0;
+      err = -R * temperature * dFdV + R * temperature / getMolarVolume() - pressure;
+
+      // System.out.println("pressure " + -R * temperature * dFdV + " " + R *
+      // temperature / getMolarVolume());
+      // -pressure;
+      dErrdV = -R * temperature * dFdVdV
+          - R * temperature * numberOfMolesInPhase / Math.pow(getVolume(), 2.0);
+
+      // System.out.println("errdV " + dErrdV);
+      // System.out.println("err " + err);
+      deltaV = -err / dErrdV;
+
+      setMolarVolume(getMolarVolume() + deltaV / numberOfMolesInPhase);
+
+      Z = pressure * getMolarVolume() / (R * temperature);
+      if (Z < 0) {
+        Z = 1e-6;
+        setMolarVolume(Z * R * temperature / pressure);
+      }
+
+      // System.out.println("Z " + Z);
+    } while (Math.abs(err) > 1.0e-8 || iterations < 100);
+    // System.out.println("Z " + Z);
+    return getMolarVolume();
+  }
+
+  /** {@inheritDoc} */
+  @Override
   public double getGcpav() {
     return gcpav;
   }
@@ -1372,7 +1423,7 @@ public class PhaseSrkCPA extends PhaseSrkEos implements PhaseCPAInterface {
 
   /** {@inheritDoc} */
   @Override
-  public CPAMixingInterface getCpamix() {
+  public CPAMixingRulesInterface getCpaMixingRule() {
     return cpamix;
   }
 
@@ -1407,9 +1458,9 @@ public class PhaseSrkCPA extends PhaseSrkEos implements PhaseCPAInterface {
    * croeneckerProduct.
    * </p>
    *
-   * @param a an array of {@link double} objects
-   * @param b an array of {@link double} objects
-   * @return an array of {@link double} objects
+   * @param a an array of type double
+   * @param b an array of type double
+   * @return an array of type double
    */
   public double[][] croeneckerProduct(double[][] a, double[][] b) {
     int aLength = a.length;
@@ -1449,7 +1500,7 @@ public class PhaseSrkCPA extends PhaseSrkEos implements PhaseCPAInterface {
    * @param totalNumberOfMoles a double
    * @param numberOfComponents a int
    * @param type a int
-   * @param pt the PhaseType of the phase.
+   * @param pt the PhaseType of the phase
    * @param beta a double
    */
   public void initOld2(double totalNumberOfMoles, int numberOfComponents, int type, PhaseType pt,
@@ -1527,6 +1578,7 @@ public class PhaseSrkCPA extends PhaseSrkEos implements PhaseCPAInterface {
       }
     }
     if (cpamix == null) {
+      // NB! Hardcoded mixing rule type
       cpamix = cpaSelect.getMixingRule(1, this);
     }
 
@@ -1551,53 +1603,6 @@ public class PhaseSrkCPA extends PhaseSrkEos implements PhaseCPAInterface {
       // hcpatotdT = calc_hCPAdT();
       // super.init(totalNumberOfMoles, numberOfComponents, type, phase, beta);
     }
-  }
-
-  /** {@inheritDoc} */
-  @Override
-  public double molarVolume2(double pressure, double temperature, double A, double B, PhaseType pt)
-      throws neqsim.util.exception.IsNaNException,
-      neqsim.util.exception.TooManyIterationsException {
-    Z = pt == PhaseType.LIQUID ? 1.0 : 1.0e-5;
-    setMolarVolume(Z * R * temperature / pressure);
-    // super.molarVolume(pressure,temperature, A, B, phase);
-    int iterations = 0;
-    double err = 0.0;
-    double dErrdV = 0.0;
-    double deltaV = 0;
-
-    do {
-      A = calcA(this, temperature, pressure, numberOfComponents);
-      B = calcB(this, temperature, pressure, numberOfComponents);
-
-      double dFdV = dFdV();
-      double dFdVdV = dFdVdV();
-      // double dFdVdVdV = dFdVdVdV();
-      // double factor1 = 1.0e0, factor2 = 1.0e0;
-      err = -R * temperature * dFdV + R * temperature / getMolarVolume() - pressure;
-
-      // System.out.println("pressure " + -R * temperature * dFdV + " " + R *
-      // temperature / getMolarVolume());
-      // -pressure;
-      dErrdV = -R * temperature * dFdVdV
-          - R * temperature * numberOfMolesInPhase / Math.pow(getVolume(), 2.0);
-
-      // System.out.println("errdV " + dErrdV);
-      // System.out.println("err " + err);
-      deltaV = -err / dErrdV;
-
-      setMolarVolume(getMolarVolume() + deltaV / numberOfMolesInPhase);
-
-      Z = pressure * getMolarVolume() / (R * temperature);
-      if (Z < 0) {
-        Z = 1e-6;
-        setMolarVolume(Z * R * temperature / pressure);
-      }
-
-      // System.out.println("Z " + Z);
-    } while (Math.abs(err) > 1.0e-8 || iterations < 100);
-    // System.out.println("Z " + Z);
-    return getMolarVolume();
   }
 
   /**
@@ -2005,7 +2010,7 @@ public class PhaseSrkCPA extends PhaseSrkEos implements PhaseCPAInterface {
    * @param temperature a double
    * @param A a double
    * @param B a double
-   * @param pt the PhaseType of the phase.
+   * @param pt the PhaseType of the phase
    * @return a double
    * @throws neqsim.util.exception.IsNaNException if any.
    * @throws neqsim.util.exception.TooManyIterationsException if any.

@@ -4,7 +4,8 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import neqsim.thermo.system.SystemInterface;
 import neqsim.thermo.system.SystemPsrkEos;
-import neqsim.thermodynamicOperations.ThermodynamicOperations;
+import neqsim.thermodynamicoperations.ThermodynamicOperations;
+import neqsim.util.ExcludeFromJacocoGeneratedReport;
 
 /**
  * <p>
@@ -16,6 +17,7 @@ import neqsim.thermodynamicOperations.ThermodynamicOperations;
  * @since 2.2.3
  */
 public class TestPSRK {
+  /** Logger object for class. */
   static Logger logger = LogManager.getLogger(TestPSRK.class);
 
   /**
@@ -25,6 +27,7 @@ public class TestPSRK {
    *
    * @param args an array of {@link java.lang.String} objects
    */
+  @ExcludeFromJacocoGeneratedReport
   public static void main(String args[]) {
     // SystemInterface testSystem = new SystemSrkEos(325.8, 10.0);
     // SystemInterface testSystem = new SystemCSPsrkEos(245.8, 70.0);
@@ -51,7 +54,7 @@ public class TestPSRK {
     // testSystem.setMixingRule(1);
     // testSystem.set
     testSystem.setMixingRule("HV", "UNIFAC_PSRK");
-    // testSystem.setMixingRule("WS","UNIFAC_PSRK");
+    // testSystem.setMixingRule("WS", "UNIFAC_PSRK");
     testSystem.init(0);
     testSystem.init(2);
 

@@ -4,7 +4,8 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import neqsim.thermo.system.SystemInterface;
 import neqsim.thermo.system.SystemSrkEos;
-import neqsim.thermodynamicOperations.ThermodynamicOperations;
+import neqsim.thermodynamicoperations.ThermodynamicOperations;
+import neqsim.util.ExcludeFromJacocoGeneratedReport;
 
 /**
  * <p>
@@ -16,6 +17,7 @@ import neqsim.thermodynamicOperations.ThermodynamicOperations;
  * @since 2.2.3
  */
 public class TestUMRPRUMC {
+  /** Logger object for class. */
   static Logger logger = LogManager.getLogger(TestUMRPRUMC.class);
 
   /**
@@ -25,6 +27,7 @@ public class TestUMRPRUMC {
    *
    * @param args an array of {@link java.lang.String} objects
    */
+  @ExcludeFromJacocoGeneratedReport
   public static void main(String args[]) {
     // SystemInterface testSystem = new SystemUMRPRUMCEos(273.15 + 20, 10.0);
     SystemInterface testSystem = new SystemSrkEos(273.15 + 20, 15.0);

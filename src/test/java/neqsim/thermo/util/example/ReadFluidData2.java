@@ -2,11 +2,12 @@ package neqsim.thermo.util.example;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import neqsim.processSimulation.processEquipment.separator.ThreePhaseSeparator;
-import neqsim.processSimulation.processEquipment.stream.Stream;
-import neqsim.processSimulation.processEquipment.stream.StreamInterface;
+import neqsim.process.equipment.separator.ThreePhaseSeparator;
+import neqsim.process.equipment.stream.Stream;
+import neqsim.process.equipment.stream.StreamInterface;
 import neqsim.thermo.system.SystemInterface;
 import neqsim.thermo.system.SystemSrkEos;
+import neqsim.util.ExcludeFromJacocoGeneratedReport;
 
 /**
  * <p>
@@ -18,6 +19,7 @@ import neqsim.thermo.system.SystemSrkEos;
  * @since 2.2.3
  */
 public class ReadFluidData2 {
+  /** Logger object for class. */
   static Logger logger = LogManager.getLogger(ReadFluidData.class);
 
   /**
@@ -28,6 +30,7 @@ public class ReadFluidData2 {
    * @param args an array of {@link java.lang.String} objects
    */
   @SuppressWarnings("unused")
+  @ExcludeFromJacocoGeneratedReport
   public static void main(String args[]) {
     SystemInterface testSystem = new SystemSrkEos(273.15 + 30.0, 10.0);
     // testSystem.readObjectFromFile("C:/temp/neqsimfluids/-65919.68493879325.neqsim",

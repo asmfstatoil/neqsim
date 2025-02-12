@@ -7,6 +7,7 @@ package neqsim.thermo.system;
  * @version $Id: $Id
  */
 public class SystemPrMathiasCopeman extends SystemPrEos {
+  /** Serialization version UID. */
   private static final long serialVersionUID = 1000;
 
   /**
@@ -41,8 +42,8 @@ public class SystemPrMathiasCopeman extends SystemPrEos {
    */
   public SystemPrMathiasCopeman(double T, double P, boolean checkForSolids) {
     super(T, P, checkForSolids);
-    attractiveTermNumber = 13;
     modelName = "Mathias-Copeman-PR-EOS";
+    attractiveTermNumber = 13;
   }
 
   /** {@inheritDoc} */

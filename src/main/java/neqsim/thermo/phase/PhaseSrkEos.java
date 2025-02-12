@@ -17,6 +17,7 @@ import neqsim.thermo.component.ComponentSrk;
  * @version $Id: $Id
  */
 public class PhaseSrkEos extends PhaseEos {
+  /** Serialization version UID. */
   private static final long serialVersionUID = 1000;
 
   /**
@@ -25,7 +26,6 @@ public class PhaseSrkEos extends PhaseEos {
    * </p>
    */
   public PhaseSrkEos() {
-    super();
     // mixRule = mixSelect.getMixingRule(2);
     thermoPropertyModelName = "SRK-EoS";
     uEOS = 1;
@@ -50,7 +50,7 @@ public class PhaseSrkEos extends PhaseEos {
   /** {@inheritDoc} */
   @Override
   public void addComponent(String name, double moles, double molesInPhase, int compNumber) {
-    super.addComponent(name, molesInPhase);
+    super.addComponent(name, molesInPhase, compNumber);
     componentArray[compNumber] = new ComponentSrk(name, moles, molesInPhase, compNumber);
   }
 }

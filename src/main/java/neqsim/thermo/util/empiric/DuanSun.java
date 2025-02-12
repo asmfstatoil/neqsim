@@ -5,7 +5,8 @@ import org.apache.logging.log4j.Logger;
 import neqsim.thermo.ThermodynamicConstantsInterface;
 import neqsim.thermo.system.SystemElectrolyteCPAstatoil;
 import neqsim.thermo.system.SystemInterface;
-import neqsim.thermodynamicOperations.ThermodynamicOperations;
+import neqsim.thermodynamicoperations.ThermodynamicOperations;
+import neqsim.util.ExcludeFromJacocoGeneratedReport;
 
 /**
  * <p>
@@ -16,6 +17,7 @@ import neqsim.thermodynamicOperations.ThermodynamicOperations;
  * @version $Id: $Id
  */
 public class DuanSun {
+  /** Logger object for class. */
   static Logger logger = LogManager.getLogger(DuanSun.class);
 
   double[] c = new double[] {0.1, 0.2, 0.3, 0.4, 0.5};
@@ -637,6 +639,7 @@ public class DuanSun {
    *
    * @param args an array of {@link java.lang.String} objects
    */
+  @ExcludeFromJacocoGeneratedReport
   public static void main(String[] args) {
     DuanSun testDuanSun = new DuanSun();
 

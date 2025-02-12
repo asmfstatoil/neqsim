@@ -10,11 +10,12 @@ import neqsim.thermo.phase.PhaseInterface;
 import neqsim.thermo.phase.PhaseType;
 
 /**
- * Abstract class ComponentGEUniquacmodifiedHV
- * 
+ * Abstract class ComponentGEUniquacmodifiedHV.
+ *
  * @author Even Solbraa
  */
-abstract class ComponentGEUniquacmodifiedHV extends ComponentGEUniquac {
+public abstract class ComponentGEUniquacmodifiedHV extends ComponentGEUniquac {
+  /** Serialization version UID. */
   private static final long serialVersionUID = 1000;
 
   /**

@@ -6,7 +6,7 @@
 
 package neqsim.standards;
 
-import neqsim.standards.salesContract.ContractInterface;
+import neqsim.standards.salescontract.ContractInterface;
 import neqsim.thermo.system.SystemInterface;
 
 /**
@@ -27,7 +27,7 @@ public interface StandardInterface {
    * @param returnUnit a {@link java.lang.String} object
    * @return a double
    */
-  double getValue(java.lang.String returnParameter, java.lang.String returnUnit);
+  double getValue(String returnParameter, String returnUnit);
 
   /**
    * <p>
@@ -37,7 +37,7 @@ public interface StandardInterface {
    * @param returnParameter a {@link java.lang.String} object
    * @return a double
    */
-  double getValue(java.lang.String returnParameter);
+  double getValue(String returnParameter);
 
   /**
    * <p>
@@ -70,7 +70,7 @@ public interface StandardInterface {
    * getSalesContract.
    * </p>
    *
-   * @return a {@link neqsim.standards.salesContract.ContractInterface} object
+   * @return a {@link neqsim.standards.salescontract.ContractInterface} object
    */
   public ContractInterface getSalesContract();
 
@@ -88,7 +88,7 @@ public interface StandardInterface {
    * setSalesContract.
    * </p>
    *
-   * @param salesContract a {@link neqsim.standards.salesContract.ContractInterface} object
+   * @param salesContract a {@link neqsim.standards.salescontract.ContractInterface} object
    */
   public void setSalesContract(ContractInterface salesContract);
 

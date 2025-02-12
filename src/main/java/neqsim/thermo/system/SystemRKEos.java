@@ -10,6 +10,7 @@ import neqsim.thermo.phase.PhaseRK;
  * @version $Id: $Id
  */
 public class SystemRKEos extends SystemEos {
+  /** Serialization version UID. */
   private static final long serialVersionUID = 1000;
 
   /**
@@ -44,8 +45,8 @@ public class SystemRKEos extends SystemEos {
    */
   public SystemRKEos(double T, double P, boolean checkForSolids) {
     super(T, P, checkForSolids);
-    attractiveTermNumber = 5;
     modelName = "RK-EOS";
+    attractiveTermNumber = 5;
 
     for (int i = 0; i < numberOfPhases; i++) {
       phaseArray[i] = new PhaseRK();

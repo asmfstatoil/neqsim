@@ -4,7 +4,8 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import neqsim.thermo.system.SystemInterface;
 import neqsim.thermo.system.SystemUMRPRUMCEos;
-import neqsim.thermodynamicOperations.ThermodynamicOperations;
+import neqsim.thermodynamicoperations.ThermodynamicOperations;
+import neqsim.util.ExcludeFromJacocoGeneratedReport;
 
 /**
  * <p>
@@ -16,6 +17,7 @@ import neqsim.thermodynamicOperations.ThermodynamicOperations;
  * @since 2.2.3
  */
 public class TestUMRPRU {
+  /** Logger object for class. */
   static Logger logger = LogManager.getLogger(TestUMRPRU.class);
 
   /**
@@ -25,6 +27,7 @@ public class TestUMRPRU {
    *
    * @param args an array of {@link java.lang.String} objects
    */
+  @ExcludeFromJacocoGeneratedReport
   public static void main(String args[]) {
     // SystemInterface testSystem = new SystemSrkCPAstatoil(273.15 - 3.5, 33.0);
     // SystemInterface testSystem = new SystemUMRPRUMCEos(273.15 + 20.5, 70.0);
@@ -100,8 +103,8 @@ public class TestUMRPRU {
 
     double numCp = (ent1 - ent2) / 0.002;
 
-    System.out.println("Cp " + cp + " numCp " + numCp);
-    System.out.println("entropy " + testSystem.getPhase(1).getEntropy());
+    // System.out.println("Cp " + cp + " numCp " + numCp);
+    // System.out.println("entropy " + testSystem.getPhase(1).getEntropy());
 
     // thermo.ThermodynamicModelTest testModel = new
     // thermo.ThermodynamicModelTest(testSystem);

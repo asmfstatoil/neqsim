@@ -1,5 +1,7 @@
 package neqsim.thermo.characterization;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import neqsim.thermo.system.SystemInterface;
 
 /**
@@ -11,6 +13,9 @@ import neqsim.thermo.system.SystemInterface;
  * @version $Id: $Id
  */
 public class PlusFractionModel implements java.io.Serializable {
+  /** Logger object for class. */
+  static Logger logger = LogManager.getLogger(PlusFractionModel.class);
+  /** Serialization version UID. */
   private static final long serialVersionUID = 1000;
   private String name = "";
   private SystemInterface system = null;
@@ -40,6 +45,7 @@ public class PlusFractionModel implements java.io.Serializable {
   }
 
   class PedersenPlusModel implements PlusFractionModelInterface, Cloneable {
+    /** Serialization version UID. */
     private static final long serialVersionUID = 1000;
 
     double[] coefs = {4.4660105006, -1.1266303727, 0.80, 0.0408709562};
@@ -95,11 +101,13 @@ public class PlusFractionModel implements java.io.Serializable {
       return name;
     }
 
+    /** {@inheritDoc} */
     @Override
     public double getMPlus() {
       return MPlus;
     }
 
+    /** {@inheritDoc} */
     @Override
     public double getZPlus() {
       return zPlus;
@@ -113,36 +121,43 @@ public class PlusFractionModel implements java.io.Serializable {
       return maxPlusMolarMass;
     }
 
+    /** {@inheritDoc} */
     @Override
     public double getNumberOfPlusPseudocomponents() {
       return numberOfPlusPseudocomponents;
     }
 
+    /** {@inheritDoc} */
     @Override
     public double[] getZ() {
       return z;
     }
 
+    /** {@inheritDoc} */
     @Override
     public double[] getM() {
       return M;
     }
 
+    /** {@inheritDoc} */
     @Override
     public double[] getDens() {
       return dens;
     }
 
+    /** {@inheritDoc} */
     @Override
     public double getDensPlus() {
       return densPlus;
     }
 
+    /** {@inheritDoc} */
     @Override
     public int getFirstPlusFractionNumber() {
       return firstPlusFractionNumber;
     }
 
+    /** {@inheritDoc} */
     @Override
     public int getFirstTBPFractionNumber() {
       int firstTBPNumber = 0;
@@ -168,16 +183,19 @@ public class PlusFractionModel implements java.io.Serializable {
       return firstTBPNumber;
     }
 
+    /** {@inheritDoc} */
     @Override
     public int getPlusComponentNumber() {
       return plusComponentNumber;
     }
 
+    /** {@inheritDoc} */
     @Override
     public int getLastPlusFractionNumber() {
       return lastPlusFractionNumber;
     }
 
+    /** {@inheritDoc} */
     @Override
     public boolean hasPlusFraction() {
       for (int i = 0; i < system.getPhase(0).getNumberOfComponents(); i++) {
@@ -192,8 +210,9 @@ public class PlusFractionModel implements java.io.Serializable {
       return false;
     }
 
+    /** {@inheritDoc} */
     @Override
-    public void characterizePlusFraction(TBPModelInterface TBPModel) {
+    public boolean characterizePlusFraction(TBPModelInterface TBPModel) {
       system.init(0);
       Integer firstPlusNumber = Integer.valueOf(0);
       if (system.getPhase(0).getComponent(plusComponentNumber).getComponentName().substring(3, 4)
@@ -210,6 +229,10 @@ public class PlusFractionModel implements java.io.Serializable {
 
       numberOfPlusPseudocomponents = lastPlusFractionNumber - firstPlusFractionNumber + 1;
 
+      if (PVTsimMolarMass[firstPlusFractionNumber - 6] > MPlus * 1000) {
+        logger.error("Plus fraction molar mass too light ");
+        return false;
+      }
       // System.out.println("first plus fraction number " + firstPlusFractionNumber);
       coefs[0] = 0.1;
       coefs[1] = Math.log(zPlus) / getFirstPlusFractionNumber();
@@ -227,16 +250,18 @@ public class PlusFractionModel implements java.io.Serializable {
         z[i] = Math.exp(getCoef(0) + getCoef(1) * i);
         M[i] = PVTsimMolarMass[i - 6] / 1000.0;
         dens[i] = getCoef(2) + getCoef(3) * Math.log(i);
-
-        // System.out.println("z,m,dens " + z[i] + " " + M[i] + " " + dens[i]);
       }
+      // System.out.println("z,m,dens " + z[i] + " " + M[i] + " " + dens[i]);
+      return true;
     }
 
+    /** {@inheritDoc} */
     @Override
     public double[] getCoefs() {
       return this.coefs;
     }
 
+    /** {@inheritDoc} */
     @Override
     public double getCoef(int i) {
       return this.coefs[i];
@@ -287,15 +312,194 @@ public class PlusFractionModel implements java.io.Serializable {
     public void setCoefs(double coef, int i) {
       this.coefs[i] = coef;
     }
+
+    /** {@inheritDoc} */
+    @Override
+    public void setLastPlusFractionNumber(int fract) {
+      lastPlusFractionNumber = fract + 1;
+    }
   }
 
   private class PedersenHeavyOilPlusModel extends PedersenPlusModel {
+    /** Serialization version UID. */
     private static final long serialVersionUID = 1000;
 
     public PedersenHeavyOilPlusModel() {
       lastPlusFractionNumber = 200;
       maxPlusMolarMass = 2.10;
       name = "Pedersen Heavy Oil";
+    }
+  }
+
+  class WhitsonGammaModel extends PedersenPlusModel {
+    /** Serialization version UID. */
+    private static final long serialVersionUID = 1000;
+    public double[] zValues;
+    public double[] molarMasses;
+    public double[] densities;
+    public double eta = 90; // minimum molecular weight in C7+
+    public String model = "Whitson";
+    public double alfa = 1.0;
+    public double betta = Double.NaN;
+
+    public WhitsonGammaModel() {
+      name = "Whitson Gamma";
+    }
+
+    public void setCalculationModel(String model) {
+      this.model = model;
+    }
+
+    public void characterizePlusFractionWhitsonGamma() {}
+
+    public double gamma(double X) {
+      double[] dataB = {-0.577191652, 0.988205891, -0.897056937, 0.918206857, -0.756704078,
+          0.482199394, -0.193527818, 0.035868343};
+      double const_ = 1.0;
+      double XX = X;
+      if (X < 1.0) {
+        XX = X + 1.0;
+      }
+      while (XX >= 2.0) {
+        XX -= 1.0;
+      }
+      const_ = XX * const_;
+      XX -= 1.0;
+      double Y = 1.0;
+      for (int i = 1; i <= 8; i++) {
+        Y += dataB[i - 1] * XX * i;
+      }
+      double GAMMA = const_ * Y;
+      if (X < 1.0) {
+        GAMMA /= X;
+      }
+      return GAMMA;
+    }
+
+    public double[] P0P1(double MWB) {
+      double P0 = 0.0;
+      double P1 = 0.0;
+      if (MWB == eta) {
+        return new double[] {P0, P1};
+      }
+      double Y = (MWB - eta) / betta;
+      double Q = Math.exp(-Y) * Math.pow(Y, alfa) / gamma(alfa);
+      double TERM = 1.0 / alfa;
+      double S = TERM;
+      for (int j = 1; j <= 10000; j++) {
+        TERM *= Y / (alfa + j);
+        S += TERM;
+        if (Math.abs(TERM) <= 1e-8) {
+          P0 = Q * S;
+          P1 = Q * (S - 1.0 / alfa);
+          break;
+        }
+      }
+      return new double[] {P0, P1};
+    }
+
+    public void densityUOP() {
+      // Calculates density of the C+ function with Watson or Universal Oil Products
+      // characterization factor
+      // Experience has shown, that the method is not very accurate for C20+
+      double Kw = 4.5579 * Math.pow(MPlus * 1000, 0.15178) * Math.pow(densPlus, -1.18241);
+      for (int i = firstPlusFractionNumber; i < lastPlusFractionNumber; i++) {
+        densities[i - 1] = 6.0108 * Math.pow(molarMasses[i - 1], 0.17947) * Math.pow(Kw, -1.18241);
+      }
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public boolean characterizePlusFraction(TBPModelInterface TBPModel) {
+      system.init(0);
+      double MWBU = Double.NaN;
+      double MWBL = Double.NaN;
+      double sumZ = 0.0;
+
+      betta = (MPlus * 1000 - eta) / alfa;
+      // Implement the Gamma distribution for the plus fraction
+      zValues = new double[lastPlusFractionNumber];
+      molarMasses = new double[lastPlusFractionNumber];
+      densities = new double[lastPlusFractionNumber];
+
+      if (model.equals("Whitson")) {
+        for (int i = firstPlusFractionNumber; i < lastPlusFractionNumber; i++) {
+          if (i == 1) {
+            MWBU = eta;
+          }
+          MWBL = MWBU;
+          MWBU = MWBL + 14;
+          if (i == lastPlusFractionNumber) {
+            MWBU = 10000.0;
+          }
+          double[] P0LP1L = P0P1(MWBL);
+          double P0L = P0LP1L[0];
+          double P1L = P0LP1L[1];
+
+          double[] P0UP1U = P0P1(MWBU);
+          double P0U = P0UP1U[0];
+          double P1U = P0UP1U[1];
+
+          double Z = P0U - P0L;
+          if (Z < 1E-15) {
+            Z = 1E-15;
+          }
+          zValues[i] = Z * zPlus;
+          double MWAV = eta + alfa * betta * (P1U - P1L) / (P0U - P0L);
+          molarMasses[i] = MWAV / 1000;
+          sumZ = sumZ + zValues[i];
+        }
+        densityUOP();
+      }
+
+      // Normalize z values to ensure sumZ equals zPlus
+      for (int i = firstPlusFractionNumber; i < lastPlusFractionNumber; i++) {
+        zValues[i] *= zPlus / sumZ;
+      }
+      return true;
+    }
+
+    public void setGammaParameters(double shape, double minMW) {
+      this.alfa = shape;
+      this.eta = minMW;
+    }
+
+    public double[] getGammaParameters() {
+      return new double[] {this.alfa, this.eta};
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public double[] getCoefs() {
+      return new double[] {alfa, eta};
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public double getCoef(int i) {
+      if (i == 0)
+        return alfa;
+      if (i == 1)
+        return eta;
+      return 0;
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public double[] getZ() {
+      return zValues;
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public double[] getM() {
+      return molarMasses;
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public double[] getDens() {
+      return densities;
     }
   }
 
@@ -308,8 +512,12 @@ public class PlusFractionModel implements java.io.Serializable {
    * @return a {@link neqsim.thermo.characterization.PlusFractionModelInterface} object
    */
   public PlusFractionModelInterface getModel(String name) {
-    if (name.equals("heavyOil")) {
+    if (name.equals("Pedersen")) {
+      return new PedersenPlusModel();
+    } else if (name.equals("Pedersen Heavy Oil")) {
       return new PedersenHeavyOilPlusModel();
+    } else if (name.equals("Whitson Gamma Model")) {
+      return new WhitsonGammaModel();
     } else {
       return new PedersenPlusModel();
     }

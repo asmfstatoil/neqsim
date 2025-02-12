@@ -4,7 +4,8 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import neqsim.thermo.system.SystemInterface;
 import neqsim.thermo.system.SystemPrEos;
-import neqsim.thermodynamicOperations.ThermodynamicOperations;
+import neqsim.thermodynamicoperations.ThermodynamicOperations;
+import neqsim.util.ExcludeFromJacocoGeneratedReport;
 
 /**
  * <p>
@@ -16,6 +17,7 @@ import neqsim.thermodynamicOperations.ThermodynamicOperations;
  * @version $Id: $Id
  */
 public class DewPointCurve {
+  /** Logger object for class. */
   static Logger logger = LogManager.getLogger(DewPointCurve.class);
 
   /**
@@ -25,6 +27,7 @@ public class DewPointCurve {
    *
    * @param args an array of {@link java.lang.String} objects
    */
+  @ExcludeFromJacocoGeneratedReport
   public static void main(String args[]) {
     SystemInterface testSystem = new SystemPrEos(260.0, 5.0);
     // testSystem = new SystemCSPsrkEos(290,50.6);
@@ -57,8 +60,6 @@ public class DewPointCurve {
     // testSystem.addComponent("n-heptane", 0.1757);
 
     testSystem.createDatabase(true);
-    // 1- orginal no interaction 2- classic w interaction
-    // 3- Huron-Vidal 4- Wong-Sandler
     testSystem.setMixingRule(2);
     // testSystem.setMixingRule("HV", "UNIFAC_PSRK");
     testSystem.init(0);

@@ -5,7 +5,8 @@ import org.apache.logging.log4j.Logger;
 import neqsim.thermo.ThermodynamicConstantsInterface;
 import neqsim.thermo.system.SystemInterface;
 import neqsim.thermo.system.SystemSrkCPAstatoil;
-import neqsim.thermodynamicOperations.ThermodynamicOperations;
+import neqsim.thermodynamicoperations.ThermodynamicOperations;
+import neqsim.util.ExcludeFromJacocoGeneratedReport;
 
 /**
  * <p>
@@ -17,6 +18,7 @@ import neqsim.thermodynamicOperations.ThermodynamicOperations;
  * @version $Id: $Id
  */
 public class FreezingPoint {
+  /** Logger object for class. */
   static Logger logger = LogManager.getLogger(FreezingPoint.class);
 
   /**
@@ -26,6 +28,7 @@ public class FreezingPoint {
    *
    * @param args an array of {@link java.lang.String} objects
    */
+  @ExcludeFromJacocoGeneratedReport
   public static void main(String[] args) {
     // SystemInterface testSystem = new SystemSrkSchwartzentruberEos(260.15,19.00);
     SystemInterface testSystem =

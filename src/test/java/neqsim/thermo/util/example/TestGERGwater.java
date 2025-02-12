@@ -4,7 +4,8 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import neqsim.thermo.system.SystemInterface;
 import neqsim.thermo.system.SystemSrkCPAstatoil;
-import neqsim.thermodynamicOperations.ThermodynamicOperations;
+import neqsim.thermodynamicoperations.ThermodynamicOperations;
+import neqsim.util.ExcludeFromJacocoGeneratedReport;
 
 /**
  * <p>
@@ -16,6 +17,7 @@ import neqsim.thermodynamicOperations.ThermodynamicOperations;
  * @version $Id: $Id
  */
 public class TestGERGwater {
+  /** Logger object for class. */
   static Logger logger = LogManager.getLogger(TestGERGwater.class);
 
   /**
@@ -25,6 +27,7 @@ public class TestGERGwater {
    *
    * @param args an array of {@link java.lang.String} objects
    */
+  @ExcludeFromJacocoGeneratedReport
   public static void main(String args[]) {
     // SystemInterface testSystem = new SystemGERGwaterEos(273.15-20.0, 100.0);
     SystemInterface testSystem = new SystemSrkCPAstatoil(273.15 - 20.0, 100.0);
@@ -41,8 +44,6 @@ public class TestGERGwater {
     testSystem.addComponent("water", 178.3e-4);
 
     testSystem.createDatabase(true);
-    // 1- orginal no interaction 2- classic w interaction
-    // 3- Huron-Vidal 4- Wong-Sandler
     testSystem.setMixingRule(7);
     // testSystem.setMixingRule("HV", "UNIFAC_PSRK");
     testSystem.init(0);

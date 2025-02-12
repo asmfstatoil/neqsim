@@ -11,6 +11,7 @@ import neqsim.thermo.component.ComponentKentEisenberg;
  * @version $Id: $Id
  */
 public class PhaseKentEisenberg extends PhaseGENRTL {
+  /** Serialization version UID. */
   private static final long serialVersionUID = 1000;
 
   /**
@@ -18,14 +19,12 @@ public class PhaseKentEisenberg extends PhaseGENRTL {
    * Constructor for PhaseKentEisenberg.
    * </p>
    */
-  public PhaseKentEisenberg() {
-    super();
-  }
+  public PhaseKentEisenberg() {}
 
   /** {@inheritDoc} */
   @Override
   public void addComponent(String name, double moles, double molesInPhase, int compNumber) {
-    super.addComponent(name, molesInPhase);
+    super.addComponent(name, molesInPhase, compNumber);
     componentArray[compNumber] = new ComponentKentEisenberg(name, moles, molesInPhase, compNumber);
   }
 

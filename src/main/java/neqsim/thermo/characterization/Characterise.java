@@ -13,7 +13,9 @@ import neqsim.thermo.system.SystemInterface;
  * @version $Id: $Id
  */
 public class Characterise implements java.io.Serializable, Cloneable {
+  /** Serialization version UID. */
   private static final long serialVersionUID = 1000;
+  /** Logger object for class. */
   static Logger logger = LogManager.getLogger(Characterise.class);
 
   SystemInterface system = null;
@@ -156,11 +158,13 @@ public class Characterise implements java.io.Serializable, Cloneable {
     if (plusFractionModel.hasPlusFraction()) {
       if (plusFractionModel.getMPlus() > plusFractionModel.getMaxPlusMolarMass()) {
         logger.error("plus fraction molar mass too heavy for " + plusFractionModel.getName());
-        plusFractionModel = plusFractionModelSelector.getModel("heavyOil");
+        plusFractionModel = plusFractionModelSelector.getModel("Pedersen Heavy Oil");
         logger.info("changing to " + plusFractionModel.getName());
       }
-      plusFractionModel.characterizePlusFraction(TBPfractionModel);
-      lumpingModel.generateLumpedComposition(this);
+      boolean couldCharacerize = plusFractionModel.characterizePlusFraction(TBPfractionModel);
+      if (couldCharacerize) {
+        lumpingModel.generateLumpedComposition(this);
+      }
     }
   }
 

@@ -17,6 +17,7 @@ import neqsim.thermo.component.ComponentElectrolyteCPAstatoil;
  * @version $Id: $Id
  */
 public class PhaseElectrolyteCPAstatoil extends PhaseElectrolyteCPA {
+  /** Serialization version UID. */
   private static final long serialVersionUID = 1000;
 
   /**
@@ -24,9 +25,7 @@ public class PhaseElectrolyteCPAstatoil extends PhaseElectrolyteCPA {
    * Constructor for PhaseElectrolyteCPAstatoil.
    * </p>
    */
-  public PhaseElectrolyteCPAstatoil() {
-    super();
-  }
+  public PhaseElectrolyteCPAstatoil() {}
 
   /** {@inheritDoc} */
   @Override

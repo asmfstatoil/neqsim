@@ -16,7 +16,9 @@ import neqsim.util.database.NeqSimDataBase;
  * @version $Id: $Id
  */
 public class ComponentHydrate extends Component {
+  /** Serialization version UID. */
   private static final long serialVersionUID = 1000;
+  /** Logger object for class. */
   static Logger logger = LogManager.getLogger(ComponentHydrate.class);
 
   // double[][] emptyHydrateVapourPressureConstant = {{17.6025820786,
@@ -38,6 +40,8 @@ public class ComponentHydrate extends Component {
   private double sphericalCoreRadiusHydrate = 0.0;
   private double lennardJonesEnergyParameterHydrate = 0.0;
   private double lennardJonesMolecularDiameterHydrate = 0.0;
+
+  /** Reference phase containing only this single component, i.e., mixing rules are not relevant. */
   PhaseInterface refPhase = null;
 
   /**
@@ -73,9 +77,10 @@ public class ComponentHydrate extends Component {
     reffug[0] = 10.0;
     reffug[1] = 1.0;
 
-    java.sql.ResultSet dataSet = null;
-    try (neqsim.util.database.NeqSimDataBase database = new neqsim.util.database.NeqSimDataBase()) {
-      if (!name.equals("default")) {
+    if (!name.equals("default")) {
+      java.sql.ResultSet dataSet = null;
+      try (neqsim.util.database.NeqSimDataBase database =
+          new neqsim.util.database.NeqSimDataBase()) {
         try {
           if (NeqSimDataBase.createTemporaryTables()) {
             dataSet = database.getResultSet(("SELECT * FROM comptemp WHERE name='" + name + "'"));
@@ -95,16 +100,16 @@ public class ComponentHydrate extends Component {
         lennardJonesEnergyParameterHydrate = Double.parseDouble(dataSet.getString("LJepsHYDRATE"));
         sphericalCoreRadiusHydrate =
             Double.parseDouble(dataSet.getString("SphericalCoreRadiusHYDRATE"));
-      }
-    } catch (Exception ex) {
-      logger.error("error in comp", ex);
-    } finally {
-      try {
-        if (dataSet != null) {
-          dataSet.close();
-        }
       } catch (Exception ex) {
-        logger.error("error closing database.....", ex);
+        logger.error("error in comp");
+      } finally {
+        try {
+          if (dataSet != null) {
+            dataSet.close();
+          }
+        } catch (Exception ex) {
+          logger.error("error closing database.....", ex);
+        }
       }
     }
   }
@@ -476,7 +481,7 @@ public class ComponentHydrate extends Component {
    * Getter for the field <code>dGfHydrate</code>.
    * </p>
    *
-   * @return an array of {@link double} objects
+   * @return an array of type double
    */
   public double[] getDGfHydrate() {
     return dGfHydrate;
@@ -487,7 +492,7 @@ public class ComponentHydrate extends Component {
    * Setter for the field <code>dGfHydrate</code>.
    * </p>
    *
-   * @param dGfHydrate an array of {@link double} objects
+   * @param dGfHydrate an array of type double
    */
   public void setDGfHydrate(double[] dGfHydrate) {
     this.dGfHydrate = dGfHydrate;
@@ -510,7 +515,7 @@ public class ComponentHydrate extends Component {
    * Getter for the field <code>dHfHydrate</code>.
    * </p>
    *
-   * @return an array of {@link double} objects
+   * @return an array of type double
    */
   public double[] getDHfHydrate() {
     return dHfHydrate;
@@ -533,7 +538,7 @@ public class ComponentHydrate extends Component {
    * Setter for the field <code>dHfHydrate</code>.
    * </p>
    *
-   * @param dHfHydrate an array of {@link double} objects
+   * @param dHfHydrate an array of type double
    */
   public void setDHfHydrate(double[] dHfHydrate) {
     this.dHfHydrate = dHfHydrate;
@@ -656,7 +661,8 @@ public class ComponentHydrate extends Component {
       refPhase.setTemperature(273.0);
       refPhase.setPressure(1.0);
       refPhase.addComponent("water", 10.0, 10.0, 0);
-      refPhase.init(refPhase.getNumberOfMolesInPhase(), 1, 0, PhaseType.byValue(1), 1.0);
+      refPhase.setMixingRule(null);
+      refPhase.init(refPhase.getNumberOfMolesInPhase(), 1, 0, PhaseType.GAS, 1.0);
     } catch (Exception ex) {
       logger.error("error occured", ex);
     }
@@ -730,10 +736,9 @@ public class ComponentHydrate extends Component {
    * Getter for the field <code>cavprwat</code>.
    * </p>
    *
-   * @return an array of {@link double} objects
+   * @return an array of type double
    */
   public double[][] getCavprwat() {
     return cavprwat;
   }
 }
-

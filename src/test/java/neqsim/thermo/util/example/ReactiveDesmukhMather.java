@@ -2,7 +2,8 @@ package neqsim.thermo.util.example;
 
 import neqsim.thermo.system.SystemDesmukhMather;
 import neqsim.thermo.system.SystemInterface;
-import neqsim.thermodynamicOperations.ThermodynamicOperations;
+import neqsim.thermodynamicoperations.ThermodynamicOperations;
+import neqsim.util.ExcludeFromJacocoGeneratedReport;
 
 /**
  * <p>
@@ -21,6 +22,7 @@ public class ReactiveDesmukhMather {
    *
    * @param args an array of {@link java.lang.String} objects
    */
+  @ExcludeFromJacocoGeneratedReport
   public static void main(String args[]) {
     SystemInterface testSystem = new SystemDesmukhMather(290.0, 5.1);
 
@@ -31,7 +33,7 @@ public class ReactiveDesmukhMather {
     testSystem.chemicalReactionInit();
     testSystem.setMixingRule(2);
     testSystem.createDatabase(true);
-    // testSystem.setPhysicalPropertyModel(3);
+    // testSystem.setPhysicalPropertyModel(PhysicalPropertyModel.AMINE);
 
     ThermodynamicOperations ops = new ThermodynamicOperations(testSystem);
 

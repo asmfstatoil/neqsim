@@ -6,8 +6,14 @@
 
 package neqsim.thermo.phase;
 
+import neqsim.physicalproperties.PhysicalPropertyType;
+import neqsim.physicalproperties.system.PhysicalProperties;
+import neqsim.physicalproperties.system.PhysicalPropertyModel;
 import neqsim.thermo.ThermodynamicConstantsInterface;
 import neqsim.thermo.component.ComponentInterface;
+import neqsim.thermo.mixingrule.EosMixingRuleType;
+import neqsim.thermo.mixingrule.MixingRuleTypeInterface;
+import neqsim.thermo.mixingrule.MixingRulesInterface;
 import neqsim.thermo.system.SystemInterface;
 
 /**
@@ -21,7 +27,7 @@ import neqsim.thermo.system.SystemInterface;
 public interface PhaseInterface extends ThermodynamicConstantsInterface, Cloneable {
   /**
    * <p>
-   * addcomponent.
+   * Add component to component array and update moles variables.
    * </p>
    *
    * @param name Name of component.
@@ -33,10 +39,10 @@ public interface PhaseInterface extends ThermodynamicConstantsInterface, Cloneab
 
   /**
    * <p>
-   * setMoleFractions.
+   * Set <code>x</code> and normalize for all Components in phase.
    * </p>
    *
-   * @param x an array of {@link double} objects
+   * @param x Mole fractions of component in a phase.
    */
   public void setMoleFractions(double[] x);
 
@@ -93,16 +99,9 @@ public interface PhaseInterface extends ThermodynamicConstantsInterface, Cloneab
   /**
    * Returns the mole composition vector in unit mole fraction.
    *
-   * @return an array of {@link double} objects
+   * @return an array of type double
    */
   public double[] getMolarComposition();
-
-  /**
-   * <p>
-   * resetPhysicalProperties.
-   * </p>
-   */
-  public void resetPhysicalProperties();
 
   /**
    * method to return phase volume note: without Peneloux volume correction.
@@ -250,19 +249,28 @@ public interface PhaseInterface extends ThermodynamicConstantsInterface, Cloneab
 
   /**
    * <p>
-   * initPhysicalProperties.
+   * Init / calculate all physical properties of phase.
    * </p>
    */
   public void initPhysicalProperties();
 
   /**
    * <p>
-   * initPhysicalProperties.
+   * Init / calculate specified physical property of phase.
    * </p>
    *
-   * @param type a {@link String} object
+   * @param ppt PhysicalPropertyType enum object.
    */
-  public void initPhysicalProperties(String type);
+  public void initPhysicalProperties(PhysicalPropertyType ppt);
+
+  /**
+   * Initialize / calculate a specified physical properties for all phases and interfaces.
+   *
+   * @param name Name of physical property.
+   */
+  public default void initPhysicalProperties(String name) {
+    initPhysicalProperties(PhysicalPropertyType.byName(name));
+  }
 
   /**
    * <p>
@@ -329,12 +337,19 @@ public interface PhaseInterface extends ThermodynamicConstantsInterface, Cloneab
 
   /**
    * <p>
-   * getcomponentArray.
+   * Get component array of Phase.
    * </p>
    *
    * @return an array of {@link neqsim.thermo.component.ComponentInterface} objects
    */
   public ComponentInterface[] getcomponentArray();
+
+  /**
+   * Get normalized names of components in phase.
+   *
+   * @return Array of names of components in phase.
+   */
+  public String[] getComponentNames();
 
   /**
    * <p>
@@ -400,9 +415,43 @@ public interface PhaseInterface extends ThermodynamicConstantsInterface, Cloneab
    * method to get GERG properties of a phase using the GERG-2008 EoS.
    * </p>
    *
-   * @return an array of {@link double} objects
+   * @return an array of type double
    */
   public double[] getProperties_GERG2008();
+
+
+  /**
+   * method to get Leachman density of a phase using the Leachman EoS.
+   * 
+   * @param hydrogenType Supported types are 'normal', 'para', 'ortho'
+   * @return density with unit kg/m3
+   */
+  public double getDensity_Leachman(String hydrogenType);
+
+  /**
+   * Overloaded method to get the Leachman density with default hydrogen type ('normal').
+   *
+   * @return density with unit kg/m3
+   */
+  public double getDensity_Leachman();
+
+  /**
+   * <p>
+   * method to get Leachman properties of a phase using the Leachman EoS.
+   * </p>
+   *
+   * @return an array of type double
+   */
+
+  public double[] getProperties_Leachman(String hydrogenType);
+
+  /**
+   * Overloaded method to get the Leachman properties with default hydrogen type ('normal').
+   *
+   * @return density with unit kg/m3
+   */
+
+  public double[] getProperties_Leachman();
 
   /**
    * method to get density of a phase note: does not use Peneloux volume correction.
@@ -445,7 +494,7 @@ public interface PhaseInterface extends ThermodynamicConstantsInterface, Cloneab
    * getFugacity.
    * </p>
    *
-   * @param compName a {@link String} object
+   * @param compName a {@link java.lang.String} object
    * @return a double
    */
   public double getFugacity(String compName);
@@ -601,7 +650,7 @@ public interface PhaseInterface extends ThermodynamicConstantsInterface, Cloneab
    * getWtFrac.
    * </p>
    *
-   * @param componentName a {@link String} object
+   * @param componentName a {@link java.lang.String} object
    * @return a double
    */
   public double getWtFrac(String componentName);
@@ -611,7 +660,7 @@ public interface PhaseInterface extends ThermodynamicConstantsInterface, Cloneab
    * setMixingRuleGEModel.
    * </p>
    *
-   * @param name a {@link String} object
+   * @param name a {@link java.lang.String} object
    */
   public void setMixingRuleGEModel(String name);
 
@@ -675,8 +724,11 @@ public interface PhaseInterface extends ThermodynamicConstantsInterface, Cloneab
   public double getpH();
 
   /**
+   * Normalize property <code>x</code>.
+   * 
    * <p>
-   * normalize.
+   * Property <code>x</code> is the mole fraction of a component in a specific phase. Normalizing,
+   * means that the sum of <code>x</code> for all Components in a phase equal 1.0.
    * </p>
    */
   public void normalize();
@@ -771,19 +823,64 @@ public interface PhaseInterface extends ThermodynamicConstantsInterface, Cloneab
 
   /**
    * <p>
-   * setPhysicalProperties.
+   * getPhysicalProperties.
    * </p>
+   *
+   * @return a {@link neqsim.physicalproperties.system.PhysicalProperties} object
    */
-  public void setPhysicalProperties();
+  public PhysicalProperties getPhysicalProperties();
 
   /**
    * <p>
-   * specify the type model for the physical properties you want to use.
+   * resetPhysicalProperties.
+   * </p>
+   */
+  public void resetPhysicalProperties();
+
+  /**
+   * <p>
+   * Specify the type of the physical properties.
+   * </p>
+   */
+  public default void setPhysicalProperties() {
+    setPhysicalProperties(getPhysicalPropertyModel());
+  }
+
+  /**
+   * <p>
+   * Specify the type of the physical properties.
    * </p>
    *
-   * @param type 0 Orginal/default 1 Water 2 Glycol 3 Amine 4 CO2Water 6 Basic
+   * @param ppm PhysicalPropertyModel enum object
    */
-  public void setPhysicalProperties(int type);
+  public void setPhysicalProperties(PhysicalPropertyModel ppm);
+
+  /**
+   * <p>
+   * Getter for property ppm.
+   * </p>
+   *
+   * @return a {@link neqsim.physicalproperties.system.PhysicalPropertyModel} object
+   */
+  public PhysicalPropertyModel getPhysicalPropertyModel();
+
+  /**
+   * <p>
+   * Setter for property ppm.
+   * </p>
+   *
+   * @param ppm PhysicalPropertyModel enum object
+   */
+  public void setPpm(PhysicalPropertyModel ppm);
+
+  /**
+   * <p>
+   * setPhysicalPropertyModel.
+   * </p>
+   *
+   * @param ppm a {@link neqsim.physicalproperties.system.PhysicalPropertyModel} object
+   */
+  public void setPhysicalPropertyModel(PhysicalPropertyModel ppm);
 
   /**
    * <p>
@@ -805,12 +902,32 @@ public interface PhaseInterface extends ThermodynamicConstantsInterface, Cloneab
 
   /**
    * <p>
+   * setMixingRule.
+   * </p>
+   *
+   * @param mr a MixingRuleTypeInterface
+   */
+  public void setMixingRule(MixingRuleTypeInterface mr);
+
+  /**
+   * <p>
+   * setMixingRule.
+   * </p>
+   *
+   * @param mr a int
+   */
+  public default void setMixingRule(int mr) {
+    setMixingRule(EosMixingRuleType.byValue(mr));
+  }
+
+  /**
+   * <p>
    * resetMixingRule.
    * </p>
    *
-   * @param type a int
+   * @param mr a int
    */
-  public void resetMixingRule(int type);
+  public void resetMixingRule(MixingRuleTypeInterface mr);
 
   /**
    * Set the temperature of a phase.
@@ -821,16 +938,6 @@ public interface PhaseInterface extends ThermodynamicConstantsInterface, Cloneab
 
   /**
    * <p>
-   * getPhysicalProperties.
-   * </p>
-   *
-   * @return a {@link neqsim.physicalProperties.physicalPropertySystem.PhysicalPropertiesInterface}
-   *         object
-   */
-  public neqsim.physicalProperties.physicalPropertySystem.PhysicalPropertiesInterface getPhysicalProperties();
-
-  /**
-   * <p>
    * molarVolume.
    * </p>
    *
@@ -838,7 +945,7 @@ public interface PhaseInterface extends ThermodynamicConstantsInterface, Cloneab
    * @param temperature a double
    * @param A a double
    * @param B a double
-   * @param pt the PhaseType of the phase.
+   * @param pt the PhaseType of the phase
    * @return a double
    * @throws neqsim.util.exception.IsNaNException if any.
    * @throws neqsim.util.exception.TooManyIterationsException if any.
@@ -1201,15 +1308,6 @@ public interface PhaseInterface extends ThermodynamicConstantsInterface, Cloneab
 
   /**
    * <p>
-   * setMixingRule.
-   * </p>
-   *
-   * @param type a int
-   */
-  public void setMixingRule(int type);
-
-  /**
-   * <p>
    * getComponents.
    * </p>
    *
@@ -1219,10 +1317,10 @@ public interface PhaseInterface extends ThermodynamicConstantsInterface, Cloneab
 
   /**
    * <p>
-   * getNumberOfMolesInPhase.
+   * Get the number of moles the phase contains.
    * </p>
    *
-   * @return a double
+   * @return The number of moles in the phase.
    */
   public double getNumberOfMolesInPhase();
 
@@ -1353,6 +1451,14 @@ public interface PhaseInterface extends ThermodynamicConstantsInterface, Cloneab
   public double getTemperature();
 
   /**
+   * method to return temperature in a specified unit.
+   *
+   * @param unit Supported units are K, C, R
+   * @return temperature in specified unit
+   */
+  public double getTemperature(String unit);
+
+  /**
    * Get pressure of phase.
    *
    * @return pressure in unit bara
@@ -1362,7 +1468,7 @@ public interface PhaseInterface extends ThermodynamicConstantsInterface, Cloneab
   /**
    * Get pressure of phase in a specified unit.
    *
-   * @param unit Supported units are bara, barg, Pa and MPa
+   * @param unit Supported units are bara, barg, Pa, MPa, psi, psia, psig
    * @return pressure in specified unit
    */
   public double getPressure(String unit);
@@ -1373,6 +1479,14 @@ public interface PhaseInterface extends ThermodynamicConstantsInterface, Cloneab
    * @return molar mass in unit kg/mol
    */
   public double getMolarMass();
+
+  /**
+   * method to get molar mass of a fluid phase.
+   *
+   * @param unit Supported units are kg/mol, gr/mol
+   * @return molar mass in specified unit
+   */
+  public double getMolarMass(String unit);
 
   /**
    * <p>
@@ -1646,7 +1760,7 @@ public interface PhaseInterface extends ThermodynamicConstantsInterface, Cloneab
 
   /**
    * <p>
-   * dFdT.
+   * Calculate derivative of F per Temperature, i.e., dF/dT.
    * </p>
    *
    * @return a double
@@ -1655,7 +1769,7 @@ public interface PhaseInterface extends ThermodynamicConstantsInterface, Cloneab
 
   /**
    * <p>
-   * dFdV.
+   * Calculate derivative of F per Volume, i.e., dF/dV.
    * </p>
    *
    * @return a double
@@ -1664,7 +1778,7 @@ public interface PhaseInterface extends ThermodynamicConstantsInterface, Cloneab
 
   /**
    * <p>
-   * dFdTdV.
+   * Calculate derivative of F per Temperature and Volume, i.e., dF/dT * 1/dV.
    * </p>
    *
    * @return a double
@@ -1741,13 +1855,18 @@ public interface PhaseInterface extends ThermodynamicConstantsInterface, Cloneab
   public double getLogInfiniteDiluteFugacity(int k);
 
   /**
-   * <p>
-   * Getter for property mixingRuleNumber.
-   * </p>
+   * Get mixing rule.
    *
-   * @return a int
+   * @return a MixingRulesInterface
    */
-  public int getMixingRuleNumber();
+  public MixingRulesInterface getMixingRule();
+
+  /**
+   * Get mixing rule type.
+   *
+   * @return a MixingRuleTypeInterface
+   */
+  public MixingRuleTypeInterface getMixingRuleType();
 
   /**
    * <p>
@@ -1798,33 +1917,15 @@ public interface PhaseInterface extends ThermodynamicConstantsInterface, Cloneab
 
   /**
    * <p>
-   * Getter for property physicalPropertyType.
-   * </p>
-   *
-   * @return a int
-   */
-  public int getPhysicalPropertyType();
-
-  /**
-   * <p>
-   * Setter for property physicalPropertyType.
-   * </p>
-   *
-   * @param physicalPropertyType a int
-   */
-  public void setPhysicalPropertyType(int physicalPropertyType);
-
-  /**
-   * <p>
    * setParams.
    * </p>
    *
    * @param phase a {@link neqsim.thermo.phase.PhaseInterface} object
-   * @param alpha an array of {@link double} objects
-   * @param Dij an array of {@link double} objects
-   * @param DijT an array of {@link double} objects
-   * @param mixRule an array of {@link String} objects
-   * @param intparam an array of {@link double} objects
+   * @param alpha an array of type double
+   * @param Dij an array of type double
+   * @param DijT an array of type double
+   * @param mixRule an array of {@link java.lang.String} objects
+   * @param intparam an array of type double
    */
   public void setParams(PhaseInterface phase, double[][] alpha, double[][] Dij, double[][] DijT,
       String[][] mixRule, double[][] intparam);
@@ -1848,7 +1949,7 @@ public interface PhaseInterface extends ThermodynamicConstantsInterface, Cloneab
    * Getter for property phaseTypeName.
    * </p>
    *
-   * @return a {@link String} object
+   * @return a {@link java.lang.String} object
    */
   public default String getPhaseTypeName() {
     return getType().getDesc();
@@ -1859,7 +1960,7 @@ public interface PhaseInterface extends ThermodynamicConstantsInterface, Cloneab
    * Setter for property phaseTypeName.
    * </p>
    *
-   * @param phaseTypeName a {@link String} object
+   * @param phaseTypeName a {@link java.lang.String} object
    */
   public default void setPhaseTypeName(String phaseTypeName) {
     setType(PhaseType.byDesc(phaseTypeName));
@@ -1867,21 +1968,12 @@ public interface PhaseInterface extends ThermodynamicConstantsInterface, Cloneab
 
   /**
    * <p>
-   * Getter for property mixingRuleDefined.
+   * Check if mixing rule is defined.
    * </p>
    *
-   * @return a boolean
+   * @return Returns true if MixingRule is defined and false if not.
    */
   public boolean isMixingRuleDefined();
-
-  /**
-   * <p>
-   * Setter for property mixingRuleDefined.
-   * </p>
-   *
-   * @param mixingRuleDefined a boolean
-   */
-  public void setMixingRuleDefined(boolean mixingRuleDefined);
 
   /**
    * <p>
@@ -1904,14 +1996,23 @@ public interface PhaseInterface extends ThermodynamicConstantsInterface, Cloneab
   public double getActivityCoefficientUnSymetric(int k);
 
   /**
-   * <p>
-   * hasComponent.
-   * </p>
+   * Verify if phase has a component.
    *
-   * @param name a {@link String} object
-   * @return a boolean
+   * @param name Name of component to look for. NB! Converts name to normalized name.
+   * @return True if component is found.
    */
-  public boolean hasComponent(String name);
+  public default boolean hasComponent(String name) {
+    return hasComponent(name, true);
+  }
+
+  /**
+   * Verify if phase has a component.
+   *
+   * @param name Name of component to look for.
+   * @param normalized Set true to convert input name to normalized component name.
+   * @return True if component is found.
+   */
+  public boolean hasComponent(String name, boolean normalized);
 
   /**
    * <p>
@@ -1948,4 +2049,27 @@ public interface PhaseInterface extends ThermodynamicConstantsInterface, Cloneab
    * @return speed of sound in m/s
    */
   public double getSoundSpeed();
+
+  /**
+   * method to get the speed of sound of a system. The sound speed is implemented based on a molar
+   * average over the phases
+   *
+   * @param unit Supported units are m/s, km/h
+   * @return speed of sound in m/s
+   */
+  public double getSoundSpeed(String unit);
+
+  /**
+   * method to return name of thermodynamic model
+   *
+   * @return String model name
+   */
+  public String getModelName();
+
+  /**
+   * method to return Z volume corrected gas compressibility
+   *
+   * @return double Z volume corrected
+   */
+  public double getZvolcorr();
 }

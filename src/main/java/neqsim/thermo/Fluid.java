@@ -2,6 +2,7 @@ package neqsim.thermo;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import neqsim.util.ExcludeFromJacocoGeneratedReport;
 
 /**
  * <p>
@@ -12,6 +13,7 @@ import org.apache.logging.log4j.Logger;
  * @version $Id: $Id
  */
 public class Fluid {
+  /** Logger object for class. */
   static Logger logger = LogManager.getLogger(Fluid.class);
 
   neqsim.thermo.system.SystemInterface fluid = null;
@@ -39,21 +41,6 @@ public class Fluid {
   }
 
   /**
-   * 
-   */
-  private void setThermoModel() {
-    if (thermoModel.equals("srk")) {
-      fluid = new neqsim.thermo.system.SystemSrkEos();
-    } else if (thermoModel.equals("pr")) {
-      fluid = new neqsim.thermo.system.SystemPrEos();
-    } else if (thermoModel.equals("cpa")) {
-      fluid = new neqsim.thermo.system.SystemSrkCPAstatoil();
-    } else {
-      fluid = new neqsim.thermo.system.SystemSrkEos();
-    }
-  }
-
-  /**
    * <p>
    * create2.
    * </p>
@@ -75,7 +62,7 @@ public class Fluid {
    * </p>
    *
    * @param componentNames an array of {@link java.lang.String} objects
-   * @param flowrate an array of {@link double} objects
+   * @param flowrate an array of type double
    * @param unit a {@link java.lang.String} object
    * @return a {@link neqsim.thermo.system.SystemInterface} object
    */
@@ -83,7 +70,7 @@ public class Fluid {
       String unit) {
     setThermoModel();
     createFluid(componentNames, flowrate, unit);
-    if (isHasWater() == true) {
+    if (isHasWater()) {
       fluid.addComponent("water", 0.1);
     }
     fluid.createDatabase(true);
@@ -208,7 +195,7 @@ public class Fluid {
       return null;
     }
 
-    if (isHasWater() == true) {
+    if (isHasWater()) {
       fluid.addComponent("water", 0.1);
     }
     fluid.createDatabase(true);
@@ -229,7 +216,7 @@ public class Fluid {
    * </p>
    *
    * @param componentNames an array of {@link java.lang.String} objects
-   * @param flowrate an array of {@link double} objects
+   * @param flowrate an array of type double
    * @param unit a {@link java.lang.String} object
    * @return a {@link neqsim.thermo.system.SystemInterface} object
    */
@@ -271,6 +258,7 @@ public class Fluid {
    *
    * @param args an array of {@link java.lang.String} objects
    */
+  @ExcludeFromJacocoGeneratedReport
   public static void main(String[] args) {
     neqsim.thermo.Fluid fluidCreator = new neqsim.thermo.Fluid();
 
@@ -339,6 +327,21 @@ public class Fluid {
    */
   public String getThermoModel() {
     return thermoModel;
+  }
+
+  /**
+   * Init fluid object?.
+   */
+  private void setThermoModel() {
+    if (thermoModel.equals("srk")) {
+      fluid = new neqsim.thermo.system.SystemSrkEos();
+    } else if (thermoModel.equals("pr")) {
+      fluid = new neqsim.thermo.system.SystemPrEos();
+    } else if (thermoModel.equals("cpa")) {
+      fluid = new neqsim.thermo.system.SystemSrkCPAstatoil();
+    } else {
+      fluid = new neqsim.thermo.system.SystemSrkEos();
+    }
   }
 
   /**

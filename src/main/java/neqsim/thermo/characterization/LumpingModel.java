@@ -13,7 +13,9 @@ import neqsim.thermo.system.SystemInterface;
  * @version $Id: $Id
  */
 public class LumpingModel implements java.io.Serializable {
+  /** Serialization version UID. */
   private static final long serialVersionUID = 1000;
+  /** Logger object for class. */
   static Logger logger = LogManager.getLogger(LumpingModel.class);
 
   int numberOfLumpedComponents = 7;
@@ -43,45 +45,54 @@ public class LumpingModel implements java.io.Serializable {
    */
   public class StandardLumpingModel
       implements LumpingModelInterface, Cloneable, java.io.Serializable {
+    /** Serialization version UID. */
     private static final long serialVersionUID = 1000;
 
     public StandardLumpingModel() {}
 
+    /** {@inheritDoc} */
     @Override
     public void setNumberOfLumpedComponents(int lumpedNumb) {
       numberOfLumpedComponents = lumpedNumb;
     }
 
+    /** {@inheritDoc} */
     @Override
     public int getNumberOfLumpedComponents() {
       return numberOfLumpedComponents;
     }
 
+    /** {@inheritDoc} */
     @Override
     public void setNumberOfPseudoComponents(int lumpedNumb) {
       numberOfPseudocomponents = lumpedNumb;
     }
 
+    /** {@inheritDoc} */
     @Override
     public int getNumberOfPseudoComponents() {
       return numberOfPseudocomponents;
     }
 
+    /** {@inheritDoc} */
     @Override
     public String getName() {
       return name;
     }
 
+    /** {@inheritDoc} */
     @Override
     public String getLumpedComponentName(int i) {
       return lumpedComponentNames[i];
     }
 
+    /** {@inheritDoc} */
     @Override
     public String[] getLumpedComponentNames() {
       return lumpedComponentNames;
     }
 
+    /** {@inheritDoc} */
     @Override
     public void generateLumpedComposition(Characterise charac) {
       numberOfLumpedComponents = numberOfPseudocomponents;
@@ -193,14 +204,13 @@ public class LumpingModel implements java.io.Serializable {
       }
     }
 
+    /** {@inheritDoc} */
     @Override
     public double getFractionOfHeavyEnd(int i) {
       if (fractionOfHeavyEnd == null) {
-        neqsim.util.exception.ThermoException ex =
+        throw new RuntimeException(
             new neqsim.util.exception.NotInitializedException(this, "getFractionOfHeavyEnd",
-                "fractionOfHeavyEnd", "characterisePlusFraction or generateLumpedComposition");
-        logger.error(ex.getMessage(), ex);
-        throw new RuntimeException(ex);
+                "fractionOfHeavyEnd", "characterisePlusFraction or generateLumpedComposition"));
       }
       return fractionOfHeavyEnd[i];
     }
@@ -214,10 +224,12 @@ public class LumpingModel implements java.io.Serializable {
    * @version 1.0
    */
   public class PVTLumpingModel extends StandardLumpingModel {
+    /** Serialization version UID. */
     private static final long serialVersionUID = 1000;
 
     public PVTLumpingModel() {}
 
+    /** {@inheritDoc} */
     @Override
     public void generateLumpedComposition(Characterise charac) {
       double weightFrac = 0.0;
@@ -306,16 +318,16 @@ public class LumpingModel implements java.io.Serializable {
         system.removeComponent(system.getPhase(0)
             .getComponent(charac.getPlusFractionModel().getPlusComponentNumber()).getName());
       }
+      system.init(0);
     }
 
+    /** {@inheritDoc} */
     @Override
     public double getFractionOfHeavyEnd(int i) {
       if (fractionOfHeavyEnd == null) {
-        neqsim.util.exception.ThermoException ex =
+        throw new RuntimeException(
             new neqsim.util.exception.NotInitializedException(this, "getFractionOfHeavyEnd",
-                "fractionOfHeavyEnd", "characterisePlusFraction or generateLumpedComposition");
-        logger.error(ex.getMessage(), ex);
-        throw new RuntimeException(ex);
+                "fractionOfHeavyEnd", "characterisePlusFraction or generateLumpedComposition"));
       }
       return fractionOfHeavyEnd[i];
     }
@@ -328,10 +340,12 @@ public class LumpingModel implements java.io.Serializable {
    * @version 1.0
    */
   public class NoLumpingModel extends StandardLumpingModel {
+    /** Serialization version UID. */
     private static final long serialVersionUID = 1000;
 
     public NoLumpingModel() {}
 
+    /** {@inheritDoc} */
     @Override
     public void generateLumpedComposition(Characterise charac) {
       numberOfPseudocomponents = charac.getPlusFractionModel().getLastPlusFractionNumber();
@@ -400,26 +414,25 @@ public class LumpingModel implements java.io.Serializable {
         getLumpedComponentNames()[k] = addName;
         // System.out.println("adding " + addName);
         fractionOfHeavyEnd[k] = zPlus[k] / molFracTot;
-
         system.addTBPfraction(addName, totalNumberOfMoles * zPlus[k], Maverage / zPlus[k],
             denstemp1 / denstemp2);
         k++;
-        starti = i + 1;
+        starti = i;
       }
       if (charac.getPlusFractionModel().hasPlusFraction()) {
         system.removeComponent(system.getPhase(0)
             .getComponent(charac.getPlusFractionModel().getPlusComponentNumber()).getName());
       }
+      system.init(0);
     }
 
+    /** {@inheritDoc} */
     @Override
     public double getFractionOfHeavyEnd(int i) {
       if (fractionOfHeavyEnd == null) {
-        neqsim.util.exception.ThermoException ex =
+        throw new RuntimeException(
             new neqsim.util.exception.NotInitializedException(this, "getFractionOfHeavyEnd",
-                "fractionOfHeavyEnd", "characterisePlusFraction or generateLumpedComposition");
-        logger.error(ex.getMessage(), ex);
-        throw new RuntimeException(ex);
+                "fractionOfHeavyEnd", "characterisePlusFraction or generateLumpedComposition"));
       }
       return fractionOfHeavyEnd[i];
     }

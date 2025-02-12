@@ -11,6 +11,7 @@ import neqsim.thermo.phase.PhasePureComponentSolid;
  * @version $Id: $Id
  */
 public class SystemPrEos extends SystemEos {
+  /** Serialization version UID. */
   private static final long serialVersionUID = 1000;
 
   /**
@@ -39,9 +40,9 @@ public class SystemPrEos extends SystemEos {
    */
   public SystemPrEos(double T, double P, boolean checkForSolids) {
     super(T, P, checkForSolids);
-    attractiveTermNumber = 1;
     modelName = "PR-EOS";
     getCharacterization().setTBPModel("PedersenPR");
+    attractiveTermNumber = 1;
 
     for (int i = 0; i < numberOfPhases; i++) {
       phaseArray[i] = new PhasePrEos();

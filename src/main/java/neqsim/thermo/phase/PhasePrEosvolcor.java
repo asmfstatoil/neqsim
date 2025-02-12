@@ -18,6 +18,7 @@ import neqsim.thermo.component.ComponentPRvolcor;
  * @version $Id: $Id
  */
 public class PhasePrEosvolcor extends PhasePrEos {
+  /** Serialization version UID. */
   private static final long serialVersionUID = 1000;
   double loc_C = 0;
   private double CT;
@@ -28,7 +29,6 @@ public class PhasePrEosvolcor extends PhasePrEos {
    * Creates new PhaseSrkEos.
    */
   public PhasePrEosvolcor() {
-    super();
     thermoPropertyModelName = "PR-EoS-volcorr";
   }
 
@@ -296,13 +296,8 @@ public class PhasePrEosvolcor extends PhasePrEos {
     // return -1.0 / (val2 * val2) + 1.0 / (val1 * val1);
   }
 
-  /**
-   * <p>
-   * gVVV.
-   * </p>
-   *
-   * @return a double
-   */
+  /** {@inheritDoc} */
+  @Override
   public double gVVV() {
     double val1 = numberOfMolesInPhase * getMolarVolume();
     double val2 = val1 + getC() - getB();
@@ -331,13 +326,8 @@ public class PhasePrEosvolcor extends PhasePrEos {
     // return 1.0 / (R * loc_B * (delta1 - delta2)) * (-1.0 / (val1 * val1) + 1.0 / (val2 * val2));
   }
 
-  /**
-   * <p>
-   * fVVV.
-   * </p>
-   *
-   * @return a double
-   */
+  /** {@inheritDoc} */
+  @Override
   public double fVVV() {
     double val1 = numberOfMolesInPhase * molarVolume + getB() * delta1 + getC();
     double val2 = numberOfMolesInPhase * molarVolume + getB() * delta2 + getC();
@@ -633,7 +623,7 @@ public class PhasePrEosvolcor extends PhasePrEos {
   /** {@inheritDoc} */
   @Override
   public void addComponent(String name, double moles, double molesInPhase, int compNumber) {
-    super.addComponent(name, molesInPhase);
+    super.addComponent(name, molesInPhase, compNumber);
     componentArray[compNumber] = new ComponentPRvolcor(name, moles, molesInPhase, compNumber);
   }
 }

@@ -9,8 +9,9 @@ import org.ejml.simple.SimpleMatrix;
 // import org.ejml.data.DenseMatrix64F;
 import neqsim.thermo.component.ComponentCPAInterface;
 import neqsim.thermo.component.ComponentUMRCPA;
-import neqsim.thermo.mixingRule.CPAMixing;
-import neqsim.thermo.mixingRule.CPAMixingInterface;
+import neqsim.thermo.mixingrule.CPAMixingRuleHandler;
+import neqsim.thermo.mixingrule.CPAMixingRulesInterface;
+import neqsim.thermo.mixingrule.MixingRuleTypeInterface;
 
 /**
  * <p>
@@ -21,22 +22,13 @@ import neqsim.thermo.mixingRule.CPAMixingInterface;
  * @version $Id: $Id
  */
 public class PhaseUMRCPA extends PhasePrEos implements PhaseCPAInterface {
-  /**
-   * <p>
-   * Getter for the field <code>dFdNtemp</code>.
-   * </p>
-   *
-   * @return the dFdNtemp
-   */
-  public double[] getdFdNtemp() {
-    return dFdNtemp;
-  }
-
+  /** Serialization version UID. */
   private static final long serialVersionUID = 1000;
+  /** Logger object for class. */
   static Logger logger = LogManager.getLogger(PhaseUMRCPA.class);
 
-  public CPAMixing cpaSelect = new CPAMixing();
-  public CPAMixingInterface cpamix;
+  public CPAMixingRuleHandler cpaSelect = new CPAMixingRuleHandler();
+  public CPAMixingRulesInterface cpamix;
   double gcpavv = 0.0;
   double gcpavvv = 0.0;
   double gcpa = 0.0;
@@ -92,7 +84,6 @@ public class PhaseUMRCPA extends PhasePrEos implements PhaseCPAInterface {
    * </p>
    */
   public PhaseUMRCPA() {
-    super();
     thermoPropertyModelName = "UMR-CPA-EoS";
   }
 
@@ -224,6 +215,7 @@ public class PhaseUMRCPA extends PhasePrEos implements PhaseCPAInterface {
     }
 
     if (cpamix == null) {
+      // NB! Hardcoded mixing rule type
       cpamix = cpaSelect.getMixingRule(1, this);
     }
     if (initType > 0) {
@@ -500,8 +492,10 @@ public class PhaseUMRCPA extends PhasePrEos implements PhaseCPAInterface {
 
   /** {@inheritDoc} */
   @Override
-  public void setMixingRule(int type) {
-    super.setMixingRule(type);
+  public void setMixingRule(MixingRuleTypeInterface mr) {
+    // NB! Sets EOS mixing rule in parent class
+    super.setMixingRule(mr);
+    // NB! Ignores input mr, uses CPA
     cpamix = cpaSelect.getMixingRule(1, this);
   }
 
@@ -821,11 +815,22 @@ public class PhaseUMRCPA extends PhasePrEos implements PhaseCPAInterface {
   }
 
   /**
-   * calcdFdNtemp.
+   * <p>
+   * Getter for the field <code>dFdNtemp</code>. Set value by calling function molarVolume.
+   * </p>
+   *
+   * @return the dFdNtemp
+   */
+  public double[] getdFdNtemp() {
+    return dFdNtemp;
+  }
+
+  /**
+   * Calculate and return dFdNtemp. NB! Does not set field <code>dFdNtemp</code>.
    *
    * @return double[]
    */
-  double[] calcdFdNtemp() {
+  private double[] calcdFdNtemp() {
     double tot1 = 0.0;
     double tot2 = 0.0;
     double tot3 = 0.0;
@@ -1138,7 +1143,7 @@ public class PhaseUMRCPA extends PhasePrEos implements PhaseCPAInterface {
    * calcRootVolFinder.
    * </p>
    *
-   * @param pt the PhaseType of the phase.
+   * @param pt the PhaseType of the phase
    * @return a double
    */
   public double calcRootVolFinder(PhaseType pt) {
@@ -1199,8 +1204,8 @@ public class PhaseUMRCPA extends PhasePrEos implements PhaseCPAInterface {
     if (solvedBonVlow < 1e-3) {
       solvedBonVlow = solvedBonVHigh;
     }
-    // dataPresentation.fileHandeling.createTextFile.TextFile file = new
-    // dataPresentation.fileHandeling.createTextFile.TextFile();
+    // dataPresentation.filehandling.TextFile file = new
+    // dataPresentation.filehandling.TextFile();
     // file.setValues(matrix);
     // file.setOutputFileName("D:/temp/temp2.txt");
     // file.createFile();
@@ -1220,7 +1225,7 @@ public class PhaseUMRCPA extends PhasePrEos implements PhaseCPAInterface {
    * @param temperature a double
    * @param A a double
    * @param B a double
-   * @param pt the PhaseType of the phase.
+   * @param pt the PhaseType of the phase
    * @return a double
    * @throws neqsim.util.exception.IsNaNException if any.
    * @throws neqsim.util.exception.TooManyIterationsException if any.
@@ -1372,7 +1377,7 @@ public class PhaseUMRCPA extends PhasePrEos implements PhaseCPAInterface {
 
   /** {@inheritDoc} */
   @Override
-  public CPAMixingInterface getCpamix() {
+  public CPAMixingRulesInterface getCpaMixingRule() {
     return cpamix;
   }
 
@@ -1407,9 +1412,9 @@ public class PhaseUMRCPA extends PhasePrEos implements PhaseCPAInterface {
    * croeneckerProduct.
    * </p>
    *
-   * @param a an array of {@link double} objects
-   * @param b an array of {@link double} objects
-   * @return an array of {@link double} objects
+   * @param a an array of type double
+   * @param b an array of type double
+   * @return an array of type double
    */
   public double[][] croeneckerProduct(double[][] a, double[][] b) {
     int aLength = a.length;
@@ -1527,6 +1532,7 @@ public class PhaseUMRCPA extends PhasePrEos implements PhaseCPAInterface {
       }
     }
     if (cpamix == null) {
+      // NB! Hardcoded mixing rule type
       cpamix = cpaSelect.getMixingRule(1, this);
     }
 
@@ -2005,7 +2011,7 @@ public class PhaseUMRCPA extends PhasePrEos implements PhaseCPAInterface {
    * @param temperature a double
    * @param A a double
    * @param B a double
-   * @param pt the PhaseType of the phase.
+   * @param pt the PhaseType of the phase
    * @return a double
    * @throws neqsim.util.exception.IsNaNException if any.
    * @throws neqsim.util.exception.TooManyIterationsException if any.

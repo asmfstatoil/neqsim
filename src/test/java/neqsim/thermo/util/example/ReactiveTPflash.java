@@ -4,7 +4,8 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import neqsim.thermo.system.SystemElectrolyteCPAstatoil;
 import neqsim.thermo.system.SystemInterface;
-import neqsim.thermodynamicOperations.ThermodynamicOperations;
+import neqsim.thermodynamicoperations.ThermodynamicOperations;
+import neqsim.util.ExcludeFromJacocoGeneratedReport;
 
 /**
  * <p>
@@ -16,6 +17,7 @@ import neqsim.thermodynamicOperations.ThermodynamicOperations;
  * @version $Id: $Id
  */
 public class ReactiveTPflash {
+  /** Logger object for class. */
   static Logger logger = LogManager.getLogger(ReactiveTPflash.class);
 
   /**
@@ -25,6 +27,7 @@ public class ReactiveTPflash {
    *
    * @param args an array of {@link java.lang.String} objects
    */
+  @ExcludeFromJacocoGeneratedReport
   public static void main(String args[]) {
     // SystemInterface testSystem = new SystemFurstElectrolyteEosMod2004(423.2,
     // 24.4);
@@ -67,7 +70,7 @@ public class ReactiveTPflash {
     } catch (Exception ex) {
     }
     testSystem.display();
-    System.out.println("pH " + testSystem.getPhase(1).getpH());
+    // System.out.println("pH " + testSystem.getPhase(1).getpH());
     logger.info("pH " + testSystem.getPhase(1).getpH());
     logger.info(
         "activity coefficiet water " + testSystem.getPhase("aqueous").getActivityCoefficient(2));

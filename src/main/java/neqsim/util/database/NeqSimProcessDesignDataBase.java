@@ -14,7 +14,9 @@ import org.apache.logging.log4j.Logger;
  * @version June 2023
  */
 public class NeqSimProcessDesignDataBase extends NeqSimDataBase {
+  /** Serialization version UID. */
   private static final long serialVersionUID = 1000;
+  /** Logger object for class. */
   static Logger logger = LogManager.getLogger(NeqSimProcessDesignDataBase.class);
 
   /** Constant <code>dataBasePath=""</code>. */
@@ -61,15 +63,16 @@ public class NeqSimProcessDesignDataBase extends NeqSimDataBase {
     }
   }
 
-  /**
-   * Drops and re-creates table from contents in csv file.
-   *
-   * @param tableName Name of table to replace
-   */
+  /** {@inheritDoc} */
   public static void updateTable(String tableName) {
     updateTable(tableName, "designdata/" + tableName + ".csv");
   }
 
+  /**
+   * <p>
+   * initH2DatabaseFromCSVfiles.
+   * </p>
+   */
   public static void initH2DatabaseFromCSVfiles() {
     h2IsInitalizing = true;
     neqsim.util.database.NeqSimProcessDesignDataBase.connectionString =

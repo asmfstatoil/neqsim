@@ -5,7 +5,8 @@ import org.apache.logging.log4j.Logger;
 import neqsim.thermo.ThermodynamicModelTest;
 import neqsim.thermo.system.SystemInterface;
 import neqsim.thermo.system.SystemSrkCPAstatoil;
-import neqsim.thermodynamicOperations.ThermodynamicOperations;
+import neqsim.thermodynamicoperations.ThermodynamicOperations;
+import neqsim.util.ExcludeFromJacocoGeneratedReport;
 
 /**
  * <p>
@@ -17,6 +18,7 @@ import neqsim.thermodynamicOperations.ThermodynamicOperations;
  * @since 2.2.3
  */
 public class TestPCSAFT {
+  /** Logger object for class. */
   static Logger logger = LogManager.getLogger(TestPCSAFT.class);
 
   /**
@@ -27,6 +29,7 @@ public class TestPCSAFT {
    * @param args an array of {@link java.lang.String} objects
    */
   @SuppressWarnings("unused")
+  @ExcludeFromJacocoGeneratedReport
   public static void main(String args[]) {
     // SystemInterface testSystem = new SystemSrkEos(273.14, 50.00);
     // SystemInterface testSystem = new SystemGERG2004Eos(273.14-55, 75.00);

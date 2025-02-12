@@ -13,6 +13,7 @@ import neqsim.thermo.phase.PhaseUMRCPA;
  * @version $Id: $Id
  */
 public class ComponentUMRCPA extends ComponentPR implements ComponentCPAInterface {
+  /** Serialization version UID. */
   private static final long serialVersionUID = 1000;
 
   int cpaon = 1;
@@ -67,12 +68,12 @@ public class ComponentUMRCPA extends ComponentPR implements ComponentCPAInterfac
    * Constructor for ComponentSrkCPA.
    * </p>
    *
-   * @param number a int
-   * @param TC a double
-   * @param PC a double
-   * @param M a double
-   * @param a a double
-   * @param moles a double
+   * @param number a int. Not used.
+   * @param TC Critical temperature
+   * @param PC Critical pressure
+   * @param M Molar mass
+   * @param a Acentric factor
+   * @param moles Total number of moles of component.
    */
   public ComponentUMRCPA(int number, double TC, double PC, double M, double a, double moles) {
     super(number, TC, PC, M, a, moles);
@@ -424,8 +425,8 @@ public class ComponentUMRCPA extends ComponentPR implements ComponentCPAInterfac
     }
     return -getNumberOfMolesInPhase() / Math.pow(xsite[sitei], 2.0) * fact
         - getNumberOfMolesInPhase() * phase.getComponent(compj).getNumberOfMolesInPhase()
-            * ((PhaseCPAInterface) phase).getCpamix().calcDelta(sitei, sitej, componentNumber,
-                compj, phase, phase.getTemperature(), phase.getPressure(),
+            * ((PhaseCPAInterface) phase).getCpaMixingRule().calcDelta(sitei, sitej,
+                componentNumber, compj, phase, phase.getTemperature(), phase.getPressure(),
                 phase.getNumberOfComponents());
   }
 
@@ -575,7 +576,7 @@ public class ComponentUMRCPA extends ComponentPR implements ComponentCPAInterfac
   /**
    * Setter for property xsite.
    *
-   * @param xsiteOld an array of {@link double} objects
+   * @param xsiteOld an array of type double
    */
   public void setXsiteOld(double[] xsiteOld) {
     this.xsiteOld = xsiteOld;

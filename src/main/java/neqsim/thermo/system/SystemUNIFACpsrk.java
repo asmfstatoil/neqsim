@@ -11,6 +11,7 @@ import neqsim.thermo.phase.PhaseSrkEos;
  * @version $Id: $Id
  */
 public class SystemUNIFACpsrk extends SystemEos {
+  /** Serialization version UID. */
   private static final long serialVersionUID = 1000;
 
   /**
@@ -45,8 +46,9 @@ public class SystemUNIFACpsrk extends SystemEos {
    */
   public SystemUNIFACpsrk(double T, double P, boolean checkForSolids) {
     super(T, P, checkForSolids);
-    attractiveTermNumber = 0;
     modelName = "UNIFAC-GE-model";
+    attractiveTermNumber = 0;
+
     solidPhaseCheck = checkForSolids;
 
     phaseArray[0] = new PhaseSrkEos();

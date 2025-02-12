@@ -13,8 +13,10 @@ import neqsim.thermo.phase.PhasePureComponentSolid;
  * @version $Id: $Id
  */
 public class SystemPCSAFT extends SystemSrkEos {
-  private static final long serialVersionUID = 1000;
+  /** Logger object for class. */
   static Logger logger = LogManager.getLogger(SystemPCSAFT.class);
+  /** Serialization version UID. */
+  private static final long serialVersionUID = 1000;
 
   /**
    * <p>
@@ -78,19 +80,6 @@ public class SystemPCSAFT extends SystemSrkEos {
 
   /** {@inheritDoc} */
   @Override
-  public SystemPCSAFT clone() {
-    SystemPCSAFT clonedSystem = null;
-    try {
-      clonedSystem = (SystemPCSAFT) super.clone();
-    } catch (Exception ex) {
-      logger.error("Cloning failed.", ex);
-    }
-
-    return clonedSystem;
-  }
-
-  /** {@inheritDoc} */
-  @Override
   public void addTBPfraction(String componentName2, double numberOfMoles, double molarMass,
       double density) {
     // componentName = (componentName + "_" + getFluidName());
@@ -112,6 +101,19 @@ public class SystemPCSAFT extends SystemSrkEos {
       logger.info("Saft parameters: m " + mSaft + " epsk " + epskSaftm / mSaft + " sigma "
           + Math.pow(msigm / mSaft, 1.0 / 3.0));
     }
+  }
+
+  /** {@inheritDoc} */
+  @Override
+  public SystemPCSAFT clone() {
+    SystemPCSAFT clonedSystem = null;
+    try {
+      clonedSystem = (SystemPCSAFT) super.clone();
+    } catch (Exception ex) {
+      logger.error("Cloning failed.", ex);
+    }
+
+    return clonedSystem;
   }
 
   /**

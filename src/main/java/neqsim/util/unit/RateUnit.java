@@ -20,7 +20,9 @@ import neqsim.util.exception.InvalidInputException;
  * @version $Id: $Id
  */
 public class RateUnit extends neqsim.util.unit.BaseUnit {
+  /** Serialization version UID. */
   private static final long serialVersionUID = 1000;
+  /** Logger object for class. */
   static Logger logger = LogManager.getLogger(RateUnit.class);
 
   double molarmass = 0.0;
@@ -43,18 +45,6 @@ public class RateUnit extends neqsim.util.unit.BaseUnit {
     this.molarmass = molarmass;
     this.stddens = stddens;
     this.boilp = boilp;
-  }
-
-  /** {@inheritDoc} */
-  @Override
-  public double getSIvalue() {
-    return getConversionFactor(inunit) / getConversionFactor("SI") * invalue;
-  }
-
-  /** {@inheritDoc} */
-  @Override
-  public double getValue(String tounit) {
-    return getConversionFactor(inunit) / getConversionFactor(tounit) * invalue;
   }
 
   /**
@@ -111,15 +101,33 @@ public class RateUnit extends neqsim.util.unit.BaseUnit {
       factor = 1.0e6 * mol_Sm3 / (3600.0 * 24.0);
     } else if (name.equals("MSm^3/hr") || name.equals("MSm3/hr")) {
       factor = 1.0e6 * mol_Sm3 / (3600.0);
+    } else if (name.equals("idSm3/sec")) {
+      factor = 1.0 / molarmass * stddens;
+    } else if (name.equals("idSm3/min")) {
+      factor = 1.0 / molarmass / 60.0 * stddens;
     } else if (name.equals("idSm3/hr")) {
       factor = 1.0 / molarmass / 3600.0 * stddens;
     } else if (name.equals("idSm3/day")) {
       factor = 1.0 / molarmass / (3600.0 * 24.0) * stddens;
+    } else if (name.equals("gallons/min")) {
+      factor = 1.0 / molarmass / 60.0 * stddens / 10.0 * 3.78541178;
     } else {
       throw new RuntimeException(
           new InvalidInputException(this, "getConversionFactor", "unit", "not supported"));
     }
 
     return factor;
+  }
+
+  /** {@inheritDoc} */
+  @Override
+  public double getSIvalue() {
+    return getConversionFactor(inunit) / getConversionFactor("SI") * invalue;
+  }
+
+  /** {@inheritDoc} */
+  @Override
+  public double getValue(String tounit) {
+    return getConversionFactor(inunit) / getConversionFactor(tounit) * invalue;
   }
 }

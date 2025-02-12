@@ -21,6 +21,7 @@ import neqsim.util.exception.TooManyIterationsException;
  * @version $Id: $Id
  */
 public class PhaseGEUniquac extends PhaseGE {
+  /** Serialization version UID. */
   private static final long serialVersionUID = 1000;
 
   double[][] alpha;
@@ -35,7 +36,6 @@ public class PhaseGEUniquac extends PhaseGE {
    * </p>
    */
   public PhaseGEUniquac() {
-    super();
     componentArray = new ComponentGEInterface[ThermodynamicModelSettings.MAX_NUMBER_OF_COMPONENTS];
   }
 
@@ -45,14 +45,13 @@ public class PhaseGEUniquac extends PhaseGE {
    * </p>
    *
    * @param phase a {@link neqsim.thermo.phase.PhaseInterface} object
-   * @param alpha an array of {@link double} objects
-   * @param Dij an array of {@link double} objects
-   * @param mixRule an array of {@link String} objects
-   * @param intparam an array of {@link double} objects
+   * @param alpha an array of type double
+   * @param Dij an array of type double
+   * @param mixRule an array of {@link java.lang.String} objects
+   * @param intparam an array of type double
    */
   public PhaseGEUniquac(PhaseInterface phase, double[][] alpha, double[][] Dij, String[][] mixRule,
       double[][] intparam) {
-    super();
     componentArray = new ComponentGEUniquac[alpha[0].length];
     this.mixRule = mixRule;
     this.alpha = alpha;
@@ -60,10 +59,9 @@ public class PhaseGEUniquac extends PhaseGE {
     this.intparam = intparam;
     for (int i = 0; i < alpha[0].length; i++) {
       numberOfComponents++;
-      componentArray[i] = new ComponentGEUniquac(phase.getComponents()[i].getName(),
-          phase.getComponents()[i].getNumberOfmoles(),
-          phase.getComponents()[i].getNumberOfMolesInPhase(),
-          phase.getComponents()[i].getComponentNumber());
+      componentArray[i] = new ComponentGEUniquac(phase.getComponent(i).getName(),
+          phase.getComponent(i).getNumberOfmoles(), phase.getComponent(i).getNumberOfMolesInPhase(),
+          phase.getComponent(i).getComponentNumber());
     }
   }
 
@@ -88,7 +86,7 @@ public class PhaseGEUniquac extends PhaseGE {
   /** {@inheritDoc} */
   @Override
   public void addComponent(String name, double moles, double molesInPhase, int compNumber) {
-    super.addComponent(name, molesInPhase);
+    super.addComponent(name, molesInPhase, compNumber);
     componentArray[compNumber] = new ComponentGEUniquac(name, moles, molesInPhase, compNumber);
   }
 
@@ -112,7 +110,7 @@ public class PhaseGEUniquac extends PhaseGE {
       double temperature, double pressure, PhaseType pt) {
     GE = 0;
     for (int i = 0; i < numberOfComponents; i++) {
-      GE += phase.getComponents()[i].getx()
+      GE += phase.getComponent(i).getx()
           * Math.log(((ComponentGEInterface) componentArray[i]).getGamma(phase, numberOfComponents,
               temperature, pressure, pt, alpha, Dij, intparam, mixRule));
     }
@@ -120,6 +118,7 @@ public class PhaseGEUniquac extends PhaseGE {
     return R * temperature * numberOfMolesInPhase * GE;
   }
 
+  /** {@inheritDoc} */
   @Override
   public double molarVolume(double pressure, double temperature, double A, double B, PhaseType pt)
       throws IsNaNException, TooManyIterationsException {

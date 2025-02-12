@@ -11,6 +11,7 @@ import neqsim.thermo.phase.PhaseSrkCPA;
  * @version $Id: $Id
  */
 public class SystemSrkCPA extends SystemSrkEos {
+  /** Serialization version UID. */
   private static final long serialVersionUID = 1000;
 
   /**
@@ -72,6 +73,16 @@ public class SystemSrkCPA extends SystemSrkEos {
 
   /** {@inheritDoc} */
   @Override
+  public void addComponent(String componentName, double moles) {
+    // if (componentName.equals("Ca++") || componentName.equals("Na+") ||
+    // componentName.equals("Cl-")) {
+    // componentName = "NaCl";
+    // }
+    super.addComponent(componentName, moles);
+  }
+
+  /** {@inheritDoc} */
+  @Override
   public SystemSrkCPA clone() {
     SystemSrkCPA clonedSystem = null;
     try {
@@ -92,15 +103,5 @@ public class SystemSrkCPA extends SystemSrkEos {
     setImplementedCompositionDeriativesofFugacity(true);
     setImplementedPressureDeriativesofFugacity(true);
     setImplementedTemperatureDeriativesofFugacity(true);
-  }
-
-  /** {@inheritDoc} */
-  @Override
-  public void addComponent(String componentName, double moles) {
-    // if (componentName.equals("Ca++") || componentName.equals("Na+") ||
-    // componentName.equals("Cl-")) {
-    // componentName = "NaCl";
-    // }
-    super.addComponent(componentName, moles);
   }
 }

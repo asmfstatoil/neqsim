@@ -11,23 +11,27 @@ import org.apache.logging.log4j.Logger;
 import neqsim.thermo.ThermodynamicConstantsInterface;
 import neqsim.thermo.ThermodynamicModelSettings;
 import neqsim.thermo.component.ComponentGEInterface;
-import neqsim.thermo.mixingRule.EosMixingRules;
-import neqsim.thermo.mixingRule.EosMixingRulesInterface;
+import neqsim.thermo.mixingrule.EosMixingRuleHandler;
+import neqsim.thermo.mixingrule.EosMixingRuleType;
+import neqsim.thermo.mixingrule.EosMixingRulesInterface;
+import neqsim.thermo.mixingrule.MixingRuleTypeInterface;
 
 /**
  * <p>
- * PhaseGE class.
+ * Abstract class PhaseGE.
  * </p>
  *
  * @author Even Solbraa
  * @version $Id: $Id
  */
 public abstract class PhaseGE extends Phase implements PhaseGEInterface {
+  /** Serialization version UID. */
   private static final long serialVersionUID = 1000;
+  /** Logger object for class. */
   static Logger logger = LogManager.getLogger(PhaseGE.class);
 
-  EosMixingRules mixSelect = new EosMixingRules();
-  EosMixingRulesInterface mixRuleEos;
+  EosMixingRuleHandler mixSelect = new EosMixingRuleHandler();
+  EosMixingRulesInterface mixRule;
 
   /**
    * <p>
@@ -35,7 +39,6 @@ public abstract class PhaseGE extends Phase implements PhaseGEInterface {
    * </p>
    */
   public PhaseGE() {
-    super();
     setType(PhaseType.LIQUID);
     componentArray = new ComponentGEInterface[ThermodynamicModelSettings.MAX_NUMBER_OF_COMPONENTS];
     useVolumeCorrection = false;
@@ -51,14 +54,17 @@ public abstract class PhaseGE extends Phase implements PhaseGEInterface {
    * @param totalNumberOfMoles a double
    * @param beta a double
    * @param numberOfComponents a int
-   * @param pt the PhaseType of the phase.
-   * @param phase a int
+   * @param pt the PhaseType of the phase
+   * @param phaseNum a int
    */
   public void init(double temperature, double pressure, double totalNumberOfMoles, double beta,
-      int numberOfComponents, PhaseType pt, int phase) {
+      int numberOfComponents, PhaseType pt, int phaseNum) {
     if (totalNumberOfMoles <= 0) {
-      new neqsim.util.exception.InvalidInputException(this, "init", "totalNumberOfMoles",
-          "must be larger than zero.");
+      // todo: throw this exception?
+      /*
+       * new neqsim.util.exception.InvalidInputException(this, "init", "totalNumberOfMoles",
+       * "must be larger than zero.");
+       */
     }
     for (int i = 0; i < numberOfComponents; i++) {
       // todo: Conflating init type and phase type?
@@ -119,25 +125,38 @@ public abstract class PhaseGE extends Phase implements PhaseGEInterface {
 
   /** {@inheritDoc} */
   @Override
-  public void setMixingRule(int type) {
-    mixingRuleDefined = true;
-    super.setMixingRule(2);
-    mixRuleEos = mixSelect.getMixingRule(2, this);
+  public void setMixingRuleGEModel(String name) {
+    mixRule.setMixingRuleGEModel(name);
+    mixSelect.setMixingRuleGEModel(name);
   }
 
   /** {@inheritDoc} */
   @Override
-  public void resetMixingRule(int type) {
-    mixingRuleDefined = true;
-    super.setMixingRule(2);
-    mixRuleEos = mixSelect.resetMixingRule(2, this);
+  public EosMixingRulesInterface getMixingRule() {
+    return mixRule;
   }
 
   /** {@inheritDoc} */
   @Override
-  public void addComponent(String name, double moles, double molesInPhase, int compNumber) {
-    super.addComponent(name, molesInPhase);
-    // TODO: compNumber not in use
+  public void setMixingRule(MixingRuleTypeInterface mr) {
+    if (!(mr == null) && !EosMixingRuleType.class.isInstance(mr)) {
+      throw new RuntimeException(
+          new neqsim.util.exception.InvalidInputException(this, "setMixingRule", "mr"));
+    }
+    mixingRuleType = EosMixingRuleType.CLASSIC;
+    mixRule = mixSelect.getMixingRule(mixingRuleType.getValue(), this);
+  }
+
+  /** {@inheritDoc} */
+  @Override
+  public void resetMixingRule(MixingRuleTypeInterface mr) {
+    if (!(mr == null) && !EosMixingRuleType.class.isInstance(mr)) {
+      throw new RuntimeException(
+          new neqsim.util.exception.InvalidInputException(this, "resetMixingRule", "mr"));
+    }
+    // NB! Ignores input mr
+    mixingRuleType = EosMixingRuleType.CLASSIC;
+    mixRule = mixSelect.resetMixingRule(mixingRuleType.getValue(), this);
   }
 
   /** {@inheritDoc} */
@@ -182,7 +201,7 @@ public abstract class PhaseGE extends Phase implements PhaseGEInterface {
    * @return a double
    */
   public double getActivityCoefficientInfDil(int k) {
-    PhaseInterface dilphase = (PhaseInterface) this.clone();
+    PhaseInterface dilphase = this.clone();
     dilphase.addMoles(k, -(1.0 - 1e-10) * dilphase.getComponent(k).getNumberOfMolesInPhase());
     dilphase.getComponent(k).setx(1e-10);
     dilphase.init(dilphase.getNumberOfMolesInPhase(), dilphase.getNumberOfComponents(), 1,

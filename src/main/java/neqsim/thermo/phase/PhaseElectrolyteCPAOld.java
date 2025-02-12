@@ -5,8 +5,9 @@ import org.apache.logging.log4j.Logger;
 import neqsim.thermo.component.ComponentCPAInterface;
 import neqsim.thermo.component.ComponentElectrolyteCPA;
 import neqsim.thermo.component.ComponentEosInterface;
-import neqsim.thermo.mixingRule.CPAMixing;
-import neqsim.thermo.mixingRule.CPAMixingInterface;
+import neqsim.thermo.mixingrule.CPAMixingRuleHandler;
+import neqsim.thermo.mixingrule.CPAMixingRulesInterface;
+import neqsim.thermo.mixingrule.MixingRuleTypeInterface;
 
 /**
  * <p>
@@ -18,13 +19,15 @@ import neqsim.thermo.mixingRule.CPAMixingInterface;
  */
 public class PhaseElectrolyteCPAOld extends PhaseModifiedFurstElectrolyteEos
     implements PhaseCPAInterface {
+  /** Serialization version UID. */
   private static final long serialVersionUID = 1000;
+  /** Logger object for class. */
   static Logger logger = LogManager.getLogger(PhaseElectrolyteCPAOld.class);
 
-  public CPAMixing cpaSelect = new CPAMixing();
+  public CPAMixingRuleHandler cpaSelect = new CPAMixingRuleHandler();
 
   int totalNumberOfAccociationSites = 0;
-  public CPAMixingInterface cpamix;
+  public CPAMixingRulesInterface cpamix;
   double hcpatot = 1.0;
   double hcpatotdT = 0.0;
   double hcpatotdTdT = 0.0;
@@ -47,9 +50,7 @@ public class PhaseElectrolyteCPAOld extends PhaseModifiedFurstElectrolyteEos
    * Constructor for PhaseElectrolyteCPAOld.
    * </p>
    */
-  public PhaseElectrolyteCPAOld() {
-    super();
-  }
+  public PhaseElectrolyteCPAOld() {}
 
   /** {@inheritDoc} */
   @Override
@@ -96,8 +97,10 @@ public class PhaseElectrolyteCPAOld extends PhaseModifiedFurstElectrolyteEos
 
   /** {@inheritDoc} */
   @Override
-  public void setMixingRule(int type) {
-    super.setMixingRule(type);
+  public void setMixingRule(MixingRuleTypeInterface mr) {
+    // NB! Sets EOS mixing rule in parent class PhaseEos
+    super.setMixingRule(mr);
+    // NB! Ignores input mr, uses CPA
     cpamix = cpaSelect.getMixingRule(1, this);
   }
 
@@ -494,8 +497,8 @@ public class PhaseElectrolyteCPAOld extends PhaseModifiedFurstElectrolyteEos
       for (int i = 0; i < numberOfComponents; i++) {
         for (int j = 0; j < getComponent(i).getNumberOfAssociationSites(); j++) {
           double old = ((ComponentElectrolyteCPA) getComponent(i)).getXsite()[j];
-          double neeval = getCpamix().calcXi(selfAccociationScheme, crossAccociationScheme, j, i,
-              this, temperature, pressure, numberOfComponents);
+          double neeval = getCpaMixingRule().calcXi(selfAccociationScheme, crossAccociationScheme,
+              j, i, this, temperature, pressure, numberOfComponents);
           ((ComponentCPAInterface) getComponent(i)).setXsite(j, neeval);
           err += Math.abs((old - neeval) / neeval);
         }
@@ -536,7 +539,7 @@ public class PhaseElectrolyteCPAOld extends PhaseModifiedFurstElectrolyteEos
    * @param temperature a double
    * @param A a double
    * @param B a double
-   * @param pt the PhaseType of the phase.
+   * @param pt the PhaseType of the phase
    * @return a double
    * @throws neqsim.util.exception.IsNaNException if any.
    * @throws neqsim.util.exception.TooManyIterationsException if any.
@@ -802,7 +805,7 @@ public class PhaseElectrolyteCPAOld extends PhaseModifiedFurstElectrolyteEos
 
   /** {@inheritDoc} */
   @Override
-  public CPAMixingInterface getCpamix() {
+  public CPAMixingRulesInterface getCpaMixingRule() {
     return cpamix;
   }
 

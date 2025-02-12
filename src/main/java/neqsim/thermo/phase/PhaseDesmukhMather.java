@@ -4,6 +4,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import neqsim.thermo.component.ComponentDesmukhMather;
 import neqsim.thermo.component.ComponentGEInterface;
+import neqsim.thermo.mixingrule.MixingRuleTypeInterface;
 import neqsim.util.exception.IsNaNException;
 import neqsim.util.exception.TooManyIterationsException;
 
@@ -16,7 +17,9 @@ import neqsim.util.exception.TooManyIterationsException;
  * @version $Id: $Id
  */
 public class PhaseDesmukhMather extends PhaseGE {
+  /** Serialization version UID. */
   private static final long serialVersionUID = 1000;
+  /** Logger object for class. */
   static Logger logger = LogManager.getLogger(PhaseDesmukhMather.class);
 
   double GE = 0.0;
@@ -28,14 +31,12 @@ public class PhaseDesmukhMather extends PhaseGE {
    * Constructor for PhaseDesmukhMather.
    * </p>
    */
-  public PhaseDesmukhMather() {
-    super();
-  }
+  public PhaseDesmukhMather() {}
 
   /** {@inheritDoc} */
   @Override
   public void addComponent(String name, double moles, double molesInPhase, int compNumber) {
-    super.addComponent(name, molesInPhase);
+    super.addComponent(name, molesInPhase, compNumber);
     componentArray[compNumber] = new ComponentDesmukhMather(name, moles, molesInPhase, compNumber);
   }
 
@@ -53,31 +54,31 @@ public class PhaseDesmukhMather extends PhaseGE {
 
   /** {@inheritDoc} */
   @Override
-  public void setMixingRule(int type) {
-    super.setMixingRule(type);
+  public void setMixingRule(MixingRuleTypeInterface mr) {
+    super.setMixingRule(mr);
     this.aij = new double[numberOfComponents][numberOfComponents];
     this.bij = new double[numberOfComponents][numberOfComponents];
     try (neqsim.util.database.NeqSimDataBase database = new neqsim.util.database.NeqSimDataBase()) {
       for (int k = 0; k < getNumberOfComponents(); k++) {
-        String component_name = getComponents()[k].getComponentName();
+        String component_name = getComponent(k).getComponentName();
 
         for (int l = k; l < getNumberOfComponents(); l++) {
           if (k == l) {
-            if (getComponents()[l].getComponentName().equals("MDEA")
-                && getComponents()[k].getComponentName().equals("MDEA")) {
+            if (getComponent(l).getComponentName().equals("MDEA")
+                && getComponent(k).getComponentName().equals("MDEA")) {
               aij[k][l] = -0.0828487;
               this.aij[l][k] = this.aij[k][l];
             }
           } else {
             try (java.sql.ResultSet dataSet =
                 database.getResultSet("SELECT * FROM inter WHERE (comp1='" + component_name
-                    + "' AND comp2='" + getComponents()[l].getComponentName() + "') OR (comp1='"
-                    + getComponents()[l].getComponentName() + "' AND comp2='" + component_name
+                    + "' AND comp2='" + getComponent(l).getComponentName() + "') OR (comp1='"
+                    + getComponent(l).getComponentName() + "' AND comp2='" + component_name
                     + "')");) {
               dataSet.next();
 
               // if
-              // (dataSet.getString("comp1").trim().equals(getComponents()[l].getComponentName())) {
+              // (dataSet.getString("comp1").trim().equals(getComponent(l).getComponentName())) {
               // templ = k;
               // tempk = l;
               // }
@@ -121,7 +122,7 @@ public class PhaseDesmukhMather extends PhaseGE {
    * Setter for the field <code>aij</code>.
    * </p>
    *
-   * @param alpha an array of {@link double} objects
+   * @param alpha an array of type double
    */
   public void setAij(double[][] alpha) {
     for (int i = 0; i < alpha.length; i++) {
@@ -134,7 +135,7 @@ public class PhaseDesmukhMather extends PhaseGE {
    * Setter for the field <code>bij</code>.
    * </p>
    *
-   * @param Bij an array of {@link double} objects
+   * @param Bij an array of type double
    */
   public void setBij(double[][] Bij) {
     for (int i = 0; i < Bij.length; i++) {
@@ -200,7 +201,7 @@ public class PhaseDesmukhMather extends PhaseGE {
       double temperature, double pressure, PhaseType pt) {
     GE = 0;
     for (int i = 0; i < numberOfComponents; i++) {
-      GE += phase.getComponents()[i].getx() * Math.log(((ComponentDesmukhMather) componentArray[i])
+      GE += phase.getComponent(i).getx() * Math.log(((ComponentDesmukhMather) componentArray[i])
           .getGamma(phase, numberOfComponents, temperature, pressure, pt));
     }
     return R * temperature * numberOfMolesInPhase * GE;
@@ -282,6 +283,7 @@ public class PhaseDesmukhMather extends PhaseGE {
     return molesMass / moles;
   }
 
+  /** {@inheritDoc} */
   @Override
   public double molarVolume(double pressure, double temperature, double A, double B, PhaseType pt)
       throws IsNaNException, TooManyIterationsException {

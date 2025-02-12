@@ -2,8 +2,8 @@ package neqsim.thermo.phase;
 
 import neqsim.thermo.component.ComponentCPAInterface;
 import neqsim.thermo.component.ComponentSrkCPA;
-import neqsim.thermo.mixingRule.CPAMixing;
-import neqsim.thermo.mixingRule.CPAMixingInterface;
+import neqsim.thermo.mixingrule.CPAMixingRuleHandler;
+import neqsim.thermo.mixingrule.CPAMixingRulesInterface;
 
 /**
  * <p>
@@ -14,11 +14,12 @@ import neqsim.thermo.mixingRule.CPAMixingInterface;
  * @version $Id: $Id
  */
 public class PhasePrCPA extends PhasePrEos implements PhaseCPAInterface {
+  /** Serialization version UID. */
   private static final long serialVersionUID = 1000;
 
   int totalNumberOfAccociationSites = 0;
-  public CPAMixing cpaSelect = new CPAMixing();
-  public CPAMixingInterface cpamix;
+  public CPAMixingRuleHandler cpaSelect = new CPAMixingRuleHandler();
+  public CPAMixingRulesInterface cpamix;
   double hcpatot = 1.0;
   double hcpatotdT = 0.0;
   double hcpatotdTdT = 0.0;
@@ -39,7 +40,6 @@ public class PhasePrCPA extends PhasePrEos implements PhaseCPAInterface {
    * </p>
    */
   public PhasePrCPA() {
-    super();
     cpamix = cpaSelect.getMixingRule(1);
   }
 
@@ -75,7 +75,7 @@ public class PhasePrCPA extends PhasePrEos implements PhaseCPAInterface {
         gcpavv = calc_lngVV();
         gcpavvv = calc_lngVVV();
       }
-    } while (Xsolved != true && totiter < 5);
+    } while (!Xsolved && totiter < 5);
 
     if (initType > 1) {
       hcpatotdT = calc_hCPAdT();
@@ -456,7 +456,7 @@ public class PhasePrCPA extends PhasePrEos implements PhaseCPAInterface {
 
   /** {@inheritDoc} */
   @Override
-  public CPAMixingInterface getCpamix() {
+  public CPAMixingRulesInterface getCpaMixingRule() {
     return cpamix;
   }
 

@@ -4,7 +4,8 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import neqsim.thermo.system.SystemElectrolyteCPAstatoil;
 import neqsim.thermo.system.SystemInterface;
-import neqsim.thermodynamicOperations.ThermodynamicOperations;
+import neqsim.thermodynamicoperations.ThermodynamicOperations;
+import neqsim.util.ExcludeFromJacocoGeneratedReport;
 
 /**
  * <p>
@@ -16,6 +17,7 @@ import neqsim.thermodynamicOperations.ThermodynamicOperations;
  * @version $Id: $Id
  */
 public class H2Sdistribution {
+  /** Logger object for class. */
   static Logger logger = LogManager.getLogger(H2Sdistribution.class);
 
   /**
@@ -25,6 +27,7 @@ public class H2Sdistribution {
    *
    * @param args an array of {@link java.lang.String} objects
    */
+  @ExcludeFromJacocoGeneratedReport
   public static void main(String args[]) {
     SystemInterface testSystem = new SystemElectrolyteCPAstatoil(308.3, 32.8);
     testSystem.addComponent("H2S", 3100.0e-6);
@@ -51,6 +54,6 @@ public class H2Sdistribution {
     } catch (Exception ex) {
     }
     testSystem.display();
-    System.out.println("pH " + testSystem.getPhase("aqueous").getpH());
+    // System.out.println("pH " + testSystem.getPhase("aqueous").getpH());
   }
 }

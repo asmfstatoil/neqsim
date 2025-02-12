@@ -6,6 +6,8 @@ import neqsim.thermo.ThermodynamicModelSettings;
 import neqsim.thermo.component.ComponentGEUnifac;
 import neqsim.thermo.component.ComponentGEUnifacUMRPRU;
 import neqsim.thermo.component.ComponentGEUniquac;
+import neqsim.thermo.mixingrule.EosMixingRuleType;
+import neqsim.thermo.mixingrule.MixingRuleTypeInterface;
 
 /**
  * <p>
@@ -16,7 +18,9 @@ import neqsim.thermo.component.ComponentGEUniquac;
  * @version $Id: $Id
  */
 public class PhaseGEUnifacUMRPRU extends PhaseGEUnifac {
+  /** Serialization version UID. */
   private static final long serialVersionUID = 1000;
+  /** Logger object for class. */
   static Logger logger = LogManager.getLogger(PhaseGEUnifacUMRPRU.class);
 
   double[] Qmix = null;
@@ -31,7 +35,6 @@ public class PhaseGEUnifacUMRPRU extends PhaseGEUnifac {
    * </p>
    */
   public PhaseGEUnifacUMRPRU() {
-    super();
     componentArray =
         new ComponentGEUnifacUMRPRU[ThermodynamicModelSettings.MAX_NUMBER_OF_COMPONENTS];
   }
@@ -42,23 +45,22 @@ public class PhaseGEUnifacUMRPRU extends PhaseGEUnifac {
    * </p>
    *
    * @param phase a {@link neqsim.thermo.phase.PhaseInterface} object
-   * @param alpha an array of {@link double} objects
-   * @param Dij an array of {@link double} objects
-   * @param mixRule an array of {@link String} objects
-   * @param intparam an array of {@link double} objects
+   * @param alpha an array of type double
+   * @param Dij an array of type double
+   * @param mixRule an array of {@link java.lang.String} objects
+   * @param intparam an array of type double
    */
   public PhaseGEUnifacUMRPRU(PhaseInterface phase, double[][] alpha, double[][] Dij,
       String[][] mixRule, double[][] intparam) {
     super(phase, alpha, Dij, mixRule, intparam);
     componentArray = new ComponentGEUnifac[alpha[0].length];
     for (int i = 0; i < alpha[0].length; i++) {
-      componentArray[i] = new ComponentGEUnifacUMRPRU(phase.getComponents()[i].getName(),
-          phase.getComponents()[i].getNumberOfmoles(),
-          phase.getComponents()[i].getNumberOfMolesInPhase(),
-          phase.getComponents()[i].getComponentNumber());
-      componentArray[i].setAttractiveTerm(phase.getComponents()[i].getAttractiveTermNumber());
+      componentArray[i] = new ComponentGEUnifacUMRPRU(phase.getComponent(i).getName(),
+          phase.getComponent(i).getNumberOfmoles(), phase.getComponent(i).getNumberOfMolesInPhase(),
+          phase.getComponent(i).getComponentNumber());
+      componentArray[i].setAttractiveTerm(phase.getComponent(i).getAttractiveTermNumber());
     }
-    this.setMixingRule(2);
+    this.setMixingRule(EosMixingRuleType.CLASSIC);
   }
 
   /**
@@ -68,7 +70,7 @@ public class PhaseGEUnifacUMRPRU extends PhaseGEUnifac {
    * @param numberOfComponents a int
    * @param temperature a double
    * @param pressure a double
-   * @param pt the PhaseType of the phase.
+   * @param pt the PhaseType of the phase
    */
   public void calcCommontemp(PhaseInterface phase, int numberOfComponents, double temperature,
       double pressure, PhaseType pt) {
@@ -82,10 +84,24 @@ public class PhaseGEUnifacUMRPRU extends PhaseGEUnifac {
     }
   }
 
+  /**
+   * <p>
+   * getVCommontemp.
+   * </p>
+   *
+   * @return a double
+   */
   public double getVCommontemp() {
     return VCommontemp;
   }
 
+  /**
+   * <p>
+   * getFCommontemp.
+   * </p>
+   *
+   * @return a double
+   */
   public double getFCommontemp() {
     return FCommontemp;
   }
@@ -93,14 +109,14 @@ public class PhaseGEUnifacUMRPRU extends PhaseGEUnifac {
   /** {@inheritDoc} */
   @Override
   public void addComponent(String name, double moles, double molesInPhase, int compNumber) {
-    super.addComponent(name, molesInPhase);
+    super.addComponent(name, molesInPhase, compNumber);
     componentArray[compNumber] = new ComponentGEUnifacUMRPRU(name, moles, molesInPhase, compNumber);
   }
 
   /** {@inheritDoc} */
   @Override
-  public void setMixingRule(int type) {
-    super.setMixingRule(type);
+  public void setMixingRule(MixingRuleTypeInterface mr) {
+    super.setMixingRule(mr);
     if (!checkedGroups) {
       checkGroups();
     }
@@ -112,17 +128,17 @@ public class PhaseGEUnifacUMRPRU extends PhaseGEUnifac {
   @Override
   public double getExcessGibbsEnergy(PhaseInterface phase, int numberOfComponents,
       double temperature, double pressure, PhaseType pt) {
-    double GE = 0.0;
     calcCommontemp(phase, numberOfComponents, temperature, pressure, pt);
-    // ((ComponentGEUnifacUMRPRU) phase.getComponents()[0]).commonInit(phase, numberOfComponents,
+    // ((ComponentGEUnifacUMRPRU) phase.getComponent(0)).commonInit(phase, numberOfComponents,
     // temperature, pressure, pt);
 
     initQmix();
     if (getInitType() > 2) {
       initQmixdN();
     }
+    double GE = 0.0;
     for (int i = 0; i < numberOfComponents; i++) {
-      GE += phase.getComponents()[i].getx() * Math.log(((ComponentGEUniquac) componentArray[i])
+      GE += phase.getComponent(i).getx() * Math.log(((ComponentGEUniquac) componentArray[i])
           .getGamma(phase, numberOfComponents, temperature, pressure, pt));
     }
     return R * phase.getTemperature() * phase.getNumberOfMolesInPhase() * GE;
@@ -163,7 +179,7 @@ public class PhaseGEUnifacUMRPRU extends PhaseGEUnifac {
    * getQmix.
    * </p>
    *
-   * @param name a {@link String} object
+   * @param name a {@link java.lang.String} object
    * @return a double
    */
   public double getQmix(String name) {
@@ -181,8 +197,8 @@ public class PhaseGEUnifacUMRPRU extends PhaseGEUnifac {
    * getQmixdN.
    * </p>
    *
-   * @param name a {@link String} object
-   * @return an array of {@link double} objects
+   * @param name a {@link java.lang.String} object
+   * @return an array of type double
    */
   public double[] getQmixdN(String name) {
     // int test = ((ComponentGEUnifac) componentArray[0]).getUnifacGroups().length;

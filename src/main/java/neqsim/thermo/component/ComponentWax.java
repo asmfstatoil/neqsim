@@ -14,7 +14,9 @@ import neqsim.thermo.phase.PhaseType;
  * @version $Id: $Id
  */
 public class ComponentWax extends ComponentSolid {
+  /** Serialization version UID. */
   private static final long serialVersionUID = 1000;
+  /** Logger object for class. */
   static Logger logger = LogManager.getLogger(ComponentWax.class);
 
   /**
@@ -52,7 +54,7 @@ public class ComponentWax extends ComponentSolid {
       logger.error(ex.getMessage(), ex);
     }
     refPhase.setPressure(phase1.getPressure());
-    refPhase.init(refPhase.getNumberOfMolesInPhase(), 1, 1, PhaseType.byValue(0), 1.0);
+    refPhase.init(refPhase.getNumberOfMolesInPhase(), 1, 1, PhaseType.LIQUID, 1.0);
     refPhase.getComponent(0).fugcoef(refPhase);
 
     double liquidPhaseFugacity =

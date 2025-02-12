@@ -9,6 +9,7 @@ package neqsim.util.unit;
  * @version $Id: $Id
  */
 public abstract class BaseUnit implements Unit, neqsim.thermo.ThermodynamicConstantsInterface {
+  /** Serialization version UID. */
   private static final long serialVersionUID = 1000;
 
   /** Process value in SI units */
@@ -43,13 +44,13 @@ public abstract class BaseUnit implements Unit, neqsim.thermo.ThermodynamicConst
 
   /** {@inheritDoc} */
   @Override
-  public double getValue(String fromunit) {
+  public double getValue(double val, String fromunit, String tounit) {
     throw new UnsupportedOperationException("Unimplemented method 'getValue'");
   }
 
   /** {@inheritDoc} */
   @Override
-  public double getValue(double val, String fromunit, String tounit) {
+  public double getValue(String fromunit) {
     throw new UnsupportedOperationException("Unimplemented method 'getValue'");
   }
 }

@@ -2,7 +2,7 @@ package neqsim.thermo.component;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import neqsim.thermo.atomElement.UNIFACgroup;
+import neqsim.thermo.atomelement.UNIFACgroup;
 import neqsim.thermo.phase.PhaseGEUnifac;
 import neqsim.thermo.phase.PhaseGEUnifacUMRPRU;
 import neqsim.thermo.phase.PhaseInterface;
@@ -17,7 +17,9 @@ import neqsim.thermo.phase.PhaseType;
  * @version $Id: $Id
  */
 public class ComponentGEUnifacUMRPRU extends ComponentGEUnifac {
+  /** Serialization version UID. */
   private static final long serialVersionUID = 1000;
+  /** Logger object for class. */
   static Logger logger = LogManager.getLogger(ComponentGEUnifacUMRPRU.class);
 
   int numberOfUnifacSubGroups = 139;
@@ -519,7 +521,7 @@ public class ComponentGEUnifacUMRPRU extends ComponentGEUnifac {
    * @param numberOfComponents a int
    * @param temperature a double
    * @param pressure a double
-   * @param pt the PhaseType of the phase.
+   * @param pt the PhaseType of the phase
    */
   public void calcGammaNumericalDerivatives(PhaseInterface phase, int numberOfComponents,
       double temperature, double pressure, PhaseType pt) {

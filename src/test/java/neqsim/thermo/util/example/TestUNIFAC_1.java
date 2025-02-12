@@ -4,7 +4,8 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import neqsim.thermo.system.SystemInterface;
 import neqsim.thermo.system.SystemPsrkEos;
-import neqsim.thermodynamicOperations.ThermodynamicOperations;
+import neqsim.thermodynamicoperations.ThermodynamicOperations;
+import neqsim.util.ExcludeFromJacocoGeneratedReport;
 
 /**
  * <p>
@@ -16,6 +17,7 @@ import neqsim.thermodynamicOperations.ThermodynamicOperations;
  * @since 2.2.3
  */
 public class TestUNIFAC_1 {
+  /** Logger object for class. */
   static Logger logger = LogManager.getLogger(TestUNIFAC_1.class);
 
   /**
@@ -26,6 +28,7 @@ public class TestUNIFAC_1 {
    * @param args an array of {@link java.lang.String} objects
    */
   @SuppressWarnings("unused")
+  @ExcludeFromJacocoGeneratedReport
   public static void main(String args[]) {
     SystemInterface testSystem = new SystemPsrkEos(273.15 + 120.0, 0.15);
     SystemInterface testSystem2 = new SystemPsrkEos(273.15 + 120.0, 0.15);

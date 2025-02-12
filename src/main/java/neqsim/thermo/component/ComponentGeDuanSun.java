@@ -13,6 +13,7 @@ import neqsim.thermo.phase.PhaseType;
  * @version $Id: $Id
  */
 public class ComponentGeDuanSun extends ComponentGE {
+  /** Serialization version UID. */
   private static final long serialVersionUID = 1000;
 
   double r = 0;
@@ -42,9 +43,9 @@ public class ComponentGeDuanSun extends ComponentGE {
    * @param numberOfComponents a int
    * @param temperature a double
    * @param pressure a double
-   * @param pt the PhaseType of the phase.
-   * @param HValpha an array of {@link double} objects
-   * @param HVgij an array of {@link double} objects
+   * @param pt the PhaseType of the phase
+   * @param HValpha an array of type double
+   * @param HVgij an array of type double
    * @return a double
    */
   public double getGamma(PhaseInterface phase, int numberOfComponents, double temperature,
@@ -57,7 +58,6 @@ public class ComponentGeDuanSun extends ComponentGE {
       return 1.0;
     }
   }
-
 
   /** {@inheritDoc} */
   @Override
@@ -76,14 +76,13 @@ public class ComponentGeDuanSun extends ComponentGE {
    * @param numberOfComponents a int
    * @param temperature a double
    * @param pressure a double
-   * @param pt the PhaseType of the phase.
-   * @param HValpha an array of {@link double} objects
-   * @param HVgij an array of {@link double} objects
+   * @param pt the PhaseType of the phase
+   * @param HValpha an array of type double
+   * @param HVgij an array of type double
    * @return a double
    */
   public double getGammaNRTL(PhaseInterface phase, int numberOfComponents, double temperature,
       double pressure, PhaseType pt, double[][] HValpha, double[][] HVgij) {
-    double type = phase.getInitType();
     // double ny = 0, Djj = 0, Dii = 0, gij = 0, gjj = 0, gji = 0, gii = 0, F2T = 0, tot2 = 0;
     double A = 0;
     double B = 0;
@@ -238,7 +237,7 @@ public class ComponentGeDuanSun extends ComponentGE {
     gamma = Math.exp(lngamma);
     // System.out.println("gamma " +gamma);
     // if derivates....
-    if (type == 3) {
+    if (phase.getInitType() == 3) {
       double dAdn = 0;
       double dBdn = 0;
       double Etemp = 0;
@@ -457,7 +456,7 @@ public class ComponentGeDuanSun extends ComponentGE {
    * @param numberOfComponents a int
    * @param temperature a double
    * @param pressure a double
-   * @param pt the PhaseType of the phase.
+   * @param pt the PhaseType of the phase
    * @param salinity a double
    * @return a double
    */

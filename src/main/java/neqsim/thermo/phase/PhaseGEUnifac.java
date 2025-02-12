@@ -5,9 +5,10 @@ import java.util.Arrays;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import neqsim.thermo.ThermodynamicModelSettings;
-import neqsim.thermo.atomElement.UNIFACgroup;
+import neqsim.thermo.atomelement.UNIFACgroup;
 import neqsim.thermo.component.ComponentGEUnifac;
 import neqsim.thermo.component.ComponentGEUniquac;
+import neqsim.thermo.mixingrule.MixingRuleTypeInterface;
 
 /**
  * <p>
@@ -18,13 +19,15 @@ import neqsim.thermo.component.ComponentGEUniquac;
  * @version $Id: $Id
  */
 public class PhaseGEUnifac extends PhaseGEUniquac {
+  /** Serialization version UID. */
   private static final long serialVersionUID = 1000;
+  /** Logger object for class. */
+  static Logger logger = LogManager.getLogger(PhaseGEUnifac.class);
 
   double[][] aij = new double[1][1];
   double[][] bij = new double[1][1];
   double[][] cij = new double[1][1];
   boolean checkedGroups = false;
-  static Logger logger = LogManager.getLogger(PhaseGEUnifac.class);
 
   /**
    * <p>
@@ -32,7 +35,6 @@ public class PhaseGEUnifac extends PhaseGEUniquac {
    * </p>
    */
   public PhaseGEUnifac() {
-    super();
     componentArray = new ComponentGEUnifac[ThermodynamicModelSettings.MAX_NUMBER_OF_COMPONENTS];
   }
 
@@ -42,34 +44,33 @@ public class PhaseGEUnifac extends PhaseGEUniquac {
    * </p>
    *
    * @param phase a {@link neqsim.thermo.phase.PhaseInterface} object
-   * @param alpha an array of {@link double} objects
-   * @param Dij an array of {@link double} objects
-   * @param mixRule an array of {@link String} objects
-   * @param intparam an array of {@link double} objects
+   * @param alpha an array of type double
+   * @param Dij an array of type double
+   * @param mixRule an array of {@link java.lang.String} objects
+   * @param intparam an array of type double
    */
   public PhaseGEUnifac(PhaseInterface phase, double[][] alpha, double[][] Dij, String[][] mixRule,
       double[][] intparam) {
     super(phase, alpha, Dij, mixRule, intparam);
     componentArray = new ComponentGEUnifac[alpha[0].length];
     for (int i = 0; i < alpha[0].length; i++) {
-      componentArray[i] = new ComponentGEUnifac(phase.getComponents()[i].getName(),
-          phase.getComponents()[i].getNumberOfmoles(),
-          phase.getComponents()[i].getNumberOfMolesInPhase(),
-          phase.getComponents()[i].getComponentNumber());
+      componentArray[i] = new ComponentGEUnifac(phase.getComponent(i).getName(),
+          phase.getComponent(i).getNumberOfmoles(), phase.getComponent(i).getNumberOfMolesInPhase(),
+          phase.getComponent(i).getComponentNumber());
     }
   }
 
   /** {@inheritDoc} */
   @Override
   public void addComponent(String name, double moles, double molesInPhase, int compNumber) {
-    super.addComponent(name, molesInPhase);
+    super.addComponent(name, molesInPhase, compNumber);
     componentArray[compNumber] = new ComponentGEUnifac(name, moles, molesInPhase, compNumber);
   }
 
   /** {@inheritDoc} */
   @Override
-  public void setMixingRule(int type) {
-    super.setMixingRule(type);
+  public void setMixingRule(MixingRuleTypeInterface mr) {
+    super.setMixingRule(mr);
     if (!checkedGroups) {
       checkGroups();
     }
@@ -138,7 +139,7 @@ public class PhaseGEUnifac extends PhaseGEUniquac {
    * </p>
    */
   public void checkGroups() {
-    ArrayList<neqsim.thermo.atomElement.UNIFACgroup> unifacGroups = new ArrayList<UNIFACgroup>();
+    ArrayList<neqsim.thermo.atomelement.UNIFACgroup> unifacGroups = new ArrayList<UNIFACgroup>();
 
     for (int i = 0; i < numberOfComponents; i++) {
       for (int j = 0; j < ((ComponentGEUnifac) getComponent(i)).getNumberOfUNIFACgroups(); j++) {
@@ -160,7 +161,7 @@ public class PhaseGEUnifac extends PhaseGEUniquac {
     }
 
     for (int i = 0; i < numberOfComponents; i++) {
-      neqsim.thermo.atomElement.UNIFACgroup[] array =
+      neqsim.thermo.atomelement.UNIFACgroup[] array =
           ((ComponentGEUnifac) getComponent(i)).getUnifacGroups();
       java.util.Arrays.sort(array);
       ArrayList<UNIFACgroup> phaseList = new ArrayList<UNIFACgroup>(0);
@@ -190,7 +191,7 @@ public class PhaseGEUnifac extends PhaseGEUniquac {
       double temperature, double pressure, PhaseType pt) {
     double GE = 0.0;
     for (int i = 0; i < numberOfComponents; i++) {
-      GE += phase.getComponents()[i].getx() * Math.log(((ComponentGEUniquac) componentArray[i])
+      GE += phase.getComponent(i).getx() * Math.log(((ComponentGEUniquac) componentArray[i])
           .getGamma(phase, numberOfComponents, temperature, pressure, pt));
     }
     return R * phase.getTemperature() * phase.getNumberOfMolesInPhase() * GE;

@@ -12,6 +12,7 @@ import neqsim.thermo.component.ComponentEosInterface;
  * @version $Id: $Id
  */
 public class PhaseCSPsrkEos extends PhaseSrkEos {
+  /** Serialization version UID. */
   private static final long serialVersionUID = 1000;
 
   double f_scale_mix = 0;
@@ -27,7 +28,6 @@ public class PhaseCSPsrkEos extends PhaseSrkEos {
    * </p>
    */
   public PhaseCSPsrkEos() {
-    super();
     refBWRSPhase = new PhaseBWRSEos();
     // refBWRSPhase = new PhaseSrkEos();
     refBWRSPhase.addComponent("methane", 1.0, 1.0, 0);
@@ -58,7 +58,7 @@ public class PhaseCSPsrkEos extends PhaseSrkEos {
   /** {@inheritDoc} */
   @Override
   public void addComponent(String name, double moles, double molesInPhase, int compNumber) {
-    super.addComponent(name, molesInPhase);
+    super.addComponent(name, molesInPhase, compNumber);
     componentArray[compNumber] = new ComponentCSPsrk(name, moles, molesInPhase, compNumber);
     ((ComponentCSPsrk) componentArray[compNumber]).setRefPhaseBWRS(this);
   }
@@ -67,13 +67,12 @@ public class PhaseCSPsrkEos extends PhaseSrkEos {
   @Override
   public void init(double totalNumberOfMoles, int numberOfComponents, int initType, PhaseType pt,
       double beta) {
-    double oldtemp = temperature;
+    double oldtemp = getTemperature();
     if (initType == 0) {
       refBWRSPhase.init(1.0, 1, 0, pt, 1.0);
-      refBWRSPhase.init(1.0, 1, 3, pt, 1.0);
-    } else {
-      refBWRSPhase.init(1.0, 1, 3, pt, 1.0);
     }
+    refBWRSPhase.init(1.0, 1, 3, pt, 1.0);
+
     do {
       super.init(totalNumberOfMoles, numberOfComponents, initType, pt, beta);
       oldtemp = refBWRSPhase.getTemperature();

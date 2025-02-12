@@ -10,6 +10,7 @@ import neqsim.thermo.util.constants.FurstElectrolyteConstants;
  * @version $Id: $Id
  */
 public class SystemElectrolyteCPA extends SystemFurstElectrolyteEos {
+  /** Serialization version UID. */
   private static final long serialVersionUID = 1000;
 
   /**
@@ -31,8 +32,9 @@ public class SystemElectrolyteCPA extends SystemFurstElectrolyteEos {
    */
   public SystemElectrolyteCPA(double T, double P) {
     super(T, P);
-    attractiveTermNumber = 0;
     modelName = "Electrolyte-CPA-EOS";
+    attractiveTermNumber = 0;
+
     for (int i = 0; i < numberOfPhases; i++) {
       phaseArray[i] = new PhaseElectrolyteCPA();
       phaseArray[i].setTemperature(T);

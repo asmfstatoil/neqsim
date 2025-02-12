@@ -14,10 +14,11 @@ import javax.swing.JDialog;
 import javax.swing.JFrame;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
-import neqsim.standards.salesContract.BaseContract;
-import neqsim.standards.salesContract.ContractInterface;
+import neqsim.standards.salescontract.BaseContract;
+import neqsim.standards.salescontract.ContractInterface;
 import neqsim.thermo.system.SystemInterface;
-import neqsim.thermodynamicOperations.ThermodynamicOperations;
+import neqsim.thermodynamicoperations.ThermodynamicOperations;
+import neqsim.util.ExcludeFromJacocoGeneratedReport;
 import neqsim.util.NamedBaseClass;
 
 /**
@@ -29,7 +30,8 @@ import neqsim.util.NamedBaseClass;
  * @version $Id: $Id
  */
 public abstract class Standard extends NamedBaseClass implements StandardInterface {
-  private static final long serialVersionUID = 1L;
+  /** Serialization version UID. */
+  private static final long serialVersionUID = 1000;
   protected String standardDescription = "Base Description";
   protected ContractInterface salesContract = new BaseContract();
   protected String[][] resultTable = null;
@@ -140,12 +142,11 @@ public abstract class Standard extends NamedBaseClass implements StandardInterfa
     FieldPosition test = new FieldPosition(0);
     for (int i = 0; i < thermoSystem.getNumberOfPhases(); i++) {
       for (int j = 0; j < thermoSystem.getPhases()[0].getNumberOfComponents(); j++) {
-        table[j + 1][0] = thermoSystem.getPhases()[0].getComponents()[j].getName();
+        table[j + 1][0] = thermoSystem.getPhases()[0].getComponent(j).getName();
         buf = new StringBuffer();
-        table[j + 1][i + 1] = nf
-            .format(thermoSystem.getPhase(thermoSystem.getPhaseIndex(i)).getComponents()[j].getx(),
-                buf, test)
-            .toString();
+        table[j + 1][i + 1] =
+            nf.format(thermoSystem.getPhase(thermoSystem.getPhaseIndex(i)).getComponent(j).getx(),
+                buf, test).toString();
         table[j + 1][4] = "[-]";
       }
     }
@@ -156,6 +157,7 @@ public abstract class Standard extends NamedBaseClass implements StandardInterfa
 
   /** {@inheritDoc} */
   @Override
+  @ExcludeFromJacocoGeneratedReport
   public void display(String name) {
     JDialog dialog = new JDialog(new JFrame(), "Standard-Report");
     Container dialogContentPane = dialog.getContentPane();

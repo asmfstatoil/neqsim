@@ -14,7 +14,9 @@ import neqsim.thermo.phase.PhaseType;
  * @version $Id: $Id
  */
 public class ComponentHydrateGF extends ComponentHydrate {
+  /** Serialization version UID. */
   private static final long serialVersionUID = 1000;
+  /** Logger object for class. */
   static Logger logger = LogManager.getLogger(ComponentHydrateGF.class);
 
   double[][] Ak = new double[2][2]; // [structure][cavitytype]
@@ -59,12 +61,12 @@ public class ComponentHydrateGF extends ComponentHydrate {
         Bk[1][1] = Double.parseDouble(dataSet.getString("B2_LargeGF"));
         dataSet.close();
       } catch (Exception ex) {
-        logger.error("error in ComponentHydrateGF", ex);
+        logger.error("error in comp");
       } finally {
         try {
           dataSet.close();
         } catch (Exception ex) {
-          logger.error("error closing database.....", ex);
+          logger.error("error closing database.....");
         }
       }
     }
@@ -85,7 +87,7 @@ public class ComponentHydrateGF extends ComponentHydrate {
 
       refPhase.setTemperature(temp);
       refPhase.setPressure(pres);
-      refPhase.init(refPhase.getNumberOfMolesInPhase(), 1, 3, PhaseType.byValue(0), 1.0);
+      refPhase.init(refPhase.getNumberOfMolesInPhase(), 1, 3, PhaseType.LIQUID, 1.0);
       double refWaterFugacityCoef = Math.log(refPhase.getComponent("water").fugcoef(refPhase));
 
       double dhf = 6010.0;

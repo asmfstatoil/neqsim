@@ -17,6 +17,7 @@ import neqsim.thermo.component.ComponentSolid;
  * @version $Id: $Id
  */
 public abstract class PhaseSolid extends PhaseSrkEos {
+  /** Serialization version UID. */
   private static final long serialVersionUID = 1000;
 
   /**
@@ -25,8 +26,8 @@ public abstract class PhaseSolid extends PhaseSrkEos {
    * </p>
    */
   public PhaseSolid() {
-    super();
     setType(PhaseType.SOLID);
+    calcMolarVolume = false;
   }
 
   /** {@inheritDoc} */
@@ -46,14 +47,19 @@ public abstract class PhaseSolid extends PhaseSrkEos {
   @Override
   public void init(double totalNumberOfMoles, int numberOfComponents, int initType, PhaseType pt,
       double beta) {
-    super.init(totalNumberOfMoles, numberOfComponents, initType, pt, beta);
+    try {
+      super.init(totalNumberOfMoles, numberOfComponents, initType, pt, beta);
+      getDensityTemp();
+    } catch (Exception ex) {
+      logger.error(ex.getMessage());
+    }
     setType(PhaseType.SOLID);
   }
 
   /** {@inheritDoc} */
   @Override
   public void addComponent(String name, double moles, double molesInPhase, int compNumber) {
-    super.addComponent(name, molesInPhase);
+    super.addComponent(name, molesInPhase, compNumber);
     componentArray[compNumber] = new ComponentSolid(name, moles, molesInPhase, compNumber);
   }
 

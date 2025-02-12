@@ -1,6 +1,8 @@
 package neqsim.thermo.phase;
 
 import neqsim.thermo.component.ComponentInterface;
+import neqsim.thermo.mixingrule.EosMixingRulesInterface;
+import neqsim.thermo.mixingrule.MixingRuleTypeInterface;
 
 /**
  * <p>
@@ -11,6 +13,7 @@ import neqsim.thermo.component.ComponentInterface;
  * @version $Id: $Id
  */
 public class PhaseDefault extends Phase {
+  /** Serialization version UID. */
   private static final long serialVersionUID = 1000;
 
   protected ComponentInterface defComponent = null;
@@ -30,7 +33,6 @@ public class PhaseDefault extends Phase {
    * @param comp a {@link neqsim.thermo.component.ComponentInterface} object
    */
   public PhaseDefault(ComponentInterface comp) {
-    super();
     defComponent = comp;
   }
 
@@ -48,7 +50,7 @@ public class PhaseDefault extends Phase {
   /** {@inheritDoc} */
   @Override
   public void addComponent(String name, double moles, double molesInPhase, int compNumber) {
-    super.addComponent(name, moles);
+    super.addComponent(name, moles, compNumber);
     try {
       componentArray[compNumber] = defComponent.getClass().getDeclaredConstructor().newInstance();
     } catch (Exception ex) {
@@ -67,7 +69,21 @@ public class PhaseDefault extends Phase {
 
   /** {@inheritDoc} */
   @Override
-  public void resetMixingRule(int type) {}
+  public EosMixingRulesInterface getMixingRule() {
+    return null;
+  }
+
+  /** {@inheritDoc} */
+  @Override
+  public void setMixingRuleGEModel(String name) {}
+
+  /** {@inheritDoc} */
+  @Override
+  public void setMixingRule(MixingRuleTypeInterface mr) {}
+
+  /** {@inheritDoc} */
+  @Override
+  public void resetMixingRule(MixingRuleTypeInterface mr) {}
 
   /** {@inheritDoc} */
   @Override
@@ -84,5 +100,11 @@ public class PhaseDefault extends Phase {
           getComponent(i).getNumberOfMolesInPhase() * (getComponent(i).getLogFugacityCoefficient()); // +Math.log(getComponent(i).getx()*getComponent(i).getAntoineVaporPressure(temperature)));
     }
     return R * temperature * ((val) + Math.log(pressure) * numberOfMolesInPhase);
+  }
+
+  /** {@inheritDoc} */
+  @Override
+  public double getSoundSpeed() {
+    return Double.NaN;
   }
 }

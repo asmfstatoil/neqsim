@@ -11,6 +11,7 @@ import neqsim.thermo.phase.PhaseSrkEos;
  * @version $Id: $Id
  */
 public class SystemDesmukhMather extends SystemEos {
+  /** Serialization version UID. */
   private static final long serialVersionUID = 1000;
 
   /**
@@ -45,8 +46,8 @@ public class SystemDesmukhMather extends SystemEos {
    */
   public SystemDesmukhMather(double T, double P, boolean checkForSolids) {
     super(T, P, checkForSolids);
-    attractiveTermNumber = 0;
     modelName = "Desmukh-Mather-model";
+    attractiveTermNumber = 0;
 
     phaseArray[0] = new PhaseSrkEos();
     phaseArray[0].setTemperature(T);

@@ -4,8 +4,12 @@ import java.io.Serializable;
 
 /**
  * A utility class for pretty printing a 2D string table.
+ *
+ * @author Even Solbraa
  */
 public class TablePrinter implements Serializable {
+  /** Serialization version UID. */
+  private static final long serialVersionUID = 1000;
 
   /**
    * Prints a 2D string table in a formatted and visually appealing way.

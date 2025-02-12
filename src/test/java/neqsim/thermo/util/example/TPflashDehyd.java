@@ -5,7 +5,8 @@ import org.apache.logging.log4j.Logger;
 import neqsim.thermo.system.SystemInterface;
 import neqsim.thermo.system.SystemSrkCPAstatoil;
 import neqsim.thermo.system.SystemSrkEos;
-import neqsim.thermodynamicOperations.ThermodynamicOperations;
+import neqsim.thermodynamicoperations.ThermodynamicOperations;
+import neqsim.util.ExcludeFromJacocoGeneratedReport;
 
 /**
  * <p>
@@ -17,6 +18,7 @@ import neqsim.thermodynamicOperations.ThermodynamicOperations;
  * @since 2.2.3
  */
 public class TPflashDehyd {
+  /** Logger object for class. */
   static Logger logger = LogManager.getLogger(TPflashDehyd.class);
 
   /**
@@ -26,6 +28,7 @@ public class TPflashDehyd {
    *
    * @param args an array of {@link java.lang.String} objects
    */
+  @ExcludeFromJacocoGeneratedReport
   public static void main(String[] args) {
     // SystemInterface testSystem = new SystemSrkEos(288.15 + 5, 165.01325);
     SystemInterface testSystem2 = new SystemSrkEos(298, 10); //

@@ -8,6 +8,8 @@ package neqsim.thermo.phase;
 
 import neqsim.thermo.component.ComponentGEInterface;
 import neqsim.thermo.component.ComponentGeNRTL;
+import neqsim.thermo.mixingrule.EosMixingRuleType;
+import neqsim.thermo.mixingrule.MixingRuleTypeInterface;
 import neqsim.util.exception.IsNaNException;
 import neqsim.util.exception.TooManyIterationsException;
 
@@ -20,10 +22,11 @@ import neqsim.util.exception.TooManyIterationsException;
  * @version $Id: $Id
  */
 public class PhaseGENRTL extends PhaseGE {
+  /** Serialization version UID. */
   private static final long serialVersionUID = 1000;
 
   double[][] alpha;
-  String[][] mixRule;
+  String[][] mixRuleString;
   double[][] intparam;
   double[][] Dij;
   double GE = 0.0;
@@ -33,9 +36,7 @@ public class PhaseGENRTL extends PhaseGE {
    * Constructor for PhaseGENRTL.
    * </p>
    */
-  public PhaseGENRTL() {
-    super();
-  }
+  public PhaseGENRTL() {}
 
   /**
    * <p>
@@ -43,43 +44,41 @@ public class PhaseGENRTL extends PhaseGE {
    * </p>
    *
    * @param phase a {@link neqsim.thermo.phase.PhaseInterface} object
-   * @param alpha an array of {@link double} objects
-   * @param Dij an array of {@link double} objects
-   * @param mixRule an array of {@link String} objects
-   * @param intparam an array of {@link double} objects
+   * @param alpha an array of type double
+   * @param Dij an array of type double
+   * @param mixRule an array of {@link java.lang.String} objects
+   * @param intparam an array of type double
    */
   public PhaseGENRTL(PhaseInterface phase, double[][] alpha, double[][] Dij, String[][] mixRule,
       double[][] intparam) {
-    super();
     componentArray = new ComponentGeNRTL[alpha[0].length];
-    this.mixRule = mixRule;
+    this.mixRuleString = mixRule;
     this.alpha = alpha;
     this.Dij = Dij;
     this.intparam = intparam;
     for (int i = 0; i < alpha[0].length; i++) {
       numberOfComponents++;
-      componentArray[i] = new ComponentGeNRTL(phase.getComponents()[i].getName(),
-          phase.getComponents()[i].getNumberOfmoles(),
-          phase.getComponents()[i].getNumberOfMolesInPhase(),
-          phase.getComponents()[i].getComponentNumber());
+      componentArray[i] = new ComponentGeNRTL(phase.getComponent(i).getName(),
+          phase.getComponent(i).getNumberOfmoles(), phase.getComponent(i).getNumberOfMolesInPhase(),
+          phase.getComponent(i).getComponentNumber());
     }
-    setMixingRule(2);
+    setMixingRule(EosMixingRuleType.CLASSIC);
   }
 
   /** {@inheritDoc} */
   @Override
   public void addComponent(String name, double moles, double molesInPhase, int compNumber) {
-    super.addComponent(name, molesInPhase);
+    super.addComponent(name, molesInPhase, compNumber);
     componentArray[compNumber] = new ComponentGeNRTL(name, moles, molesInPhase, compNumber);
   }
 
   /** {@inheritDoc} */
   @Override
-  public void setMixingRule(int type) {
-    super.setMixingRule(type);
+  public void setMixingRule(MixingRuleTypeInterface mr) {
+    super.setMixingRule(mr);
     this.intparam = mixSelect.getSRKbinaryInteractionParameters();
     this.alpha = mixSelect.getNRTLalpha();
-    this.mixRule = mixSelect.getClassicOrHV();
+    this.mixRuleString = mixSelect.getClassicOrHV();
     this.Dij = mixSelect.getNRTLDij();
   }
 
@@ -119,9 +118,9 @@ public class PhaseGENRTL extends PhaseGE {
       double temperature, double pressure, PhaseType pt) {
     GE = 0;
     for (int i = 0; i < numberOfComponents; i++) {
-      GE += phase.getComponents()[i].getx()
+      GE += phase.getComponent(i).getx()
           * Math.log(((ComponentGEInterface) componentArray[i]).getGamma(phase, numberOfComponents,
-              temperature, pressure, pt, alpha, Dij, intparam, mixRule));
+              temperature, pressure, pt, alpha, Dij, intparam, mixRuleString));
     }
 
     return R * temperature * numberOfMolesInPhase * GE;
@@ -133,6 +132,7 @@ public class PhaseGENRTL extends PhaseGE {
     return R * temperature * numberOfMolesInPhase * (GE + Math.log(pressure));
   }
 
+  /** {@inheritDoc} */
   @Override
   public double molarVolume(double pressure, double temperature, double A, double B, PhaseType pt)
       throws IsNaNException, TooManyIterationsException {

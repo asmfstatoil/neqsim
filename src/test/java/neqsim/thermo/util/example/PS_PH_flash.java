@@ -2,7 +2,8 @@ package neqsim.thermo.util.example;
 
 import neqsim.thermo.system.SystemInterface;
 import neqsim.thermo.system.SystemSrkEos;
-import neqsim.thermodynamicOperations.ThermodynamicOperations;
+import neqsim.thermodynamicoperations.ThermodynamicOperations;
+import neqsim.util.ExcludeFromJacocoGeneratedReport;
 
 /**
  * <p>
@@ -22,6 +23,7 @@ public class PS_PH_flash {
    * @param args an array of {@link java.lang.String} objects
    */
   @SuppressWarnings("unused")
+  @ExcludeFromJacocoGeneratedReport
   public static void main(String args[]) {
     // SystemInterface testSystem = new SystemSrkMathiasCopeman(273.15 + 5, 80);
     SystemInterface testSystem = new SystemSrkEos(273.15 + 15.0, 100.0);
@@ -52,8 +54,6 @@ public class PS_PH_flash {
      * testSystem.addComponent("n-butane", 3.53465e-1); // testSystem.addComponent("propane", 50);
      * //testSystem.addComponent("CO2", 50); //testSystem.addComponent("water", 20);
      */
-    // 1- orginal no interaction 2- classic w interaction
-    // 3- Huron-Vidal 4- Wong-Sandler
     testSystem.createDatabase(true);
     testSystem.setMixingRule(2);
     testSystem.setMultiPhaseCheck(true);

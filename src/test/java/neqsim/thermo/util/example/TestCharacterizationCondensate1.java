@@ -5,7 +5,8 @@ import org.apache.logging.log4j.Logger;
 import neqsim.thermo.phase.PhaseEosInterface;
 import neqsim.thermo.system.SystemInterface;
 import neqsim.thermo.system.SystemSrkEos;
-import neqsim.thermodynamicOperations.ThermodynamicOperations;
+import neqsim.thermodynamicoperations.ThermodynamicOperations;
+import neqsim.util.ExcludeFromJacocoGeneratedReport;
 
 /**
  * <p>
@@ -17,6 +18,7 @@ import neqsim.thermodynamicOperations.ThermodynamicOperations;
  * @since 2.2.3
  */
 public class TestCharacterizationCondensate1 {
+  /** Logger object for class. */
   static Logger logger = LogManager.getLogger(TestCharacterizationCondensate1.class);
 
   /**
@@ -26,6 +28,7 @@ public class TestCharacterizationCondensate1 {
    *
    * @param args an array of {@link java.lang.String} objects
    */
+  @ExcludeFromJacocoGeneratedReport
   public static void main(String args[]) {
     SystemInterface testSystem = new SystemSrkEos(273.15 + 30, 50);
     // SystemInterface testSystem = new SystemSrkCPAs(293.65, 79.3);
@@ -51,18 +54,18 @@ public class TestCharacterizationCondensate1 {
      */
     testSystem.addTBPfraction("C7", 5, 100.0 / 1000.0, 0.72);
     testSystem.addPlusFraction("C8", 50, 230.0 / 1000.0, 0.84);
-    //testSystem.addPlusFraction("C8", 34, 200.0 / 1000.0, 0.82);
+    // testSystem.addPlusFraction("C8", 34, 200.0 / 1000.0, 0.82);
     testSystem.getCharacterization().getLumpingModel().setNumberOfLumpedComponents(12);
     testSystem.getCharacterization().characterisePlusFraction();
     /*
      * testSystem.getInterphaseProperties().setInterfacialTensionModel(0);
      */
-    System.out.println("number of components " + testSystem.getNumberOfComponents());
+    // System.out.println("number of components " + testSystem.getNumberOfComponents());
     testSystem.useVolumeCorrection(true);
     testSystem.createDatabase(true);
     testSystem.setMixingRule(2);
     testSystem.setMultiPhaseCheck(true);
-    System.out.println("number of components " + testSystem.getNumberOfComponents());
+    // System.out.println("number of components " + testSystem.getNumberOfComponents());
     ThermodynamicOperations testOps = new ThermodynamicOperations(testSystem);
 
     try {

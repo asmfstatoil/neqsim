@@ -4,7 +4,8 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import neqsim.thermo.system.SystemInterface;
 import neqsim.thermo.system.SystemSrkCPAstatoil;
-import neqsim.thermodynamicOperations.ThermodynamicOperations;
+import neqsim.thermodynamicoperations.ThermodynamicOperations;
+import neqsim.util.ExcludeFromJacocoGeneratedReport;
 
 /**
  * <p>
@@ -16,6 +17,7 @@ import neqsim.thermodynamicOperations.ThermodynamicOperations;
  * @version $Id: $Id
  */
 public class BubbleFlashCPA {
+  /** Logger object for class. */
   static Logger logger = LogManager.getLogger(BubbleFlashCPA.class);
 
   /**
@@ -25,6 +27,7 @@ public class BubbleFlashCPA {
    *
    * @param args an array of {@link java.lang.String} objects
    */
+  @ExcludeFromJacocoGeneratedReport
   public static void main(String args[]) {
     SystemInterface testSystem = new SystemSrkCPAstatoil(273.15 - 36.6, 63.2);
     // SystemInterface testSystem = new SystemSrkEos(273.15- 50.6, 63.2);

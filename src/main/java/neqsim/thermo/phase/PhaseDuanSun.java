@@ -1,6 +1,7 @@
 package neqsim.thermo.phase;
 
 import neqsim.thermo.component.ComponentGeDuanSun;
+import neqsim.thermo.mixingrule.MixingRuleTypeInterface;
 import neqsim.util.exception.IsNaNException;
 import neqsim.util.exception.TooManyIterationsException;
 
@@ -13,6 +14,7 @@ import neqsim.util.exception.TooManyIterationsException;
  * @version $Id: $Id
  */
 public class PhaseDuanSun extends PhaseGE {
+  /** Serialization version UID. */
   private static final long serialVersionUID = 1000;
 
   double[][] alpha;
@@ -26,21 +28,19 @@ public class PhaseDuanSun extends PhaseGE {
    * Constructor for PhaseDuanSun.
    * </p>
    */
-  public PhaseDuanSun() {
-    super();
-  }
+  public PhaseDuanSun() {}
 
   /** {@inheritDoc} */
   @Override
   public void addComponent(String name, double moles, double molesInPhase, int compNumber) {
-    super.addComponent(name, molesInPhase);
+    super.addComponent(name, molesInPhase, compNumber);
     componentArray[compNumber] = new ComponentGeDuanSun(name, moles, molesInPhase, compNumber);
   }
 
   /** {@inheritDoc} */
   @Override
-  public void setMixingRule(int type) {
-    super.setMixingRule(type);
+  public void setMixingRule(MixingRuleTypeInterface mr) {
+    super.setMixingRule(mr);
     this.alpha = mixSelect.getNRTLalpha();
     this.Dij = mixSelect.getNRTLDij();
   }
@@ -85,18 +85,18 @@ public class PhaseDuanSun extends PhaseGE {
     // salinity=salinity+phase.getComponent("Na+").getNumberOfMolesInPhase()/(phase.getComponent("water").getNumberOfmoles()*phase.getComponent("water").getMolarMass());
 
     // for (int i=2;i<numberOfComponents;i++) {
-    // salinity=salinity+phase.getComponents()[i].getNumberOfMolesInPhase()/(phase.getComponent("water").getNumberOfmoles()*phase.getComponent("water").getMolarMass());
+    // salinity=salinity+phase.getComponent(i).getNumberOfMolesInPhase()/(phase.getComponent("water").getNumberOfmoles()*phase.getComponent("water").getMolarMass());
     // }
     for (int i = 0; i < numberOfComponents; i++) {
-      if (phase.getComponents()[i].isIsIon()) {
-        salinity = salinity + phase.getComponents()[i].getNumberOfMolesInPhase()
+      if (phase.getComponent(i).isIsIon()) {
+        salinity = salinity + phase.getComponent(i).getNumberOfMolesInPhase()
             / (phase.getComponent("water").getNumberOfMolesInPhase()
                 * phase.getComponent("water").getMolarMass());
       }
     }
     // for (int i=0; i < numberOfComponents; i++) {
-    // if(phase.getComponents()[i].isIsIon()) {
-    // salinity=salinity+phase.getComponents()[i].getNumberOfMolesInPhase()/(phase.getComponent("water").getNumberOfmoles()*phase.getComponent("water").getMolarMass());
+    // if(phase.getComponent(i).isIsIon()) {
+    // salinity=salinity+phase.getComponent(i).getNumberOfMolesInPhase()/(phase.getComponent("water").getNumberOfmoles()*phase.getComponent("water").getMolarMass());
     // phase.getComponent("Na+").getNumberOfmoles()
     // }
     // }
@@ -104,10 +104,10 @@ public class PhaseDuanSun extends PhaseGE {
     // salinity=salinity+phase.getComponent("Na+").getNumberOfmoles()/(phase.getComponent("water").getNumberOfmoles()*phase.getComponent("water").getMolarMass());
 
     for (int i = 0; i < numberOfComponents; i++) {
-      // GE += phase.getComponents()[i].getx()*Math.log(((ComponentGeDuanSun)
+      // GE += phase.getComponent(i).getx()*Math.log(((ComponentGeDuanSun)
       // componentArray[i]).getGammaNRTL(phase, numberOfComponents, temperature, pressure,
       // pt, alpha, Dij));
-      GE += phase.getComponents()[i].getx() * Math.log(((ComponentGeDuanSun) componentArray[i])
+      GE += phase.getComponent(i).getx() * Math.log(((ComponentGeDuanSun) componentArray[i])
           .getGammaPitzer(phase, numberOfComponents, temperature, pressure, pt, salinity));
     }
 
@@ -120,6 +120,7 @@ public class PhaseDuanSun extends PhaseGE {
     return R * temperature * numberOfMolesInPhase * (GE + Math.log(pressure));
   }
 
+  /** {@inheritDoc} */
   @Override
   public double molarVolume(double pressure, double temperature, double A, double B, PhaseType pt)
       throws IsNaNException, TooManyIterationsException {

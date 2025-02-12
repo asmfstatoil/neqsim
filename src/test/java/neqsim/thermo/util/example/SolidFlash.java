@@ -4,7 +4,8 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import neqsim.thermo.system.SystemInterface;
 import neqsim.thermo.system.SystemSrkCPAstatoil;
-import neqsim.thermodynamicOperations.ThermodynamicOperations;
+import neqsim.thermodynamicoperations.ThermodynamicOperations;
+import neqsim.util.ExcludeFromJacocoGeneratedReport;
 
 /**
  * <p>
@@ -16,6 +17,7 @@ import neqsim.thermodynamicOperations.ThermodynamicOperations;
  * @since 2.2.3
  */
 public class SolidFlash {
+  /** Logger object for class. */
   static Logger logger = LogManager.getLogger(SolidFlash.class);
 
   /**
@@ -25,12 +27,13 @@ public class SolidFlash {
    *
    * @param args an array of {@link java.lang.String} objects
    */
+  @ExcludeFromJacocoGeneratedReport
   public static void main(String args[]) {
     SystemInterface testSystem = new SystemSrkCPAstatoil(269.671, 1.00);
     // SystemInterface testSystem = new SystemSrkTwuCoonEos(273.15 - 165, 1.0);
     // SystemInterface testSystem = new SystemPrEos(91.617,1.1168013258);
     ThermodynamicOperations testOps = new ThermodynamicOperations(testSystem);
-    // dataHandeling output = new dataHandeling();
+    // DataHandling output = new DataHandling();
     // testSystem.addComponent("water", 1.0-0.1525);
     testSystem.addComponent("methane", 121.8);
     // testSystem.addComponent("ethane", 0.05);

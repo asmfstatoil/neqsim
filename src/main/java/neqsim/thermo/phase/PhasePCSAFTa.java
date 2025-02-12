@@ -4,8 +4,9 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import neqsim.thermo.component.ComponentCPAInterface;
 import neqsim.thermo.component.ComponentPCSAFTa;
-import neqsim.thermo.mixingRule.CPAMixing;
-import neqsim.thermo.mixingRule.CPAMixingInterface;
+import neqsim.thermo.mixingrule.CPAMixingRuleHandler;
+import neqsim.thermo.mixingrule.CPAMixingRulesInterface;
+import neqsim.thermo.mixingrule.MixingRuleTypeInterface;
 
 /**
  * <p>
@@ -16,10 +17,13 @@ import neqsim.thermo.mixingRule.CPAMixingInterface;
  * @version $Id: $Id
  */
 public class PhasePCSAFTa extends PhasePCSAFT implements PhaseCPAInterface {
+  /** Serialization version UID. */
   private static final long serialVersionUID = 1000;
+  /** Logger object for class. */
+  static Logger logger = LogManager.getLogger(PhasePCSAFTa.class);
 
-  public CPAMixing cpaSelect = new CPAMixing();
-  public CPAMixingInterface cpamix;
+  public CPAMixingRuleHandler cpaSelect = new CPAMixingRuleHandler();
+  public CPAMixingRulesInterface cpamix;
   double hcpatot = 1.0;
   double hcpatotdT = 0.0;
   double hcpatotdTdT = 0.0;
@@ -33,16 +37,13 @@ public class PhasePCSAFTa extends PhasePCSAFT implements PhaseCPAInterface {
 
   int[][][] selfAccociationScheme = null;
   int[][][][] crossAccociationScheme = null;
-  static Logger logger = LogManager.getLogger(PhasePCSAFTa.class);
 
   /**
    * <p>
    * Constructor for PhasePCSAFTa.
    * </p>
    */
-  public PhasePCSAFTa() {
-    super();
-  }
+  public PhasePCSAFTa() {}
 
   /** {@inheritDoc} */
   @Override
@@ -60,8 +61,10 @@ public class PhasePCSAFTa extends PhasePCSAFT implements PhaseCPAInterface {
 
   /** {@inheritDoc} */
   @Override
-  public void setMixingRule(int type) {
-    super.setMixingRule(type);
+  public void setMixingRule(MixingRuleTypeInterface mr) {
+    // NB! Sets EOS mixing rule in parent class PhaseEos
+    super.setMixingRule(mr);
+    // NB! Ignores input mr, uses CPA
     cpamix = cpaSelect.getMixingRule(3, this);
   }
 
@@ -475,7 +478,7 @@ public class PhasePCSAFTa extends PhasePCSAFT implements PhaseCPAInterface {
 
   /** {@inheritDoc} */
   @Override
-  public CPAMixingInterface getCpamix() {
+  public CPAMixingRulesInterface getCpaMixingRule() {
     return cpamix;
   }
 

@@ -11,6 +11,7 @@ import neqsim.thermo.phase.PhaseInterface;
  * @version $Id: $Id
  */
 public class ComponentGERG2004 extends ComponentEos {
+  /** Serialization version UID. */
   private static final long serialVersionUID = 1000;
 
   /**
@@ -32,12 +33,12 @@ public class ComponentGERG2004 extends ComponentEos {
    * Constructor for ComponentGERG2004.
    * </p>
    *
-   * @param number a int
+   * @param number a int. Not used.
    * @param TC Critical temperature
    * @param PC Critical pressure
    * @param M Molar mass
    * @param a Acentric factor
-   * @param moles Number of moles
+   * @param moles Total number of moles of component.
    */
   public ComponentGERG2004(int number, double TC, double PC, double M, double a, double moles) {
     super(number, TC, PC, M, a, moles);

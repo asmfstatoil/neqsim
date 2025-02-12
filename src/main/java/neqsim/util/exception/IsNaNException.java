@@ -9,17 +9,8 @@ package neqsim.util.exception;
  * @version $Id: $Id
  */
 public class IsNaNException extends neqsim.util.exception.ThermoException {
+  /** Serialization version UID. */
   private static final long serialVersionUID = 1000;
-
-  /**
-   * Constructs an <code>IsNaNException</code> with the specified detail message.
-   *
-   * @param msg the detail message.
-   */
-  @Deprecated
-  public IsNaNException(String msg) {
-    super(msg);
-  }
 
   /**
    * Constructs an <code>IsNaNException</code> with a detailed message.

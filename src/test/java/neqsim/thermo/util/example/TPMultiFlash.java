@@ -5,7 +5,8 @@ import org.apache.logging.log4j.Logger;
 import neqsim.thermo.phase.PhaseType;
 import neqsim.thermo.system.SystemInterface;
 import neqsim.thermo.system.SystemSrkCPAstatoil;
-import neqsim.thermodynamicOperations.ThermodynamicOperations;
+import neqsim.thermodynamicoperations.ThermodynamicOperations;
+import neqsim.util.ExcludeFromJacocoGeneratedReport;
 
 /**
  * <p>
@@ -17,6 +18,7 @@ import neqsim.thermodynamicOperations.ThermodynamicOperations;
  * @version $Id: $Id
  */
 public class TPMultiFlash {
+  /** Logger object for class. */
   static Logger logger = LogManager.getLogger(TPMultiFlash.class);
 
   /**
@@ -27,6 +29,7 @@ public class TPMultiFlash {
    * @param args an array of {@link java.lang.String} objects
    */
   @SuppressWarnings("unused")
+  @ExcludeFromJacocoGeneratedReport
   public static void main(String[] args) {
     // SystemInterface testSystem = new SystemPrEos1978(273.15,100.0);
     // SystemInterface testSystem = new SystemSrkCPAstatoil(273.15,100.0);
@@ -75,12 +78,10 @@ public class TPMultiFlash {
 
     // System.out.println("activity water " +
     // testSystem.getPhase(1).getActivityCoefficient(2));
-    // 1- orginal no interaction 2- classic w interaction
-    // 3- Huron-Vidal 4- Wong-Sandler
     // testSystem.setMixingRule(1);
 
     try {
-      int phase = 0;
+      PhaseType pt = PhaseType.LIQUID;
 
       testSystem.init(0);
       testSystem.useVolumeCorrection(true);
@@ -93,13 +94,15 @@ public class TPMultiFlash {
         testSystem.init(0, 0);
         testSystem.setTemperature(298);
         testSystem.setPressure(10);
-        if (phase == 1) {
-          phase = 0;
+
+        // Change phasetype each run
+        if (pt == PhaseType.GAS) {
+          pt = PhaseType.LIQUID;
         } else {
-          phase = 1;
+          pt = PhaseType.LIQUID;
         }
 
-        testSystem.setPhaseType(0, PhaseType.byValue(phase));
+        testSystem.setPhaseType(0, pt);
         testSystem.init(2, 0);
         testSystem.initPhysicalProperties();
       }

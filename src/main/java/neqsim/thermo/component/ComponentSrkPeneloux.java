@@ -1,6 +1,6 @@
 package neqsim.thermo.component;
 
-import neqsim.thermo.component.attractiveEosTerm.AttractiveTermSrk;
+import neqsim.thermo.component.attractiveeosterm.AttractiveTermSrk;
 
 /**
  * <p>
@@ -11,6 +11,7 @@ import neqsim.thermo.component.attractiveEosTerm.AttractiveTermSrk;
  * @version $Id: $Id
  */
 public class ComponentSrkPeneloux extends ComponentSrk {
+  /** Serialization version UID. */
   private static final long serialVersionUID = 1000;
 
   private double factTemp = Math.pow(2.0, 1.0 / 3.0);
@@ -49,12 +50,12 @@ public class ComponentSrkPeneloux extends ComponentSrk {
    * Constructor for ComponentSrkPeneloux.
    * </p>
    *
-   * @param number a int
-   * @param TC a double
-   * @param PC a double
-   * @param M a double
-   * @param a a double
-   * @param moles a double
+   * @param number a int. Not used.
+   * @param TC Critical temperature
+   * @param PC Critical pressure
+   * @param M Molar mass
+   * @param a Acentric factor
+   * @param moles Total number of moles of component.
    */
   public ComponentSrkPeneloux(int number, double TC, double PC, double M, double a, double moles) {
     super(number, TC, PC, M, a, moles);

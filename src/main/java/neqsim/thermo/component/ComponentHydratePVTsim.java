@@ -15,11 +15,13 @@ import neqsim.util.database.NeqSimDataBase;
  * @version $Id: $Id
  */
 public class ComponentHydratePVTsim extends ComponentHydrate {
+  /** Serialization version UID. */
   private static final long serialVersionUID = 1000;
+  /** Logger object for class. */
+  static Logger logger = LogManager.getLogger(ComponentHydratePVTsim.class);
 
   double[][] Ak = new double[2][2]; // [structure][cavitytype]
   double[][] Bk = new double[2][2]; // [structure][cavitytype]
-  static Logger logger = LogManager.getLogger(ComponentHydratePVTsim.class);
 
   /**
    * <p>
@@ -63,7 +65,7 @@ public class ComponentHydratePVTsim extends ComponentHydrate {
         Ak[1][1] = Double.parseDouble(dataSet.getString("HydrateA2Large"));
         Bk[1][1] = Double.parseDouble(dataSet.getString("HydrateB2Large"));
       } catch (Exception ex) {
-        logger.error("error in ComponentHydratePVTsim", ex);
+        logger.error("error in comp");
       } finally {
         try {
           dataSet.close();
@@ -85,7 +87,7 @@ public class ComponentHydratePVTsim extends ComponentHydrate {
       stableStructure = -1;
       refPhase.setTemperature(temp);
       refPhase.setPressure(pres);
-      refPhase.init(refPhase.getNumberOfMolesInPhase(), 1, 3, PhaseType.byValue(0), 1.0);
+      refPhase.init(refPhase.getNumberOfMolesInPhase(), 1, 3, PhaseType.LIQUID, 1.0);
 
       double refWaterFugacityCoef = Math.log(refPhase.getComponent("water").fugcoef(refPhase));
 
@@ -115,7 +117,7 @@ public class ComponentHydratePVTsim extends ComponentHydrate {
         if (componentName.equals("water")) {
           refPhase.setTemperature(temp);
           refPhase.setPressure(pres);
-          refPhase.init(refPhase.getNumberOfMolesInPhase(), 1, 3, PhaseType.byValue(0), 1.0);
+          refPhase.init(refPhase.getNumberOfMolesInPhase(), 1, 3, PhaseType.LIQUID, 1.0);
 
           double refWaterFugacity = refPhase.getComponent("water").fugcoef(refPhase) * pres;
 

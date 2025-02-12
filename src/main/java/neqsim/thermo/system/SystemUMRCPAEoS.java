@@ -8,7 +8,8 @@ import neqsim.thermo.phase.PhaseUMRCPA;
  * @author Even Solbraa
  */
 public class SystemUMRCPAEoS extends SystemPrEos {
-  private static final long serialVersionUID = 1L;
+  /** Serialization version UID. */
+  private static final long serialVersionUID = 1000;
 
   /**
    * <p>
@@ -31,6 +32,7 @@ public class SystemUMRCPAEoS extends SystemPrEos {
     super(T, P);
     modelName = "UMR-CPA";
     attractiveTermNumber = 19;
+
     useVolumeCorrection(false);
     for (int i = 0; i < numberOfPhases; i++) {
       phaseArray[i] = new PhaseUMRCPA();

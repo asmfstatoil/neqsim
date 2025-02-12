@@ -9,20 +9,13 @@ package neqsim.util.exception;
  * @version $Id: $Id
  */
 public class InvalidInputException extends neqsim.util.exception.ThermoException {
+  /** Serialization version UID. */
   private static final long serialVersionUID = 1000;
 
   /**
-   * Constructs an <code>InvalidInputException</code> with the specified detail message.
+   * Constructs an <code>InvalidInputException</code> with a default message like:
    *
-   * @param msg the detail message.
-   */
-  @Deprecated
-  public InvalidInputException(String msg) {
-    super(msg);
-  }
-
-  /**
-   * Constructs an <code>InvalidInputException</code> with a default message.
+   * Input " + inputName + " was invalid.
    *
    * @param className Class that exception is raised from
    * @param methodName Method that exception is raised from
@@ -33,7 +26,9 @@ public class InvalidInputException extends neqsim.util.exception.ThermoException
   }
 
   /**
-   * Constructs an <code>InvalidInputException</code> with the specified detail message.
+   * Constructs an <code>InvalidInputException</code> with a message like:
+   *
+   * "Input " + inputName + " " + msg
    *
    * @param className Class that exception is raised from
    * @param methodName Method that exception is raised from

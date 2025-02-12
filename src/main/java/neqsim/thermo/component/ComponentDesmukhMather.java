@@ -15,9 +15,11 @@ import neqsim.thermo.phase.PhaseType;
  * @version $Id: $Id
  */
 public class ComponentDesmukhMather extends ComponentGE {
+  /** Serialization version UID. */
   private static final long serialVersionUID = 1000;
 
   private double deshMathIonicDiameter = 1.0;
+  /** Logger object for class. */
   static Logger logger = LogManager.getLogger(ComponentDesmukhMather.class);
 
   /**
@@ -49,7 +51,7 @@ public class ComponentDesmukhMather extends ComponentGE {
         deshMathIonicDiameter = Double.parseDouble(dataSet.getString("DeshMatIonicDiameter"));
       }
     } catch (Exception ex) {
-      logger.error("error in comp", ex);
+      logger.error("error in comp");
     }
   }
 
@@ -58,6 +60,7 @@ public class ComponentDesmukhMather extends ComponentGE {
   public double getGamma(PhaseInterface phase, int numberOfComponents, double temperature,
       double pressure, PhaseType pt, double[][] HValpha, double[][] HVgij, double[][] intparam,
       String[][] mixRule) {
+    // todo: not actually implemented
     return getGamma(phase, numberOfComponents, temperature, pressure, pt);
   }
 
@@ -70,7 +73,7 @@ public class ComponentDesmukhMather extends ComponentGE {
    * @param numberOfComponents a int
    * @param temperature a double
    * @param pressure a double
-   * @param pt the PhaseType of the phase.
+   * @param pt the PhaseType of the phase
    * @return a double
    */
   public double getGamma(PhaseInterface phase, int numberOfComponents, double temperature,

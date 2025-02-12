@@ -14,7 +14,9 @@ import neqsim.thermo.component.ComponentPCSAFT;
  * @version $Id: $Id
  */
 public class PhasePCSAFTRahmat extends PhasePCSAFT {
+  /** Serialization version UID. */
   private static final long serialVersionUID = 1000;
+  /** Logger object for class. */
   static Logger logger = LogManager.getLogger(PhasePCSAFTRahmat.class);
 
   double dnSAFTdVdVdV = 1.0;
@@ -46,9 +48,7 @@ public class PhasePCSAFTRahmat extends PhasePCSAFT {
    * Constructor for PhasePCSAFTRahmat.
    * </p>
    */
-  public PhasePCSAFTRahmat() {
-    super();
-  }
+  public PhasePCSAFTRahmat() {}
 
   /** {@inheritDoc} */
   @Override
@@ -66,11 +66,17 @@ public class PhasePCSAFTRahmat extends PhasePCSAFT {
   /** {@inheritDoc} */
   @Override
   public void addComponent(String name, double moles, double molesInPhase, int compNumber) {
-    super.addComponent(name, molesInPhase);
+    super.addComponent(name, molesInPhase, compNumber);
     componentArray[compNumber] = new ComponentPCSAFT(name, moles, molesInPhase, compNumber);
   }
 
-  /** {@inheritDoc} */
+  /**
+   * {@inheritDoc}
+   *
+   * <p>
+   * Calls component.Finit(initType)
+   * </p>
+   */
   @Override
   public void init(double totalNumberOfMoles, int numberOfComponents, int initType, PhaseType pt,
       double beta) {

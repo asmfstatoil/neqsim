@@ -17,6 +17,7 @@ import neqsim.thermo.system.SystemInterface;
  * @version $Id: $Id
  */
 public class TBPCharacterize extends PlusCharacterize {
+  /** Serialization version UID. */
   private static final long serialVersionUID = 1000;
   int startPlus = 7;
   int endPlus = 20;
@@ -62,7 +63,7 @@ public class TBPCharacterize extends PlusCharacterize {
 
     for (int i = 0; i < system.getPhase(0).getNumberOfComponents(); i++) {
       // if (system.getPhase(0).getComponent(i).getComponentType().equals("HC")) {
-      double boilpoint = system.getPhase(0).getComponent(i).getNormalBoilingPoint();
+      double boilpoint = system.getPhase(0).getComponent(i).getNormalBoilingPoint("C");
 
       if (boilpoint >= 331.0) {
         numb = 13;

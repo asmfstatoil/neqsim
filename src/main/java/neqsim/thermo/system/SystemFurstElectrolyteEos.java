@@ -9,6 +9,7 @@ import neqsim.thermo.phase.PhaseModifiedFurstElectrolyteEos;
  * @version $Id: $Id
  */
 public class SystemFurstElectrolyteEos extends SystemSrkEos {
+  /** Serialization version UID. */
   private static final long serialVersionUID = 1000;
 
   /**
@@ -30,8 +31,9 @@ public class SystemFurstElectrolyteEos extends SystemSrkEos {
    */
   public SystemFurstElectrolyteEos(double T, double P) {
     super(T, P);
-    attractiveTermNumber = 2;
     modelName = "Electrolyte-ScRK-EOS";
+    attractiveTermNumber = 2;
+
     for (int i = 0; i < numberOfPhases; i++) {
       phaseArray[i] = new PhaseModifiedFurstElectrolyteEos();
       phaseArray[i].setTemperature(T);

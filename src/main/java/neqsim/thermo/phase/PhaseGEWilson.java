@@ -2,6 +2,7 @@ package neqsim.thermo.phase;
 
 import neqsim.thermo.ThermodynamicModelSettings;
 import neqsim.thermo.component.ComponentGEWilson;
+import neqsim.thermo.mixingrule.MixingRuleTypeInterface;
 import neqsim.util.exception.IsNaNException;
 import neqsim.util.exception.TooManyIterationsException;
 
@@ -14,6 +15,7 @@ import neqsim.util.exception.TooManyIterationsException;
  * @version $Id: $Id
  */
 public class PhaseGEWilson extends PhaseGE {
+  /** Serialization version UID. */
   private static final long serialVersionUID = 1000;
 
   double GE = 0;
@@ -24,7 +26,6 @@ public class PhaseGEWilson extends PhaseGE {
    * </p>
    */
   public PhaseGEWilson() {
-    super();
     componentArray = new ComponentGEWilson[ThermodynamicModelSettings.MAX_NUMBER_OF_COMPONENTS];
   }
 
@@ -34,21 +35,19 @@ public class PhaseGEWilson extends PhaseGE {
    * </p>
    *
    * @param phase a {@link neqsim.thermo.phase.PhaseInterface} object
-   * @param alpha an array of {@link double} objects
-   * @param Dij an array of {@link double} objects
-   * @param mixRule an array of {@link String} objects
-   * @param intparam an array of {@link double} objects
+   * @param alpha an array of type double
+   * @param Dij an array of type double
+   * @param mixRule an array of {@link java.lang.String} objects
+   * @param intparam an array of type double
    */
   public PhaseGEWilson(PhaseInterface phase, double[][] alpha, double[][] Dij, String[][] mixRule,
       double[][] intparam) {
-    super();
     componentArray = new ComponentGEWilson[alpha[0].length];
     for (int i = 0; i < alpha[0].length; i++) {
       numberOfComponents++;
-      componentArray[i] = new ComponentGEWilson(phase.getComponents()[i].getName(),
-          phase.getComponents()[i].getNumberOfmoles(),
-          phase.getComponents()[i].getNumberOfMolesInPhase(),
-          phase.getComponents()[i].getComponentNumber());
+      componentArray[i] = new ComponentGEWilson(phase.getComponent(i).getName(),
+          phase.getComponent(i).getNumberOfmoles(), phase.getComponent(i).getNumberOfMolesInPhase(),
+          phase.getComponent(i).getComponentNumber());
     }
   }
 
@@ -73,14 +72,14 @@ public class PhaseGEWilson extends PhaseGE {
   /** {@inheritDoc} */
   @Override
   public void addComponent(String name, double moles, double molesInPhase, int compNumber) {
-    super.addComponent(name, molesInPhase);
+    super.addComponent(name, molesInPhase, compNumber);
     componentArray[compNumber] = new ComponentGEWilson(name, moles, molesInPhase, compNumber);
   }
 
   /** {@inheritDoc} */
   @Override
-  public void setMixingRule(int type) {
-    super.setMixingRule(type);
+  public void setMixingRule(MixingRuleTypeInterface mr) {
+    super.setMixingRule(mr);
   }
 
   /** {@inheritDoc} */
@@ -103,13 +102,14 @@ public class PhaseGEWilson extends PhaseGE {
       double temperature, double pressure, PhaseType pt) {
     GE = 0;
     for (int i = 0; i < numberOfComponents; i++) {
-      GE += phase.getComponents()[i].getx()
+      GE += phase.getComponent(i).getx()
           * Math.log(((ComponentGEWilson) componentArray[i]).getWilsonActivityCoefficient(phase));
     }
 
     return R * temperature * numberOfMolesInPhase * GE;
   }
 
+  /** {@inheritDoc} */
   @Override
   public double molarVolume(double pressure, double temperature, double A, double B, PhaseType pt)
       throws IsNaNException, TooManyIterationsException {
